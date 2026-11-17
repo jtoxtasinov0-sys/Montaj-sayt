@@ -2,6 +2,7 @@
 
 import { Scissors } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Neon } from "@/components/motion";
 
 /** Taymlayn sikli (ms) — CSS'dagi --tl-dur bilan bir xil bo'lishi shart */
 const LOOP_MS = 6000;
@@ -86,6 +87,7 @@ export function HeroVisual() {
         className="fade-up absolute inset-x-[2%] bottom-[2%] rounded-2xl border border-white/10 bg-[#0a0a1f]/70 p-3 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md sm:inset-x-[4%] sm:p-3.5 lg:right-[8%] lg:left-[-6%]"
         style={{ animationDelay: "0.9s" }}
       >
+        <Neon tone="accent" speed={6} phase={0.3} />
         <div className="mb-2.5 flex items-center justify-between text-[0.7rem] text-muted">
           <span className="inline-flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />

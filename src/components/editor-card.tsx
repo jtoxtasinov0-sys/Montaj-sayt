@@ -5,9 +5,10 @@ import { fmt, type Dict } from "@/lib/i18n";
 import { isTopRated } from "@/lib/ranking-shared";
 import { cn } from "@/lib/utils";
 import { Avatar } from "./avatar";
+import { Neon } from "./motion";
 import { RatingStars } from "./rating-stars";
 
-export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; className?: string }) {
+export function EditorCard({ e, d, className, phase = 0 }: { e: EditorCardData; d: Dict; className?: string; phase?: number }) {
   const boosted = e.boostWeight > 0 && e.boostUntil && new Date(e.boostUntil) > new Date();
   const onTimePct = e.completedOrders ? Math.round((e.onTimeOrders / e.completedOrders) * 100) : null;
   const top = isTopRated(e);
@@ -17,10 +18,11 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
       data-spotlight
       className={cn(
         "card group flex h-full flex-col gap-4 p-5 transition duration-300 hover:-translate-y-1 hover:border-line-strong",
-        boosted && "ring-glow",
         className,
       )}
     >
+      {/* Ramka bo'ylab neon: TOP montajorda — yorqin, qolganlarida — yumshoq */}
+      {boosted ? <Neon tone="accent" twin speed={6} phase={phase} /> : <Neon tone="soft" phase={phase % 1} speed={11} />}
       <div className="flex items-start gap-3.5">
         <div className="relative">
           <Avatar name={e.displayName} avatarKey={e.avatarKey} image={e.userImage} size={56} />

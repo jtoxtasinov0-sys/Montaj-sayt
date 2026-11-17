@@ -7,16 +7,17 @@ export async function SiteFooter() {
   const d = await getDict();
   const year = new Date().getFullYear();
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-line">
+    <footer data-anim className="relative mt-24 overflow-hidden border-t border-line">
+      <span className="beam-line" aria-hidden />
       <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
-        <div className="max-w-sm">
+        <div data-reveal className="max-w-sm">
           <div className="flex items-center gap-2.5">
             <LogoMark />
             <span className="text-lg font-light tracking-tight">{SITE_NAME}</span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-muted">{d.footer.about}</p>
         </div>
-        <div>
+        <div data-reveal style={{ "--d": "100ms" } as React.CSSProperties}>
           <p className="mb-4 text-xs tracking-widest text-muted uppercase">{d.footer.platform}</p>
           <ul className="space-y-2.5 text-sm">
             <li><Link className="hover:text-primary-2" href="/editors">{d.nav.editors}</Link></li>
@@ -25,7 +26,7 @@ export async function SiteFooter() {
             <li><Link className="hover:text-primary-2" href="/dashboard/profile">{d.nav.becomeEditor}</Link></li>
           </ul>
         </div>
-        <div>
+        <div data-reveal style={{ "--d": "200ms" } as React.CSSProperties}>
           <p className="mb-4 text-xs tracking-widest text-muted uppercase">{d.footer.company}</p>
           <ul className="space-y-2.5 text-sm">
             <li><Link className="hover:text-primary-2" href="/#how">{d.nav.how}</Link></li>
@@ -35,7 +36,7 @@ export async function SiteFooter() {
           </ul>
         </div>
       </div>
-      <div className="container-x">
+      <div data-reveal="fade" className="container-x" style={{ "--d": "250ms" } as React.CSSProperties}>
         <p
           aria-hidden
           className="h-display pointer-events-none pb-[0.16em] text-center text-[18.5vw] leading-none whitespace-nowrap text-fg/[0.16] select-none [mask-image:linear-gradient(to_bottom,#000_35%,rgba(0,0,0,0.2))] lg:text-[14rem]"

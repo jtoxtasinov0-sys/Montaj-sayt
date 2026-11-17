@@ -133,6 +133,7 @@ export const en: Dict = {
     qualityText: "The client’s 1–5 star score plus communication quality.",
     onTime: "On time",
     onTimeText: "Share of work delivered before the deadline — automatic.",
+    badge: "Rating system",
     count: "Experience",
     countText: "Number of orders completed on the platform.",
   },
@@ -175,6 +176,23 @@ export const en: Dict = {
     subtitle: "Find an editor or find your clients — signing up is free.",
     client: "Post a job",
     editor: "Become an editor",
+    cards: [
+      {
+        t: "Find an editor",
+        d: "Filter by price, style and rating — watch portfolio videos right here.",
+        cta: "Editors",
+      },
+      {
+        t: "Post a job",
+        d: "Publish an open brief — editors send you their offers.",
+        cta: "Post a job",
+      },
+      {
+        t: "Become an editor",
+        d: "Sign in with Gmail, upload your portfolio and land your first client.",
+        cta: "Create profile",
+      },
+    ],
   },
   footer: {
     about: "A platform that connects video editors with clients. Built in Tashkent.",

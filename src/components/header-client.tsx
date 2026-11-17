@@ -20,7 +20,7 @@ export function HeaderShell({ children, overDark = true }: { children: React.Rea
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+        "hdr-in fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled ? "glass border-x-0 border-t-0 py-2" : "border-b border-transparent py-4",
         !scrolled && overDark && "dark text-fg",
       )}
@@ -34,12 +34,13 @@ export function NavPills({ items }: { items: NavItem[] }) {
   const path = usePathname();
   return (
     <nav className="hidden items-center gap-1 rounded-full border border-line bg-card/40 p-1 backdrop-blur-md lg:flex">
-      {items.map((it) => {
+      {items.map((it, i) => {
         const active = it.href !== "/" && path.startsWith(it.href.split("#")[0]) && !it.href.includes("#");
         return (
           <Link
             key={it.href}
             href={it.href}
+            style={{ "--n": i } as React.CSSProperties}
             className={cn(
               "rounded-full px-4 py-1.5 text-[0.84rem] transition",
               active ? "bg-fg text-bg" : "text-muted hover:bg-card-2 hover:text-fg",

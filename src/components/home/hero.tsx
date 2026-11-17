@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUpRight, MousePointer2 } from "lucide-react";
 import Link from "next/link";
 import { Sparkle } from "@/components/icons";
+import { Neon, Particles, SplitText } from "@/components/motion";
 import { Stars } from "@/components/stars";
 import { HeroVisual } from "./hero-visual";
 import type { Dict } from "@/lib/i18n";
@@ -9,10 +10,19 @@ type Props = { d: Dict; stats: { editors: number; avgRating: number; onTimePct: 
 
 export function Hero({ d, stats }: Props) {
   return (
-    <section className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3">
-      {/* fon: yulduzlar, planeta yoyi, ufq chizig'i */}
+    <section
+      data-anim
+      className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3"
+    >
+      {/* fon: yulduzlar, planeta (tutilish halqasi + gorizontal chaqnash), ufq chizig'i */}
       <Stars className="absolute inset-0 -z-10 opacity-70" />
-      <div className="planet -z-10" aria-hidden />
+      <Particles count={18} seed={11} className="-z-10" />
+      <div className="planet -z-10" aria-hidden>
+        <span className="planet-eclipse">
+          <span />
+        </span>
+        <span className="planet-flare" />
+      </div>
       <div className="horizon -z-10 bottom-0" aria-hidden />
       <div
         aria-hidden
@@ -30,32 +40,30 @@ export function Hero({ d, stats }: Props) {
           </span>
 
           <h1 className="h-hero mt-7 text-[clamp(2.7rem,7.4vw,6.1rem)]">
-            <span className="rise block overflow-hidden pb-[0.08em]">
-              <span>{d.hero.titleA}</span>
+            <span className="block pb-[0.08em]">
+              <SplitText text={d.hero.titleA} load delay={120} stagger={90} wordClassName="text-silver" />
             </span>
-            <span className="rise flex items-start gap-4 overflow-hidden pb-[0.08em]">
-              <span style={{ animationDelay: "0.12s" }}>
-                <span className="text-gradient">{d.hero.titleB}</span>
-              </span>
+            <span className="flex items-start gap-4 pb-[0.08em]">
+              <SplitText text={d.hero.titleB} load delay={300} stagger={90} wordClassName="text-gradient" />
               <span
                 className="fade-up mt-[0.6em] hidden max-w-[9rem] text-[0.8rem] leading-snug font-normal tracking-normal text-muted xl:block"
-                style={{ animationDelay: "0.8s" }}
+                style={{ animationDelay: "0.9s" }}
               >
                 {d.hero.note}
               </span>
             </span>
-            <span className="rise flex items-center gap-4 overflow-hidden pb-[0.08em]">
-              <span style={{ animationDelay: "0.24s" }}>{d.hero.titleC}</span>
+            <span className="flex items-center gap-4 pb-[0.08em]">
+              <SplitText text={d.hero.titleC} load delay={460} stagger={90} wordClassName="text-silver" />
               <Sparkle className="fade-up h-[0.35em] w-[0.35em] text-accent [animation-delay:1s]" />
             </span>
           </h1>
 
-          <p className="fade-up mt-7 max-w-xl text-base leading-relaxed text-muted sm:text-lg" style={{ animationDelay: "0.4s" }}>
-            {d.hero.subtitle}
+          <p className="mt-7 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+            <SplitText text={d.hero.subtitle} load delay={620} stagger={22} />
           </p>
 
           <div className="fade-up mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "0.55s" }}>
-            <Link href="/editors" className="btn btn-primary btn-lg pr-2.5">
+            <Link href="/editors" className="btn btn-primary btn-neon btn-halo btn-lg pr-2.5">
               {d.hero.ctaFind}
               <span className="btn-arrow !mr-0">
                 <ArrowRight className="h-4 w-4" />
@@ -74,7 +82,8 @@ export function Hero({ d, stats }: Props) {
         {/* Nymera uslubidagi oq kartalar + FXIFY "Get started today" kartasi */}
         <div className="relative z-10 lg:col-span-7 lg:row-start-2">
           <div className="fade-up flex flex-wrap gap-3" style={{ animationDelay: "0.75s" }}>
-            <div className="w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
+            <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
+              <Neon tone="primary" speed={8} phase={0.15} />
               {stats.editors >= 10 ? (
                 <>
                   <div className="text-right text-4xl font-extralight tracking-tight text-primary">{stats.editors}+</div>
@@ -88,7 +97,8 @@ export function Hero({ d, stats }: Props) {
               )}
               <p className="mt-5 text-[0.7rem] leading-snug text-[#5d5f7a]">{d.categoriesSection.title}</p>
             </div>
-            <div className="w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
+            <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
+              <Neon tone="primary" speed={8} phase={0.6} />
               <div className="text-right text-4xl font-extralight tracking-tight text-primary">
                 {stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "5.0"}★
               </div>
@@ -97,9 +107,12 @@ export function Hero({ d, stats }: Props) {
             </div>
             <Link
               href="/login"
-              className="group relative hidden w-56 flex-col justify-between overflow-hidden rounded-3xl border border-line bg-white/[0.04] p-4 backdrop-blur-md transition hover:border-primary-2 sm:flex"
+              className="group relative hidden w-56 flex-col justify-between rounded-3xl border border-line bg-white/[0.04] p-4 backdrop-blur-md transition hover:border-primary-2 sm:flex"
             >
-              <span className="absolute -top-10 -left-10 h-24 w-24 rounded-full bg-primary/40 blur-2xl" aria-hidden />
+              <Neon tone="bright" twin speed={5} />
+              <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden>
+                <span className="absolute -top-10 -left-10 h-24 w-24 rounded-full bg-primary/40 blur-2xl" />
+              </span>
               <div>
                 <p className="text-sm font-medium">{d.hero.sideTitle}</p>
                 <p className="mt-1.5 text-[0.72rem] leading-snug text-muted">{d.hero.sideText}</p>

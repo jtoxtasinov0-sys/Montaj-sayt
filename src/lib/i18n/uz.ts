@@ -131,6 +131,7 @@ export const uz = {
     qualityText: "Mijozning 1–5 yulduzli bahosi va muloqot sifati.",
     onTime: "O’z vaqtida",
     onTimeText: "Muddatdan oldin topshirilgan ishlar ulushi — avtomatik.",
+    badge: "Reyting tizimi",
     count: "Tajriba",
     countText: "Platformada yakunlangan buyurtmalar soni.",
   },
@@ -173,6 +174,23 @@ export const uz = {
     subtitle: "Montajor toping yoki o’z mijozlaringizni toping — hammasi bepul ro’yxatdan o’tish bilan.",
     client: "Buyurtma berish",
     editor: "Montajor bo’lish",
+    cards: [
+      {
+        t: "Montajor toping",
+        d: "Narx, yo’nalish va reyting bo’yicha saralang — portfolio videolarni shu yerda ko’ring.",
+        cta: "Montajorlar",
+      },
+      {
+        t: "Buyurtma joylang",
+        d: "Ochiq e’lon bering — montajorlar takliflarini o’zlari yuboradi.",
+        cta: "Buyurtma berish",
+      },
+      {
+        t: "Montajor bo’ling",
+        d: "Gmail orqali kiring, portfolio joylang va birinchi mijozingizni toping.",
+        cta: "Profil yaratish",
+      },
+    ],
   },
   footer: {
     about: "Videomontajorlar va mijozlarni bog’laydigan platforma. Toshkentda ishlab chiqilgan.",

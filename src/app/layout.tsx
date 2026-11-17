@@ -3,7 +3,7 @@ import "@fontsource-variable/onest";
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import { SpotlightTracker } from "@/components/client-effects";
+import { MotionRoot, SpotlightTracker } from "@/components/client-effects";
 import { SITE_NAME } from "@/lib/constants";
 import { env } from "@/lib/env";
 import { getDict, getLocale } from "@/lib/i18n";
@@ -44,6 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen">
         {children}
         <SpotlightTracker />
+        <MotionRoot />
       </body>
     </html>
   );
