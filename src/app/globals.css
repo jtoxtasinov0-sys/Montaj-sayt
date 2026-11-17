@@ -868,18 +868,18 @@ html[data-io] [data-reveal]:not([data-in]) {
 
 @layer components {
   /* ---------- Neon ramka (komponent: <Neon />) ----------
-     Nur ramka chizig'i bo'ylab o'zgarmas tezlikda yuradi (stroke-dashoffset).
-     Geometriya va --dur'ni MotionRoot o'lchab qo'yadi. */
+     Yumshoq nur dog'lari ramka bo'ylab offset-path bilan o'zgarmas tezlikda yuradi.
+     --path / --dur / o'lchamlarni MotionRoot qo'yadi. */
   .neon {
     --c1: var(--neon-c1);
     --c2: var(--neon-tip);
     position: absolute;
     inset: -1px;
-    z-index: 3;
+    z-index: 2;
     border-radius: inherit;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.6s;
+    transition: opacity 0.7s ease;
   }
   .neon[data-ready] {
     opacity: 1;
@@ -891,49 +891,75 @@ html[data-io] [data-reveal]:not([data-in]) {
     --c1: var(--accent);
     --c2: #ffe8dc;
   }
-  .neon > svg {
+  .neon .nb,
+  .neon .ne > i {
+    position: absolute;
+    top: 0;
+    left: 0;
+    offset-path: var(--path);
+    offset-rotate: auto;
+    offset-anchor: center;
+    animation: neon-move var(--dur, 8s) linear infinite;
+  }
+  .neon .nb-2,
+  .neon .ne-2 {
+    animation-delay: calc(var(--dur, 8s) * -0.5);
+  }
+  /* Keng yumshoq yorug'lik — chetlari umuman ko'rinmaydi */
+  .neon .nb {
+    width: var(--bw, 180px);
+    height: var(--bh, 90px);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--c1) 40%, transparent), color-mix(in oklab, var(--c1) 12%, transparent) 55%, transparent);
+  }
+  /* Ramka chizig'idagi nur: faqat chegara halqasida ko'rinadi, uchlari so'nadi */
+  .neon .ne {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    filter: drop-shadow(0 0 3px var(--c1)) drop-shadow(0 0 14px color-mix(in oklab, var(--c1) 75%, transparent));
+    border-radius: inherit;
+    padding: 1.5px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
   }
-  /* Ko'k tugma ichida ko'k nur ko'rinmaydi — oq nur */
+  .neon .ne > i {
+    width: var(--ew, 140px);
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--c2), var(--c1) 38%, color-mix(in oklab, var(--c1) 30%, transparent) 70%, transparent);
+  }
+  /* Ko'k tugma ichida — oq nur */
   .btn-primary > .neon {
-    --c1: rgba(255, 255, 255, 0.85);
+    --c1: rgba(255, 255, 255, 0.9);
     --c2: #fff;
   }
-  .btn-primary > .neon rect {
-    stroke-width: 2;
+  .btn-primary > .neon .nb {
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08) 55%, transparent);
   }
-  .neon rect {
-    fill: none;
-    stroke: var(--c1);
-    stroke-linecap: round;
-  }
-  .neon .n1 {
-    stroke-width: 1.5;
-    opacity: 0.42;
-  }
-  .neon .n2 {
-    stroke-width: 1.6;
-    opacity: 0.8;
-  }
-  .neon .n3 {
-    stroke-width: 2;
-  }
-  .neon .n4 {
-    stroke: var(--c2);
-    stroke-width: 2.2;
-  }
-  .neon[data-ready] rect {
-    animation: neon-run var(--dur, 8s) linear infinite;
+  .btn-primary > .neon .ne {
+    padding: 2px;
   }
   /* Spotlight kartalardagi `> *` qoidasidan ustun turishi uchun */
   [data-spotlight] > .neon {
     position: absolute;
-    z-index: 3;
+    z-index: 2;
+  }
+  /* Guruhda nur faqat tanlangan kartada; sichqoncha qaysi kartada bo'lsa — nur o'sha yerga o'tadi (referensdagidek) */
+  .neon-group > * > .neon {
+    opacity: 0;
+  }
+  .neon-group > .is-featured > .neon[data-ready] {
+    opacity: 1;
+  }
+  @media (hover: hover) {
+    .neon-group:has(> :hover) > .is-featured:not(:hover) > .neon {
+      opacity: 0;
+    }
+    .neon-group > :hover > .neon[data-ready] {
+      opacity: 1;
+    }
   }
 
   .btn-halo {
@@ -1483,12 +1509,12 @@ html[data-io] [data-reveal]:not([data-in]) {
   }
 }
 
-@keyframes neon-run {
+@keyframes neon-move {
   from {
-    stroke-dashoffset: var(--o0);
+    offset-distance: 0%;
   }
   to {
-    stroke-dashoffset: var(--o1);
+    offset-distance: 100%;
   }
 }
 @keyframes word-in {

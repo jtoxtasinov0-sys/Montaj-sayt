@@ -89,7 +89,6 @@ export function Hero({ d, stats }: Props) {
         <div className="relative z-10 lg:col-span-7 lg:row-start-2">
           <div className="fade-up flex flex-wrap gap-3" style={{ animationDelay: "0.75s" }}>
             <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
-              <Neon />
               {stats.editors >= 10 ? (
                 <>
                   <div className="text-right text-4xl font-extralight tracking-tight text-primary">{stats.editors}+</div>
@@ -104,7 +103,6 @@ export function Hero({ d, stats }: Props) {
               <p className="mt-5 text-[0.7rem] leading-snug text-[#5d5f7a]">{d.categoriesSection.title}</p>
             </div>
             <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
-              <Neon />
               <div className="text-right text-4xl font-extralight tracking-tight text-primary">
                 {stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "5.0"}★
               </div>

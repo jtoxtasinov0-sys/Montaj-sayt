@@ -27,49 +27,50 @@ const REVEAL = "[data-reveal],[data-split]";
 const SCOPE = "[data-anim]";
 const NEON = ".neon";
 /** Neon nur tezligi — barcha ramkalarda bir xil, px/soniya */
-const NEON_SPEED = 150;
+const NEON_SPEED = 140;
 
 /**
- * Neon ramkani ota elementning haqiqiy o'lchami va radiusiga moslaydi.
- * Perimetr ma'lum bo'lgach ikki nur chiziq bo'ylab o'zgarmas tezlikda yuradi.
- * Har bir qatlam (keng-xira → qisqa-yorqin) bir markazga tekislanadi — nur o'rtasi yorqin, chetlari so'nadi.
+ * Neon uchun ota elementning haqiqiy o'lchami va radiusidan yumaloq to'rtburchak yo'l (path) quradi.
+ * Nur shu yo'l bo'ylab `offset-distance` 0→100% bilan yuradi: davomiylik = perimetr / tezlik,
+ * shuning uchun har qanday kartada va burchakda tezlik bir xil.
  * offsetWidth — transform (3D paydo bo'lish) ta'sir qilmaydigan o'lcham.
  */
 function layoutNeon(el: HTMLElement) {
-  const svg = el.firstElementChild;
   const parent = el.parentElement;
   const w = el.offsetWidth;
   const h = el.offsetHeight;
-  if (!svg || !parent || !w || !h) return;
+  if (!parent || !w || !h) return;
   const cs = getComputedStyle(parent);
   const raw = cs.borderTopLeftRadius;
   let radius = parseFloat(raw) || 0;
   if (raw.endsWith("%")) radius = (radius / 100) * Math.min(w, h);
   const inside = el.classList.contains("neon-inside");
   if (inside) radius = Math.max(0, radius - (parseFloat(cs.borderTopWidth) || 0));
-  // Chiziq markazi: tashqi variantda — 1px chegaraning o'rtasida, ichkida — to'liq ichkarida
+  // Yo'l chegaraning o'rtasidan o'tadi: tashqi variantda 1px chegara markazi, ichkida — ichkariroq
   const i = inside ? 1 : 0.5;
   const W = w - 2 * i;
   const H = h - 2 * i;
   const r = Math.max(0, Math.min(radius - i, W / 2, H / 2));
+  const f = (n: number) => n.toFixed(2);
+  const [x0, y0, x1, y1] = [i, i, i + W, i + H];
+  const d =
+    `M${f(x0 + r)} ${f(y0)}H${f(x1 - r)}` +
+    (r ? `A${f(r)} ${f(r)} 0 0 1 ${f(x1)} ${f(y0 + r)}` : "") +
+    `V${f(y1 - r)}` +
+    (r ? `A${f(r)} ${f(r)} 0 0 1 ${f(x1 - r)} ${f(y1)}` : "") +
+    `H${f(x0 + r)}` +
+    (r ? `A${f(r)} ${f(r)} 0 0 1 ${f(x0)} ${f(y1 - r)}` : "") +
+    `V${f(y0 + r)}` +
+    (r ? `A${f(r)} ${f(r)} 0 0 1 ${f(x0 + r)} ${f(y0)}` : "") +
+    "Z";
   const per = 2 * (W + H) - 8 * r + 2 * Math.PI * r;
-  const half = per / 2; // ikki nur — naqsh davri perimetrning yarmi
-  // Tugmalarda nur uzunroq (pill qisqa) — har bir nur yarim aylananing 60%i
-  const seg = parent.classList.contains("btn") ? half * 0.6 : Math.min(240, Math.max(90, per * 0.18), half * 0.8);
-  for (const rect of svg.children) {
-    const L = seg * (Number(rect.getAttribute("data-f")) || 1);
-    rect.setAttribute("x", String(i));
-    rect.setAttribute("y", String(i));
-    rect.setAttribute("width", W.toFixed(2));
-    rect.setAttribute("height", H.toFixed(2));
-    rect.setAttribute("rx", r.toFixed(2));
-    rect.setAttribute("ry", r.toFixed(2));
-    rect.setAttribute("stroke-dasharray", `${L.toFixed(2)} ${(half - L).toFixed(2)}`);
-    rect.setAttribute("stroke-dashoffset", (L / 2).toFixed(2));
-    (rect as SVGElement).style.setProperty("--o0", `${(L / 2).toFixed(2)}px`);
-    (rect as SVGElement).style.setProperty("--o1", `${(L / 2 - per).toFixed(2)}px`);
-  }
+  const small = Math.min(w, h);
+  el.style.setProperty("--path", `path("${d}")`);
   el.style.setProperty("--dur", `${(per / NEON_SPEED).toFixed(2)}s`);
+  // Nur dog'lari o'lchami ramkaga mos: kichik tugmada ixcham, katta kartada uzunroq
+  el.style.setProperty("--bw", `${f(Math.min(280, Math.max(120, per * 0.2)))}px`);
+  el.style.setProperty("--bh", `${f(Math.min(130, Math.max(50, small * 0.6)))}px`);
+  el.style.setProperty("--ew", `${f(Math.min(220, Math.max(90, per * 0.17)))}px`);
   el.setAttribute("data-ready", "");
 }
 
