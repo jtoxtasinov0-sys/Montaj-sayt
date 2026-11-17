@@ -49,11 +49,11 @@ export function SplitText({
 
 /**
  * Ramka bo'ylab aylanuvchi yumshoq nur (FXIFY referensi kabi): qarama-qarshi tomonlarda ikkita
- * porlovchi nur dog'i. Har biri ikki qatlam:
- *  - `nb` — keng, xira yorug'lik (karta ichi va tashqarisini yoritadi, chetlari ko'rinmaydi);
- *  - `ne > i` — ramka chizig'ining o'zida yonadigan yorqin, lekin chetlari so'nuvchi nur.
- * Ikkalasi CSS `offset-path` bo'ylab yuradi — burchaklarda ham tezlik bir xil.
- * Yo'l (path), uzunlik va o'lchamni MotionRoot ota elementdan o'lchab qo'yadi.
+ * bir xil nur, ikkalasi ramka yo'li bo'ylab o'zgarmas tezlikda yuradi.
+ *  - SVG chiziq qatlamlari (`n1…n6`) — ramkaning o'zidagi nur: o'rtasi yorqin, uchlari asta so'nadi.
+ *    `stroke-dashoffset` bilan siljiydi va burchakni aniq aylanib o'tadi.
+ *  - `nb` — yumshoq yorug'lik: ketma-ket uchta dumaloq dog' (burilmaydi — burchakda "sakramaydi").
+ * O'lcham, yo'l va uzunlikni MotionRoot ota elementdan o'lchab qo'yadi.
  * `inside` — ota `overflow: hidden` bo'lsa (tugmalar).
  */
 export function Neon({
@@ -68,12 +68,20 @@ export function Neon({
 }) {
   return (
     <span aria-hidden className={cn("neon", tone === "accent" && "neon-accent", inside && "neon-inside", className)}>
-      <i className="nb" />
-      <i className="nb nb-2" />
-      <span className="ne">
-        <i />
-        <i className="ne-2" />
-      </span>
+      <i className="nb k0" />
+      <i className="nb k1" />
+      <i className="nb k2" />
+      <i className="nb k0 t2" />
+      <i className="nb k1 t2" />
+      <i className="nb k2 t2" />
+      <svg>
+        <rect className="n1" data-f="1" />
+        <rect className="n2" data-f="0.78" />
+        <rect className="n3" data-f="0.58" />
+        <rect className="n4" data-f="0.4" />
+        <rect className="n5" data-f="0.24" />
+        <rect className="n6" data-f="0.1" />
+      </svg>
     </span>
   );
 }

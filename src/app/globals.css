@@ -891,55 +891,87 @@ html[data-io] [data-reveal]:not([data-in]) {
     --c1: var(--accent);
     --c2: #ffe8dc;
   }
-  .neon .nb,
-  .neon .ne > i {
+  /* Yumshoq yorug'lik: uchta dumaloq dog' ketma-ket (k0, k1, k2 — har biri BLOOM_GAP oldinda).
+     Dumaloq bo'lgani uchun burchakda burilmaydi — tezlik har joyda bir xil ko'rinadi. */
+  .neon .nb {
+    --k: 0;
+    --t: 0s;
     position: absolute;
     top: 0;
     left: 0;
-    offset-path: var(--path);
-    offset-rotate: auto;
-    offset-anchor: center;
-    animation: neon-move var(--dur, 8s) linear infinite;
-  }
-  .neon .nb-2,
-  .neon .ne-2 {
-    animation-delay: calc(var(--dur, 8s) * -0.5);
-  }
-  /* Keng yumshoq yorug'lik — chetlari umuman ko'rinmaydi */
-  .neon .nb {
-    width: var(--bw, 180px);
-    height: var(--bh, 90px);
+    width: var(--bs, 110px);
+    height: var(--bs, 110px);
     border-radius: 50%;
-    background: radial-gradient(closest-side, color-mix(in oklab, var(--c1) 40%, transparent), color-mix(in oklab, var(--c1) 12%, transparent) 55%, transparent);
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--c1) 34%, transparent), color-mix(in oklab, var(--c1) 10%, transparent) 55%, transparent);
+    offset-path: var(--path);
+    offset-rotate: 0deg;
+    offset-anchor: center;
   }
-  /* Ramka chizig'idagi nur: faqat chegara halqasida ko'rinadi, uchlari so'nadi */
-  .neon .ne {
+  /* Chiziq va dog'lar bitta lahzada (o'lcham qo'yilganda) boshlanadi — doim bir nuqtada yuradi */
+  .neon[data-ready] .nb {
+    animation: neon-move var(--dur, 8s) linear infinite;
+    animation-delay: calc(var(--t) - var(--k) * var(--sp, 0.28s));
+  }
+  .neon .nb.k1 {
+    --k: 1;
+  }
+  .neon .nb.k2 {
+    --k: 2;
+  }
+  .neon .nb.k0,
+  .neon .nb.k2 {
+    opacity: 0.6;
+  }
+  .neon .nb.t2 {
+    --t: calc(var(--dur, 8s) * -0.5);
+  }
+  /* Ramka chizig'idagi nur: 6 qatlam (keng-xira → qisqa-oq), bitta markazga tekislangan */
+  .neon > svg {
     position: absolute;
     inset: 0;
-    border-radius: inherit;
-    padding: 1.5px;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: blur(0.4px) drop-shadow(0 0 3px var(--c1)) drop-shadow(0 0 10px color-mix(in oklab, var(--c1) 65%, transparent));
   }
-  .neon .ne > i {
-    width: var(--ew, 140px);
-    height: 44px;
-    border-radius: 50%;
-    background: radial-gradient(closest-side, var(--c2), var(--c1) 38%, color-mix(in oklab, var(--c1) 30%, transparent) 70%, transparent);
+  .neon rect {
+    fill: none;
+    stroke: var(--c1);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .neon .n1 {
+    opacity: 0.14;
+  }
+  .neon .n2 {
+    opacity: 0.17;
+  }
+  .neon .n3 {
+    opacity: 0.22;
+  }
+  .neon .n4 {
+    opacity: 0.3;
+  }
+  .neon .n5 {
+    opacity: 0.45;
+  }
+  .neon .n6 {
+    stroke: var(--c2);
+    stroke-width: 1.9;
+  }
+  .neon[data-ready] rect {
+    animation: neon-run var(--dur, 8s) linear infinite;
   }
   /* Ko'k tugma ichida — oq nur */
   .btn-primary > .neon {
-    --c1: rgba(255, 255, 255, 0.9);
+    --c1: rgba(255, 255, 255, 0.95);
     --c2: #fff;
   }
   .btn-primary > .neon .nb {
-    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08) 55%, transparent);
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.07) 55%, transparent);
   }
-  .btn-primary > .neon .ne {
-    padding: 2px;
+  .btn-primary > .neon rect {
+    stroke-width: 2;
   }
   /* Spotlight kartalardagi `> *` qoidasidan ustun turishi uchun */
   [data-spotlight] > .neon {
@@ -1515,6 +1547,14 @@ html[data-io] [data-reveal]:not([data-in]) {
   }
   to {
     offset-distance: 100%;
+  }
+}
+@keyframes neon-run {
+  from {
+    stroke-dashoffset: var(--o0);
+  }
+  to {
+    stroke-dashoffset: var(--o1);
   }
 }
 @keyframes word-in {
