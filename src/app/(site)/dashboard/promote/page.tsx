@@ -2,6 +2,7 @@ import { CreditCard, Flame, Info } from "lucide-react";
 import { redirect } from "next/navigation";
 import { submitPayment } from "@/actions/payments";
 import { ActionForm, CopyButton, SubmitButton } from "@/components/form";
+import { Neon } from "@/components/motion";
 import { Field, StatusBadge } from "@/components/page-bits";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { myPayments } from "@/lib/dashboard-data";
@@ -21,7 +22,8 @@ export default async function PromotePage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-8">
-      <div className={cn("card flex flex-wrap items-center gap-4 p-5", boosted && "ring-glow")}>
+      <div className="card relative flex flex-wrap items-center gap-4 p-5">
+        {boosted && <Neon tone="accent" twin />}
         <span className={cn("grid h-11 w-11 place-items-center rounded-2xl", boosted ? "bg-accent/15 text-accent" : "bg-card-2 text-muted")}>
           <Flame className="h-5 w-5" />
         </span>

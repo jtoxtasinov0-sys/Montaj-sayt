@@ -3,6 +3,7 @@
 import { Scissors } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Neon } from "@/components/motion";
+import { HeroChips, HeroOrbit } from "./hero-orbit";
 
 /** Taymlayn sikli (ms) — CSS'dagi --tl-dur bilan bir xil bo'lishi shart */
 const LOOP_MS = 6000;
@@ -25,7 +26,7 @@ function timecode(ms: number) {
 }
 
 /** Klapper (3D render) + jonli montaj taymlayni: pleyhed yuradi, klipni kesadi, taymkod sanaydi */
-export function HeroVisual() {
+export function HeroVisual({ chips }: { chips: string[] }) {
   const root = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const tc = useRef<HTMLSpanElement>(null);
@@ -70,6 +71,7 @@ export function HeroVisual() {
 
   return (
     <div ref={root} className="hero-visual relative mx-auto aspect-square w-full max-w-[26rem] lg:max-w-none" aria-hidden>
+      <HeroOrbit />
       <div className="absolute inset-[14%] rounded-full bg-primary/30 blur-[90px]" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -82,12 +84,14 @@ export function HeroVisual() {
         className="animate-float relative h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(circle_at_50%_50%,#000_55%,transparent_72%)]"
       />
 
+      <HeroChips labels={chips} />
+
       {/* Montaj taymlayni */}
       <div
         className="fade-up absolute inset-x-[2%] bottom-[2%] rounded-2xl border border-white/10 bg-[#0a0a1f]/70 p-3 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md sm:inset-x-[4%] sm:p-3.5 lg:right-[8%] lg:left-[-6%]"
         style={{ animationDelay: "0.9s" }}
       >
-        <Neon tone="accent" speed={6} phase={0.3} />
+        <Neon />
         <div className="mb-2.5 flex items-center justify-between text-[0.7rem] text-muted">
           <span className="inline-flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />

@@ -181,10 +181,10 @@ export function TiersSection({
               key={t.id}
               data-reveal="3d"
               data-spotlight
-              className={cn("card flex flex-col p-6", i === 2 && "bg-gradient-to-b from-primary/15 to-transparent")}
+              className="card flex flex-col p-6"
               style={delay(i * 90)}
             >
-              <Neon tone={i === 2 ? "bright" : "soft"} twin={i === 2} phase={i * 0.21} speed={i === 2 ? 6 : 10} />
+              <Neon />
               <div className="text-[2.6rem] leading-none font-extralight tracking-tighter">
                 ${t.minUsd}
                 <span className="text-muted">{t.maxUsd ? `–${t.maxUsd}` : "+"}</span>
@@ -205,7 +205,7 @@ export function TiersSection({
                 <Link href={`/editors?tier=${t.id}`} className="btn btn-ghost btn-sm px-2 text-xs">
                   {d.tiers.editorsLink}
                 </Link>
-                <Link href={`/jobs?tier=${t.id}`} className={cn("btn btn-primary btn-sm px-2 text-xs", i === 2 && "btn-neon")}>
+                <Link href={`/jobs?tier=${t.id}`} className="btn btn-primary btn-sm px-2 text-xs">
                   {d.tiers.jobsLink}
                 </Link>
               </div>
@@ -247,7 +247,7 @@ export function CategoriesSection({ d }: { d: Dict }) {
               WIDE.has(i) && "md:col-span-2 md:aspect-auto",
             )}
           >
-            <Neon tone="soft" inside phase={(i * 0.37) % 1} speed={11} />
+            <Neon inside />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={c.image}
@@ -289,7 +289,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
       />
       {editors.length === 0 ? (
         <div data-reveal className="card relative p-10 text-center text-muted">
-          <Neon tone="soft" />
+          <Neon />
           {d.topEditors.empty}{" "}
           <Link href="/dashboard/profile" className="text-primary-2 underline">
             {d.nav.becomeEditor}
@@ -299,7 +299,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {editors.map((e, i) => (
             <div key={e.id} data-reveal="3d" style={delay((i % 4) * 90)}>
-              <EditorCard e={e} d={d} phase={i * 0.27} />
+              <EditorCard e={e} d={d} />
             </div>
           ))}
         </div>
@@ -363,7 +363,7 @@ export function RatingSection({ d }: { d: Dict }) {
             className="card flex flex-col overflow-hidden"
             style={{ "--tone": it.tone, "--d": `${i * 120}ms` } as Css}
           >
-            <Neon tone="soft" inside phase={i * 0.33} speed={10} />
+            <Neon inside />
             <span className="corner-num">0.{i + 1}</span>
             <div className="bento-visual" aria-hidden>
               <div className="bento-grid" />
@@ -470,7 +470,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
                   p.isPopular && "bg-gradient-to-b from-primary/25 to-transparent sm:-translate-y-4",
                 )}
               >
-                {p.isPopular ? <Neon tone="accent" twin speed={6} /> : <Neon tone="soft" phase={i * 0.4} speed={9} />}
+                {p.isPopular ? <Neon tone="accent" twin /> : <Neon />}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted">{p.name}</span>
                   {p.isPopular && (
@@ -496,8 +496,9 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
                 </ul>
                 <Link
                   href={`/dashboard/promote?plan=${p.id}`}
-                  className={cn("btn mt-auto w-full", p.isPopular ? "btn-primary btn-neon" : "btn-ghost")}
+                  className={cn("btn mt-auto w-full", p.isPopular ? "btn-primary" : "btn-ghost")}
                 >
+                  {p.isPopular && <Neon inside />}
                   {d.promo.cta}
                 </Link>
               </div>
@@ -571,7 +572,7 @@ function DashboardMock({ d }: { d: Dict }) {
       aria-hidden
       className="relative rounded-[1.4rem] border border-white/10 bg-[#0a0a1f]/85 p-2 text-left shadow-[0_40px_120px_-30px_rgba(61,76,228,0.65)] backdrop-blur-xl"
     >
-      <Neon tone="bright" speed={10} />
+      <Neon />
       <div className="grid gap-2 sm:grid-cols-[11rem_1fr]">
         <aside className="hidden flex-col gap-1 rounded-2xl bg-white/[0.03] p-3 sm:flex">
           <div className="flex items-center gap-2 px-1 pb-3">
@@ -715,7 +716,7 @@ export function FinalCta({ d }: { d: Dict }) {
               style={delay(i * 120)}
               className="group relative isolate flex flex-col items-center rounded-3xl border border-line bg-[#0a0a1f]/80 px-5 pt-3 pb-6 text-center backdrop-blur-md transition hover:border-line-strong"
             >
-              <Neon tone={i === 1 ? "bright" : "soft"} phase={i * 0.3} speed={i === 1 ? 6 : 9} />
+              <Neon />
               <span
                 className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-36 rounded-t-[inherit] bg-[radial-gradient(ellipse_60%_80%_at_50%_0%,rgba(61,76,228,0.4),transparent_70%)]"
                 aria-hidden
@@ -740,7 +741,8 @@ export function FinalCta({ d }: { d: Dict }) {
               </div>
               <h3 className="mt-2 text-xl font-light tracking-tight">{c.t}</h3>
               <p className="mt-1.5 max-w-[18rem] text-sm leading-relaxed text-muted">{c.d}</p>
-              <span className={cn("btn btn-sm mt-5", i === 1 ? "btn-primary btn-neon" : "btn-ghost")}>
+              <span className={cn("btn btn-sm mt-5", i === 1 ? "btn-primary" : "btn-ghost")}>
+                {i === 1 && <Neon inside />}
                 {c.cta} <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>

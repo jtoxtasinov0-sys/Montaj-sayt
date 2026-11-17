@@ -14,15 +14,15 @@ export function Hero({ d, stats }: Props) {
       data-anim
       className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3"
     >
-      {/* fon: yulduzlar, planeta (tutilish halqasi + gorizontal chaqnash), ufq chizig'i */}
-      <Stars className="absolute inset-0 -z-10 opacity-70" />
-      <Particles count={18} seed={11} className="-z-10" />
-      <div className="planet -z-10" aria-hidden>
-        <span className="planet-eclipse">
-          <span />
-        </span>
-        <span className="planet-flare" />
+      {/* fon: suzuvchi aurora, kinoproyektor nuri, yulduzlar va chang, pastda ufq chizig'i */}
+      <div className="aurora -z-10" aria-hidden>
+        <i />
+        <i />
+        <i />
       </div>
+      <div className="projector -z-10" aria-hidden />
+      <Stars className="absolute inset-0 -z-10 opacity-70" />
+      <Particles count={22} seed={11} className="-z-10" />
       <div className="horizon -z-10 bottom-0" aria-hidden />
       <div
         aria-hidden
@@ -63,7 +63,8 @@ export function Hero({ d, stats }: Props) {
           </p>
 
           <div className="fade-up mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "0.55s" }}>
-            <Link href="/editors" className="btn btn-primary btn-neon btn-halo btn-lg pr-2.5">
+            <Link href="/editors" className="btn btn-primary btn-halo btn-lg pr-2.5">
+              <Neon inside />
               {d.hero.ctaFind}
               <span className="btn-arrow !mr-0">
                 <ArrowRight className="h-4 w-4" />
@@ -76,14 +77,14 @@ export function Hero({ d, stats }: Props) {
         </div>
 
         <div className="relative lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:self-center">
-          <HeroVisual />
+          <HeroVisual chips={[d.categories.reels, d.categories.motion, d.categories.color, d.categories.wedding]} />
         </div>
 
         {/* Nymera uslubidagi oq kartalar + FXIFY "Get started today" kartasi */}
         <div className="relative z-10 lg:col-span-7 lg:row-start-2">
           <div className="fade-up flex flex-wrap gap-3" style={{ animationDelay: "0.75s" }}>
             <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
-              <Neon tone="primary" speed={8} phase={0.15} />
+              <Neon />
               {stats.editors >= 10 ? (
                 <>
                   <div className="text-right text-4xl font-extralight tracking-tight text-primary">{stats.editors}+</div>
@@ -98,7 +99,7 @@ export function Hero({ d, stats }: Props) {
               <p className="mt-5 text-[0.7rem] leading-snug text-[#5d5f7a]">{d.categoriesSection.title}</p>
             </div>
             <div className="relative w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
-              <Neon tone="primary" speed={8} phase={0.6} />
+              <Neon />
               <div className="text-right text-4xl font-extralight tracking-tight text-primary">
                 {stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "5.0"}★
               </div>
@@ -109,7 +110,7 @@ export function Hero({ d, stats }: Props) {
               href="/login"
               className="group relative hidden w-56 flex-col justify-between rounded-3xl border border-line bg-white/[0.04] p-4 backdrop-blur-md transition hover:border-primary-2 sm:flex"
             >
-              <Neon tone="bright" twin speed={5} />
+              <Neon />
               <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden>
                 <span className="absolute -top-10 -left-10 h-24 w-24 rounded-full bg-primary/40 blur-2xl" />
               </span>

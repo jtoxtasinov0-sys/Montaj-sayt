@@ -8,7 +8,7 @@ import { Avatar } from "./avatar";
 import { Neon } from "./motion";
 import { RatingStars } from "./rating-stars";
 
-export function EditorCard({ e, d, className, phase = 0 }: { e: EditorCardData; d: Dict; className?: string; phase?: number }) {
+export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; className?: string }) {
   const boosted = e.boostWeight > 0 && e.boostUntil && new Date(e.boostUntil) > new Date();
   const onTimePct = e.completedOrders ? Math.round((e.onTimeOrders / e.completedOrders) * 100) : null;
   const top = isTopRated(e);
@@ -21,8 +21,8 @@ export function EditorCard({ e, d, className, phase = 0 }: { e: EditorCardData; 
         className,
       )}
     >
-      {/* Ramka bo'ylab neon: TOP montajorda — yorqin, qolganlarida — yumshoq */}
-      {boosted ? <Neon tone="accent" twin speed={6} phase={phase} /> : <Neon tone="soft" phase={phase % 1} speed={11} />}
+      {/* Ramka bo'ylab neon: TOP montajorda — to'q sariq, ikki nur */}
+      {boosted ? <Neon tone="accent" twin /> : <Neon />}
       <div className="flex items-start gap-3.5">
         <div className="relative">
           <Avatar name={e.displayName} avatarKey={e.avatarKey} image={e.userImage} size={56} />

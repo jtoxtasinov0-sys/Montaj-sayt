@@ -48,36 +48,35 @@ export function SplitText({
 }
 
 /**
- * Ramka bo'ylab aylanib yuruvchi neon nur. Ota element `position: relative` va
- * `border-radius` ga ega bo'lishi kerak (nur shu radiusni oladi).
- * `inside` — ota `overflow: hidden` bo'lsa, nur chegaraning ichki tomonida chiziladi.
+ * Ramka chizig'i bo'ylab yuruvchi neon nur (dum + o'rta + yorqin bosh).
+ * Nur SVG `stroke-dashoffset` bilan chiziq uzunligi bo'yicha siljiydi — shuning uchun
+ * burchaklarda tezlashmaydi: hamma joyda, hamma kartada bir xil tezlik (px/s).
+ * O'lcham va radiusni MotionRoot o'lchab qo'yadi (ota elementning border-radius'idan).
+ * `inside` — ota `overflow: hidden` bo'lsa (tugmalar, rasmli kartalar).
  */
 export function Neon({
-  tone = "soft",
+  tone = "blue",
   inside,
   twin,
-  speed,
-  phase = 0,
   className,
 }: {
-  tone?: "soft" | "bright" | "accent" | "primary";
+  /** accent — faqat pullik ajratish (TOP montajor, ommabop reja) */
+  tone?: "blue" | "accent";
   inside?: boolean;
   /** Ikki qarama-qarshi nur */
   twin?: boolean;
-  /** Bir aylanish, soniya */
-  speed?: number;
-  /** 0..1 — kartalar bir xil joydan boshlamasin */
-  phase?: number;
   className?: string;
 }) {
-  const dur = speed ?? (tone === "soft" ? 9 : 6);
   return (
     <span
       aria-hidden
-      className={cn("neon", `neon-${tone}`, inside && "neon-inside", twin && "neon-twin", className)}
-      style={{ "--dur": `${dur}s`, "--neon-d": `${-(phase * dur).toFixed(2)}s` } as Css}
+      className={cn("neon", tone === "accent" && "neon-accent", inside && "neon-inside", twin && "neon-twin", className)}
     >
-      <span />
+      <svg>
+        <rect className="n1" data-l="150" />
+        <rect className="n2" data-l="60" />
+        <rect className="n3" data-l="14" />
+      </svg>
     </span>
   );
 }
