@@ -22,7 +22,7 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
       )}
     >
       {/* Ramka bo'ylab neon: TOP montajorda — to'q sariq, ikki nur */}
-      {boosted ? <Neon tone="accent" twin /> : <Neon />}
+      {boosted ? <Neon tone="accent" /> : <Neon />}
       <div className="flex items-start gap-3.5">
         <div className="relative">
           <Avatar name={e.displayName} avatarKey={e.avatarKey} image={e.userImage} size={56} />

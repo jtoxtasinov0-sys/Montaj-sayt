@@ -14,16 +14,21 @@ export function Hero({ d, stats }: Props) {
       data-anim
       className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3"
     >
-      {/* fon: suzuvchi aurora, kinoproyektor nuri, yulduzlar va chang, pastda ufq chizig'i */}
-      <div className="aurora -z-10" aria-hidden>
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="projector -z-10" aria-hidden />
+      {/* Fon (FXIFY referensi): tepada porlovchi shar — undan to'lqin-halqa kengayib chiqadi,
+          pastda to'q sariq ufq yoyi va chaqnash chizig'i. Hammasi bitta 8 soniyalik siklda. */}
       <Stars className="absolute inset-0 -z-10 opacity-70" />
       <Particles count={22} seed={11} className="-z-10" />
-      <div className="horizon -z-10 bottom-0" aria-hidden />
+      <div className="orb-wrap -z-10" aria-hidden>
+        <span className="orb-ring">
+          <span />
+        </span>
+        <span className="orb-ring orb-ring-2">
+          <span />
+        </span>
+        <span className="orb" />
+      </div>
+      <div className="hero-dome -z-10" aria-hidden />
+      <div className="hero-flare -z-10" aria-hidden />
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[radial-gradient(ellipse_60%_80%_at_50%_100%,rgba(61,76,228,0.35),transparent_70%)]"
@@ -77,7 +82,7 @@ export function Hero({ d, stats }: Props) {
         </div>
 
         <div className="relative lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:self-center">
-          <HeroVisual chips={[d.categories.reels, d.categories.motion, d.categories.color, d.categories.wedding]} />
+          <HeroVisual />
         </div>
 
         {/* Nymera uslubidagi oq kartalar + FXIFY "Get started today" kartasi */}

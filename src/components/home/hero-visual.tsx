@@ -3,7 +3,6 @@
 import { Scissors } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Neon } from "@/components/motion";
-import { HeroChips, HeroOrbit } from "./hero-orbit";
 
 /** Taymlayn sikli (ms) — CSS'dagi --tl-dur bilan bir xil bo'lishi shart */
 const LOOP_MS = 6000;
@@ -26,7 +25,7 @@ function timecode(ms: number) {
 }
 
 /** Klapper (3D render) + jonli montaj taymlayni: pleyhed yuradi, klipni kesadi, taymkod sanaydi */
-export function HeroVisual({ chips }: { chips: string[] }) {
+export function HeroVisual() {
   const root = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const tc = useRef<HTMLSpanElement>(null);
@@ -71,7 +70,6 @@ export function HeroVisual({ chips }: { chips: string[] }) {
 
   return (
     <div ref={root} className="hero-visual relative mx-auto aspect-square w-full max-w-[26rem] lg:max-w-none" aria-hidden>
-      <HeroOrbit />
       <div className="absolute inset-[14%] rounded-full bg-primary/30 blur-[90px]" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -83,8 +81,6 @@ export function HeroVisual({ chips }: { chips: string[] }) {
         decoding="async"
         className="animate-float relative h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(circle_at_50%_50%,#000_55%,transparent_72%)]"
       />
-
-      <HeroChips labels={chips} />
 
       {/* Montaj taymlayni */}
       <div

@@ -470,7 +470,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
                   p.isPopular && "bg-gradient-to-b from-primary/25 to-transparent sm:-translate-y-4",
                 )}
               >
-                {p.isPopular ? <Neon tone="accent" twin /> : <Neon />}
+                {p.isPopular ? <Neon tone="accent" /> : <Neon />}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted">{p.name}</span>
                   {p.isPopular && (

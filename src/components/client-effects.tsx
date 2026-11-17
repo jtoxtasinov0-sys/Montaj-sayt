@@ -27,11 +27,12 @@ const REVEAL = "[data-reveal],[data-split]";
 const SCOPE = "[data-anim]";
 const NEON = ".neon";
 /** Neon nur tezligi — barcha ramkalarda bir xil, px/soniya */
-const NEON_SPEED = 140;
+const NEON_SPEED = 150;
 
 /**
  * Neon ramkani ota elementning haqiqiy o'lchami va radiusiga moslaydi.
- * Uzunlik (perimetr) ma'lum bo'lgach nur chiziq bo'ylab o'zgarmas tezlikda yuradi.
+ * Perimetr ma'lum bo'lgach ikki nur chiziq bo'ylab o'zgarmas tezlikda yuradi.
+ * Har bir qatlam (keng-xira → qisqa-yorqin) bir markazga tekislanadi — nur o'rtasi yorqin, chetlari so'nadi.
  * offsetWidth — transform (3D paydo bo'lish) ta'sir qilmaydigan o'lcham.
  */
 function layoutNeon(el: HTMLElement) {
@@ -52,20 +53,21 @@ function layoutNeon(el: HTMLElement) {
   const H = h - 2 * i;
   const r = Math.max(0, Math.min(radius - i, W / 2, H / 2));
   const per = 2 * (W + H) - 8 * r + 2 * Math.PI * r;
-  const period = el.classList.contains("neon-twin") ? per / 2 : per;
+  const half = per / 2; // ikki nur — naqsh davri perimetrning yarmi
+  // Tugmalarda nur uzunroq (pill qisqa) — har bir nur yarim aylananing 60%i
+  const seg = parent.classList.contains("btn") ? half * 0.6 : Math.min(240, Math.max(90, per * 0.18), half * 0.8);
   for (const rect of svg.children) {
-    const L = Math.min(Number(rect.getAttribute("data-l")) || 40, period * 0.45);
+    const L = seg * (Number(rect.getAttribute("data-f")) || 1);
     rect.setAttribute("x", String(i));
     rect.setAttribute("y", String(i));
     rect.setAttribute("width", W.toFixed(2));
     rect.setAttribute("height", H.toFixed(2));
     rect.setAttribute("rx", r.toFixed(2));
     rect.setAttribute("ry", r.toFixed(2));
-    rect.setAttribute("stroke-dasharray", `${L.toFixed(2)} ${(period - L).toFixed(2)}`);
-    // Boshlar bir nuqtada: har bir qatlam o'z uzunligicha orqaga suriladi
-    rect.setAttribute("stroke-dashoffset", L.toFixed(2));
-    (rect as SVGElement).style.setProperty("--o0", `${L.toFixed(2)}px`);
-    (rect as SVGElement).style.setProperty("--o1", `${(L - per).toFixed(2)}px`);
+    rect.setAttribute("stroke-dasharray", `${L.toFixed(2)} ${(half - L).toFixed(2)}`);
+    rect.setAttribute("stroke-dashoffset", (L / 2).toFixed(2));
+    (rect as SVGElement).style.setProperty("--o0", `${(L / 2).toFixed(2)}px`);
+    (rect as SVGElement).style.setProperty("--o1", `${(L / 2 - per).toFixed(2)}px`);
   }
   el.style.setProperty("--dur", `${(per / NEON_SPEED).toFixed(2)}s`);
   el.setAttribute("data-ready", "");

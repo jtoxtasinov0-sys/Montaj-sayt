@@ -860,6 +860,12 @@ html[data-io] [data-reveal]:not([data-in]) {
   animation-duration: 1.4s;
 }
 
+@property --arc {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 @layer components {
   /* ---------- Neon ramka (komponent: <Neon />) ----------
      Nur ramka chizig'i bo'ylab o'zgarmas tezlikda yuradi (stroke-dashoffset).
@@ -891,23 +897,35 @@ html[data-io] [data-reveal]:not([data-in]) {
     width: 100%;
     height: 100%;
     overflow: visible;
-    filter: drop-shadow(0 0 2px var(--c1)) drop-shadow(0 0 7px color-mix(in oklab, var(--c1) 60%, transparent));
+    filter: drop-shadow(0 0 3px var(--c1)) drop-shadow(0 0 14px color-mix(in oklab, var(--c1) 75%, transparent));
+  }
+  /* Ko'k tugma ichida ko'k nur ko'rinmaydi — oq nur */
+  .btn-primary > .neon {
+    --c1: rgba(255, 255, 255, 0.85);
+    --c2: #fff;
+  }
+  .btn-primary > .neon rect {
+    stroke-width: 2;
   }
   .neon rect {
     fill: none;
     stroke: var(--c1);
-    stroke-width: 1.5;
     stroke-linecap: round;
   }
   .neon .n1 {
-    opacity: 0.3;
+    stroke-width: 1.5;
+    opacity: 0.42;
   }
   .neon .n2 {
+    stroke-width: 1.6;
     opacity: 0.8;
   }
   .neon .n3 {
-    stroke: var(--c2);
     stroke-width: 2;
+  }
+  .neon .n4 {
+    stroke: var(--c2);
+    stroke-width: 2.2;
   }
   .neon[data-ready] rect {
     animation: neon-run var(--dur, 8s) linear infinite;
@@ -948,158 +966,112 @@ html[data-io] [data-reveal]:not([data-in]) {
     animation-delay: calc(0.2s + var(--n, 0) * 70ms);
   }
 
-  /* ---------- Hero: aurora, kinoproyektor nuri, linza orbitalari ---------- */
-  .aurora {
+  /* ---------- Hero (FXIFY): porlovchi shar, to'lqin-halqa, ufq chaqnashi ----------
+     Uchalasi bitta 8s siklga bog'langan: halqa shar ostida "tabassum" yoy bo'lib paydo bo'ladi,
+     kengayib to'q sariqqa kiradi va so'nadi; shu payt pastda ufq yoyi, keyin chiziq chaqnaydi. */
+  .orb-wrap {
     position: absolute;
-    inset: 0;
-    overflow: hidden;
+    left: 50%;
+    top: 0;
+    width: clamp(170px, 23vw, 330px);
+    aspect-ratio: 1;
+    translate: -50% -44%;
     pointer-events: none;
   }
-  .aurora > i {
+  .orb {
     position: absolute;
+    inset: 0;
     border-radius: 999px;
-    animation: aurora 18s ease-in-out infinite alternate;
-  }
-  .aurora > i:nth-child(1) {
-    left: -15%;
-    top: -30%;
-    width: 75%;
-    height: 80%;
-    background: radial-gradient(closest-side, rgba(61, 76, 228, 0.55), transparent);
-  }
-  .aurora > i:nth-child(2) {
-    right: -20%;
-    top: -15%;
-    width: 65%;
-    height: 75%;
-    background: radial-gradient(closest-side, rgba(124, 92, 255, 0.32), transparent);
-    animation-duration: 23s;
-    animation-direction: alternate-reverse;
-  }
-  .aurora > i:nth-child(3) {
-    left: 25%;
-    top: 40%;
-    width: 50%;
-    height: 50%;
-    background: radial-gradient(closest-side, rgba(255, 138, 92, 0.14), transparent);
-    animation-duration: 28s;
-  }
-  .projector {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: conic-gradient(
-      from 200deg at 78% -6%,
-      transparent 0deg,
-      rgba(138, 146, 255, 0.07) 10deg,
-      rgba(190, 196, 255, 0.16) 20deg,
-      rgba(138, 146, 255, 0.07) 30deg,
-      transparent 42deg
-    );
-    mask-image: linear-gradient(to bottom, #000 10%, transparent 80%);
-    animation: projector 7s ease-in-out infinite;
-  }
-  @media (max-width: 1023px) {
-    .projector {
-      display: none;
-    }
-  }
-
-  .orbit {
-    overflow: visible;
-    pointer-events: none;
-  }
-  .orbit circle {
-    fill: none;
-  }
-  .orbit-rot {
-    transform-box: view-box;
-    transform-origin: 50% 50%;
-    animation: spin var(--t, 20s) linear infinite;
-  }
-  .orbit-slow {
-    --t: 90s;
-  }
-  .orbit-rev {
-    --t: 70s;
-    animation-direction: reverse;
-  }
-  .orbit-comet {
-    --t: 11s;
-    filter: drop-shadow(0 0 3px #8a92ff) drop-shadow(0 0 10px rgba(138, 146, 255, 0.7));
-  }
-  .orbit-comet-rev {
-    --t: 8s;
-    animation-direction: reverse;
-    filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 10px rgba(255, 138, 92, 0.6));
-  }
-  .orbit-tick {
-    stroke: rgba(170, 178, 255, 0.22);
-  }
-  .orbit-tick-major {
-    stroke: rgba(200, 205, 255, 0.45);
-  }
-  .orbit-line {
-    stroke: rgba(160, 165, 255, 0.16);
-    stroke-width: 1;
-  }
-  .orbit-dots {
-    stroke: rgba(170, 178, 255, 0.4);
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
-  .oc1,
-  .oc2,
-  .oc3 {
-    stroke: #8a92ff;
-    stroke-linecap: round;
-  }
-  .oc1 {
-    stroke-width: 1.5;
-    opacity: 0.3;
-  }
-  .oc2 {
-    stroke-width: 1.8;
-    opacity: 0.85;
-  }
-  .oc3 {
-    stroke: #fff;
-    stroke-width: 2.6;
-  }
-  .oc-accent.oc1,
-  .oc-accent.oc2 {
-    stroke: var(--accent);
-  }
-  .oc-accent.oc3 {
-    stroke: #ffe8dc;
-  }
-  .orbit-arm {
-    position: absolute;
-    inset: 0;
-    animation: spin var(--od) linear infinite;
-    animation-delay: var(--ad);
-  }
-  .orbit-chip {
-    position: absolute;
-    left: 80%;
-    top: 50%;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 999px;
-    border: 1px solid rgba(160, 165, 255, 0.24);
-    background: rgba(12, 12, 34, 0.85);
+    background:
+      radial-gradient(circle at 50% 82%, rgba(220, 224, 255, 0.95) 0%, rgba(138, 146, 255, 0.85) 16%, transparent 46%),
+      radial-gradient(circle at 50% 60%, #4b57e8 0%, #2a33a8 42%, #141760 70%, #0a0a26 100%);
     box-shadow:
-      0 10px 24px -10px rgba(0, 0, 0, 0.9),
-      0 0 18px -6px rgba(138, 146, 255, 0.65);
-    color: var(--fg);
-    font-size: 0.68rem;
-    white-space: nowrap;
-    translate: -50% -50%;
-    animation: spin var(--od) linear infinite reverse;
-    animation-delay: var(--ad);
+      0 0 0 1px rgba(170, 178, 255, 0.28),
+      0 12px 60px 6px rgba(61, 76, 228, 0.6),
+      0 40px 160px 40px rgba(61, 76, 228, 0.32),
+      inset 0 -18px 40px -12px rgba(220, 224, 255, 0.6);
+    animation: orb-breathe 8s ease-in-out infinite;
+  }
+  .orb-ring {
+    position: absolute;
+    inset: -16%;
+    border-radius: 999px;
+    filter: drop-shadow(0 0 3px #ffd9c7) drop-shadow(0 0 14px rgba(255, 138, 92, 0.85));
+    opacity: 0;
+    animation: orb-ring 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
+  }
+  .orb-ring > span {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.6px;
+    background: conic-gradient(
+      from calc(180deg - var(--arc) / 2),
+      transparent 0deg,
+      #ff8a5c calc(var(--arc) * 0.2),
+      #fff calc(var(--arc) * 0.5),
+      #ff8a5c calc(var(--arc) * 0.8),
+      transparent var(--arc),
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: orb-arc 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
+  }
+  /* Ikkinchi, xiraroq to'lqin — birinchisidan biroz keyin */
+  .orb-ring-2,
+  .orb-ring-2 > span {
+    animation-delay: 0.45s;
+  }
+  .orb-ring-2 {
+    filter: drop-shadow(0 0 10px rgba(255, 138, 92, 0.6));
+  }
+  .orb-ring-2 > span {
+    padding: 1px;
+    opacity: 0.55;
+  }
+  .hero-dome {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 135%;
+    height: 34%;
+    translate: -50% 62%;
+    border-radius: 50%;
+    border-top: 2px solid #ff9a6e;
+    background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(61, 76, 228, 0.35), transparent 70%);
+    box-shadow:
+      0 -6px 24px -6px rgba(255, 138, 92, 0.9),
+      0 -30px 90px -20px rgba(255, 138, 92, 0.45);
+    mask-image: linear-gradient(90deg, transparent 4%, #000 30%, #000 70%, transparent 96%);
+    opacity: 0;
+    animation: hero-dome 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .hero-flare {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 138, 92, 0.3) 12%,
+      #ff8a5c 34%,
+      #ffd9c7 50%,
+      #ff8a5c 66%,
+      rgba(255, 138, 92, 0.3) 88%,
+      transparent
+    );
+    filter: drop-shadow(0 0 6px #ff8a5c) drop-shadow(0 0 18px rgba(255, 138, 92, 0.6));
+    opacity: 0;
+    transform: scaleX(0.2);
+    animation: hero-flare 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
+    pointer-events: none;
   }
 
   /* ---------- Zarrachalar ---------- */
@@ -1571,27 +1543,78 @@ html[data-io] [data-reveal]:not([data-in]) {
     opacity: 1;
   }
 }
-@keyframes aurora {
-  from {
-    transform: translate3d(-5%, -4%, 0) scale(1);
-  }
-  to {
-    transform: translate3d(7%, 6%, 0) scale(1.15);
-  }
-}
-@keyframes projector {
+@keyframes orb-breathe {
   0%,
   100% {
-    opacity: 0.8;
+    filter: brightness(1);
   }
-  46% {
+  45% {
+    filter: brightness(1.22);
+  }
+}
+@keyframes orb-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  7% {
     opacity: 1;
   }
-  48% {
-    opacity: 0.75;
-  }
-  50% {
+  42% {
     opacity: 1;
+    transform: scale(1.3);
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+@keyframes orb-arc {
+  0% {
+    --arc: 60deg;
+  }
+  42% {
+    --arc: 220deg;
+  }
+  72%,
+  100% {
+    --arc: 300deg;
+  }
+}
+@keyframes hero-dome {
+  0%,
+  22% {
+    opacity: 0;
+    transform: scaleX(0.75);
+  }
+  40% {
+    opacity: 1;
+  }
+  62%,
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+@keyframes hero-flare {
+  0%,
+  38% {
+    opacity: 0;
+    transform: scaleX(0.15);
+  }
+  55% {
+    opacity: 1;
+    transform: scaleX(0.75);
+  }
+  72% {
+    opacity: 0.9;
+    transform: scaleX(1.05);
+  }
+  88%,
+  100% {
+    opacity: 0;
+    transform: scaleX(1.1);
   }
 }
 @keyframes particle {

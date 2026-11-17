@@ -35,7 +35,7 @@ export default async function DashboardHome() {
             </div>
           ))}
           <Link href="/dashboard/promote" className="card relative flex flex-col justify-between p-5">
-            {boosted && <Neon tone="accent" twin />}
+            {boosted && <Neon tone="accent" />}
             <Flame className={`h-5 w-5 ${boosted ? "text-accent" : "text-muted"}`} />
             <p className="mt-3 text-sm">
               {boosted ? fmt(d.dashboard.boostActive, { plan: "TOP", days: daysLeft(editor.boostUntil!) }) : d.dashboard.boostNone}
