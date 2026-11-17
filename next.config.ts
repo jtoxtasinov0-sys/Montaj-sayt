@@ -16,7 +16,9 @@ const csp = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://accounts.google.com",
-  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+  // `upgrade-insecure-requests` ataylab yo'q: u domensiz http test manzilida (IP, traefik.me)
+  // barcha CSS/JS'ni https'ga majburlab saytni buzadi. Real domenda HTTPS'ni HSTS ta'minlaydi,
+  // tashqi manbalar esa yuqorida faqat https bilan ruxsat etilgan.
 ].join("; ");
 
 const securityHeaders = [
