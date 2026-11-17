@@ -39,14 +39,15 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
           </div>
           <p className="mt-0.5 line-clamp-2 text-[0.82rem] leading-snug text-muted">{e.headline}</p>
         </div>
-        {boosted && (
-          <span className="chip chip-accent shrink-0">
-            <Flame className="h-3 w-3" /> {d.editors.topBadge}
-          </span>
-        )}
       </div>
 
       <div className="flex flex-wrap gap-1.5">
+        {/* TOP belgisi chiplar qatorida — ism uchun to'liq joy qoladi */}
+        {boosted && (
+          <span className="chip chip-accent">
+            <Flame className="h-3 w-3" /> {d.editors.topBadge}
+          </span>
+        )}
         <span className="chip">{d.levels[e.level]}</span>
         {top && <span className="chip chip-primary">{d.editors.topRated}</span>}
         {e.categories.slice(0, 2).map((c) => (

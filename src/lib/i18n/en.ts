@@ -78,7 +78,6 @@ export const en: Dict = {
     onTime: "delivered on time",
   },
   how: {
-    eyebrow: "How it works",
     title: "Simple for both sides",
     forClients: "For clients",
     forEditors: "For editors",
@@ -96,7 +95,6 @@ export const en: Dict = {
     ],
   },
   tiers: {
-    eyebrow: "Price sections",
     title: "A section for every budget",
     subtitle: "Each section lists editors working at that price and jobs with that budget.",
     editorsLink: "Editors",
@@ -108,14 +106,12 @@ export const en: Dict = {
     youtube: "YouTube video",
     wedding: "Weddings & events",
     ads: "Advertising",
-    music: "Music video",
     motion: "Motion design",
     podcast: "Podcast",
     color: "Color grading",
     other: "Other",
   },
   categoriesSection: {
-    eyebrow: "Categories",
     title: "An editor for every kind of video",
   },
   levels: {
@@ -124,16 +120,13 @@ export const en: Dict = {
     PRO: "Professional",
   },
   topEditors: {
-    eyebrow: "TOP editors",
     title: "Most chosen right now",
     empty: "No editors yet. Be the first!",
   },
   showcase: {
-    eyebrow: "Work",
     title: "The frames speak for themselves",
   },
   rating: {
-    eyebrow: "Honest rating",
     title: "Rating is earned by work, not money",
     subtitle: "The rating is recalculated automatically after every completed order.",
     quality: "Quality",
@@ -144,8 +137,7 @@ export const en: Dict = {
     countText: "Number of orders completed on the platform.",
   },
   promo: {
-    eyebrow: "For editors",
-    title: "Reach the TOP — for 10 days",
+    title: "Reach the TOP\u00a0— for\u00a010\u00a0days",
     subtitle: "Pay more, rank higher. When the plan ends, your profile returns to the regular rating order.",
     perDays: "{days} days",
     cta: "Choose",
@@ -154,7 +146,6 @@ export const en: Dict = {
     weight: "Priority level: {w}",
   },
   faq: {
-    eyebrow: "FAQ",
     title: "Frequently asked questions",
     items: [
       {

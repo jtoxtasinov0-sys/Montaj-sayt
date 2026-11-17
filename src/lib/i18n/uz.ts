@@ -76,7 +76,6 @@ export const uz = {
     onTime: "o’z vaqtida topshirilgan",
   },
   how: {
-    eyebrow: "Qanday ishlaydi",
     title: "Ikki tomon uchun ham oddiy",
     forClients: "Mijozlar uchun",
     forEditors: "Montajorlar uchun",
@@ -94,7 +93,6 @@ export const uz = {
     ],
   },
   tiers: {
-    eyebrow: "Narx bo’limlari",
     title: "Byudjetingizga mos bo’lim",
     subtitle: "Har bir bo’limda shu narxda ishlaydigan montajorlar va shu byudjetli buyurtmalar.",
     editorsLink: "Montajorlar",
@@ -106,14 +104,12 @@ export const uz = {
     youtube: "YouTube video",
     wedding: "To’y va marosim",
     ads: "Reklama",
-    music: "Musiqiy klip",
     motion: "Motion dizayn",
     podcast: "Podkast",
     color: "Rang korreksiyasi",
     other: "Boshqa",
   } as Record<string, string>,
   categoriesSection: {
-    eyebrow: "Yo’nalishlar",
     title: "Har qanday video uchun montajor",
   },
   levels: {
@@ -122,16 +118,13 @@ export const uz = {
     PRO: "Professional",
   } as Record<string, string>,
   topEditors: {
-    eyebrow: "TOP montajorlar",
     title: "Hozir eng ko’p tanlanayotganlar",
     empty: "Hali montajorlar yo’q. Birinchi bo’ling!",
   },
   showcase: {
-    eyebrow: "Ishlar",
     title: "Kadrlar o’zi gapiradi",
   },
   rating: {
-    eyebrow: "Halol reyting",
     title: "Reyting pul bilan emas, ish bilan",
     subtitle: "Har bir yakunlangan buyurtmadan keyin reyting avtomatik qayta hisoblanadi.",
     quality: "Sifat",
@@ -142,8 +135,7 @@ export const uz = {
     countText: "Platformada yakunlangan buyurtmalar soni.",
   },
   promo: {
-    eyebrow: "Montajorlar uchun",
-    title: "TOP ga chiqing — 10 kunga",
+    title: "TOP ga chiqing\u00a0— 10\u00a0kunga",
     subtitle: "Ko’proq to’lov — yuqoriroq o’rin. Reja tugagach profil odatiy reyting tartibiga qaytadi.",
     perDays: "{days} kun",
     cta: "Tanlash",
@@ -152,7 +144,6 @@ export const uz = {
     weight: "Ustuvorlik darajasi: {w}",
   },
   faq: {
-    eyebrow: "FAQ",
     title: "Ko’p beriladigan savollar",
     items: [
       {

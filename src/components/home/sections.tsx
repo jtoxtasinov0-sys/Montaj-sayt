@@ -11,13 +11,11 @@ import { fmt, type Dict } from "@/lib/i18n";
 import { cn, formatUzs } from "@/lib/utils";
 
 export function SectionHead({
-  eyebrow,
   title,
   subtitle,
   action,
   className,
 }: {
-  eyebrow: string;
   title: React.ReactNode;
   subtitle?: string;
   action?: React.ReactNode;
@@ -26,8 +24,7 @@ export function SectionHead({
   return (
     <div data-reveal className={cn("mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between", className)}>
       <div className="max-w-2xl">
-        <span className="eyebrow">{eyebrow}</span>
-        <h2 className="h-section mt-3 text-[clamp(2.2rem,5vw,4.2rem)]">{title}</h2>
+        <h2 className="h-section text-[clamp(2.2rem,5vw,4.2rem)] text-balance">{title}</h2>
         {subtitle && <p className="mt-4 max-w-xl text-muted">{subtitle}</p>}
       </div>
       {action}
@@ -105,13 +102,10 @@ export function HowItWorks({ d }: { d: Dict }) {
     <section id="how" className="mx-2 scroll-mt-20 sm:mx-3">
       <div className="panel-invert relative overflow-hidden rounded-[2rem] px-5 py-16 sm:px-10 lg:px-16 lg:py-24">
         <div className="container-x !px-0">
-          <div data-reveal className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <span className="eyebrow">{d.how.eyebrow}</span>
-            <h2 className="h-section max-w-3xl text-right text-[clamp(2.4rem,6vw,5rem)]">
-              {d.how.title.split(" ").slice(0, -1).join(" ")}{" "}
-              <span className="text-primary">{d.how.title.split(" ").slice(-1)}</span>
-            </h2>
-          </div>
+          <h2 data-reveal className="h-section mb-14 max-w-3xl text-[clamp(2.4rem,6vw,5rem)] text-balance">
+            {d.how.title.split(" ").slice(0, -1).join(" ")}{" "}
+            <span className="text-primary">{d.how.title.split(" ").slice(-1)}</span>
+          </h2>
           <div className="grid gap-14 md:grid-cols-2 md:gap-20">
             <Col title={d.how.forClients} steps={d.how.client} />
             <Col title={d.how.forEditors} steps={d.how.editor} />
@@ -135,7 +129,7 @@ export function TiersSection({
   return (
     <section className="relative container-x py-24">
       <div className="grid-floor absolute inset-0 -z-10" aria-hidden />
-      <SectionHead eyebrow={d.tiers.eyebrow} title={d.tiers.title} subtitle={d.tiers.subtitle} />
+      <SectionHead title={d.tiers.title} subtitle={d.tiers.subtitle} />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {tiers.map((t, i) => (
           <div
@@ -145,12 +139,12 @@ export function TiersSection({
             className={cn("card flex flex-col p-6", i === 2 && "ring-glow")}
             style={{ animationDelay: `${i * 60}ms` }}
           >
-            <div className="text-xs text-muted">{String(i + 1).padStart(2, "0")}</div>
-            <div className="mt-6 text-[2.6rem] leading-none font-extralight tracking-tighter">
+            <div className="text-[2.6rem] leading-none font-extralight tracking-tighter">
               ${t.minUsd}
               <span className="text-muted">{t.maxUsd ? `–${t.maxUsd}` : "+"}</span>
             </div>
-            {!t.maxUsd && <div className="mt-1 text-xs text-muted">{d.tiers.plus}</div>}
+            {/* Barcha kartalarda bir xil balandlik — qatorlar bir chiziqda turadi */}
+            <div className="mt-1.5 h-4 text-xs text-muted">{!t.maxUsd && d.tiers.plus}</div>
             <div className="mt-6 mb-6 space-y-1.5 text-sm text-muted">
               <div className="flex justify-between">
                 <span>{d.tiers.editorsLink}</span>
@@ -177,12 +171,14 @@ export function TiersSection({
 }
 
 // ---------- Yo'nalishlar (3D ikonkalar) ----------
+// 5 ustunli bento: 1-qator Reels(2)+3 ta, 2-qator Motion(2)+Podkast+Rang(2)
+const WIDE = new Set([0, 4, 6]);
+
 export function CategoriesSection({ d }: { d: Dict }) {
   const cats = CATEGORIES.filter((c) => c.key !== "other");
   return (
     <section className="container-x py-12">
       <SectionHead
-        eyebrow={d.categoriesSection.eyebrow}
         title={d.categoriesSection.title}
         action={
           <Link href="/editors" className="btn btn-ghost">
@@ -197,8 +193,10 @@ export function CategoriesSection({ d }: { d: Dict }) {
             href={`/editors?category=${c.key}`}
             data-reveal
             className={cn(
-              "dark group relative isolate flex aspect-square flex-col justify-end overflow-hidden rounded-[1.75rem] border border-line bg-[#06061a] p-5 text-fg",
-              (i === 0 || i === 5) && "md:col-span-2 md:aspect-auto",
+              "dark group relative isolate flex flex-col justify-end overflow-hidden rounded-[1.75rem] border border-line bg-[#06061a] p-5 text-fg",
+              // toq sonli oxirgi karta mobil 2 ustunda yolg'iz qolmasin — keng karta bo'ladi
+              i === cats.length - 1 && cats.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square",
+              WIDE.has(i) && "md:col-span-2 md:aspect-auto",
             )}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -211,13 +209,13 @@ export function CategoriesSection({ d }: { d: Dict }) {
               height={512}
               className={cn(
                 "absolute -z-10 object-contain mix-blend-screen transition duration-700 [mask-image:radial-gradient(circle,#000_48%,transparent_70%)] group-hover:scale-110 group-hover:-rotate-3",
-                i === 0 || i === 5 ? "top-1/2 right-0 h-[120%] -translate-y-1/2" : "inset-0 m-auto h-[85%] -translate-y-5",
+                WIDE.has(i) ? "top-1/2 right-0 h-[120%] -translate-y-1/2" : "inset-0 m-auto h-[85%] -translate-y-5",
               )}
             />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#06061a] via-transparent to-transparent" />
             <div className="flex items-end justify-between gap-2">
-              <span className="text-lg font-light tracking-tight sm:text-xl">{d.categories[c.key]}</span>
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line transition group-hover:border-primary-2 group-hover:bg-primary">
+              <span className="text-lg leading-tight font-light tracking-tight text-balance sm:text-xl">{d.categories[c.key]}</span>
+              <span className="absolute top-4 right-4 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line bg-[#06061a]/60 backdrop-blur transition group-hover:border-primary-2 group-hover:bg-primary sm:static sm:bg-transparent sm:backdrop-blur-none">
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </div>
@@ -233,7 +231,6 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
   return (
     <section className="container-x py-24">
       <SectionHead
-        eyebrow={d.topEditors.eyebrow}
         title={d.topEditors.title}
         action={
           <Link href="/editors" className="btn btn-ghost">
@@ -265,7 +262,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
 const STILLS = [
   { src: "/images/stills/wedding.webp", cat: "wedding" },
   { src: "/images/stills/car.webp", cat: "ads" },
-  { src: "/images/stills/music.webp", cat: "music" },
+  { src: "/images/stills/reels.webp", cat: "reels" },
   { src: "/images/stills/podcast.webp", cat: "podcast" },
   { src: "/images/stills/travel.webp", cat: "youtube" },
   { src: "/images/stills/food.webp", cat: "ads" },
@@ -273,9 +270,10 @@ const STILLS = [
 
 export function ShowcaseStrip({ d }: { d: Dict }) {
   return (
-    <section className="py-12">
+    // overflow-x-clip: qiya (-1°) lenta burchaklari sahifani yonga surmasin
+    <section className="overflow-x-clip py-12">
       <div className="container-x">
-        <SectionHead eyebrow={d.showcase.eyebrow} title={d.showcase.title} />
+        <SectionHead title={d.showcase.title} />
       </div>
       <div className="marquee -rotate-1" style={{ "--speed": "60s" } as React.CSSProperties}>
         {[0, 1].map((k) => (
@@ -300,7 +298,7 @@ export function ShowcaseStrip({ d }: { d: Dict }) {
 export function RatingSection({ d }: { d: Dict }) {
   return (
     <section className="container-x py-24">
-      <SectionHead eyebrow={d.rating.eyebrow} title={d.rating.title} subtitle={d.rating.subtitle} />
+      <SectionHead title={d.rating.title} subtitle={d.rating.subtitle} />
       <div className="grid gap-3 md:grid-cols-3">
         <div data-reveal data-spotlight className="card p-7">
           <div className="flex items-center justify-between">
@@ -360,8 +358,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
         <div className="grid-floor absolute inset-x-0 bottom-0 -z-10 h-1/2 [transform:perspective(600px)_rotateX(55deg)] opacity-60" />
         <div className="container-x !px-0 grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div data-reveal>
-            <span className="eyebrow">{d.promo.eyebrow}</span>
-            <h2 className="h-section mt-3 text-[clamp(2.4rem,5vw,4.4rem)]">{d.promo.title}</h2>
+            <h2 className="h-section text-[clamp(2.4rem,5vw,4.4rem)] text-balance">{d.promo.title}</h2>
             <p className="mt-5 max-w-md text-muted">{d.promo.subtitle}</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -427,8 +424,7 @@ export function FaqSection({ d }: { d: Dict }) {
   return (
     <section className="container-x grid gap-10 py-24 lg:grid-cols-[0.8fr_1.2fr]">
       <div data-reveal>
-        <span className="eyebrow">{d.faq.eyebrow}</span>
-        <h2 className="h-section mt-3 text-[clamp(2.2rem,4.5vw,3.8rem)]">{d.faq.title}</h2>
+        <h2 className="h-section text-[clamp(2.2rem,4.5vw,3.8rem)] text-balance">{d.faq.title}</h2>
       </div>
       <div className="divide-y divide-line border-y border-line">
         {d.faq.items.map((f) => (

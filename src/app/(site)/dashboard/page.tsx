@@ -56,7 +56,8 @@ export default async function DashboardHome() {
       )}
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <section>
+        {/* min-w-0: uzun sarlavhali qatorlar mobil ekranni kengaytirib yubormasin */}
+        <section className="min-w-0">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-medium">{d.dashboard.asClient}</h2>
             <Link href="/orders/new" className="btn btn-ghost btn-sm">
@@ -72,7 +73,7 @@ export default async function DashboardHome() {
           </div>
         </section>
         {editor && (
-          <section>
+          <section className="min-w-0">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-medium">{d.dashboard.asEditor}</h2>
               <Link href={`/editors/${editor.slug}`} className="btn btn-ghost btn-sm">

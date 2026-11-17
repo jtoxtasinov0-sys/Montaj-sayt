@@ -2,6 +2,7 @@ import { ArrowRight, ArrowUpRight, MousePointer2 } from "lucide-react";
 import Link from "next/link";
 import { Sparkle } from "@/components/icons";
 import { Stars } from "@/components/stars";
+import { HeroVisual } from "./hero-visual";
 import type { Dict } from "@/lib/i18n";
 
 type Props = { d: Dict; stats: { editors: number; avgRating: number; onTimePct: number } };
@@ -18,10 +19,13 @@ export function Hero({ d, stats }: Props) {
         className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[radial-gradient(ellipse_60%_80%_at_50%_100%,rgba(61,76,228,0.35),transparent_70%)]"
       />
 
-      <div className="container-x relative grid min-h-[100svh] items-center gap-10 pt-28 pb-24 lg:grid-cols-12 lg:pt-32">
-        <div className="relative z-10 lg:col-span-7">
+      {/* Mobil tartib: matn → vizual → kartalar. Desktop: chapda matn+kartalar, o'ngda vizual */}
+      <div className="container-x relative grid min-h-[100svh] content-center gap-10 pt-28 pb-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 lg:pt-32">
+        <div className="relative z-10 lg:col-span-7 lg:row-start-1">
           <span className="fade-up inline-flex items-center gap-2 rounded-full border border-line bg-white/5 py-1 pr-3 pl-1 text-xs text-muted backdrop-blur">
-            <span className="chip-primary chip h-6">✦ 2026</span>
+            <span className="chip-primary chip h-6">
+              <Sparkle className="h-2.5 w-2.5" /> 2026
+            </span>
             {d.hero.badge}
           </span>
 
@@ -61,9 +65,15 @@ export function Hero({ d, stats }: Props) {
               {d.hero.ctaJoin}
             </Link>
           </div>
+        </div>
 
-          {/* Nymera uslubidagi oq kartalar + FXIFY "Get started today" kartasi */}
-          <div className="fade-up mt-12 flex flex-wrap gap-3" style={{ animationDelay: "0.75s" }}>
+        <div className="relative lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:self-center">
+          <HeroVisual />
+        </div>
+
+        {/* Nymera uslubidagi oq kartalar + FXIFY "Get started today" kartasi */}
+        <div className="relative z-10 lg:col-span-7 lg:row-start-2">
+          <div className="fade-up flex flex-wrap gap-3" style={{ animationDelay: "0.75s" }}>
             <div className="w-40 rounded-3xl bg-[#f1f1f4] p-4 text-[#0b0b1a] shadow-xl shadow-black/30">
               {stats.editors >= 10 ? (
                 <>
@@ -98,23 +108,6 @@ export function Hero({ d, stats }: Props) {
                 {d.hero.sideCta} <ArrowUpRight className="h-3.5 w-3.5" />
               </span>
             </Link>
-          </div>
-        </div>
-
-        {/* Generatsiya qilingan shisha planeta + kino lentasi */}
-        <div className="pointer-events-none absolute top-24 right-[-30%] z-0 w-[95%] opacity-50 sm:right-[-15%] sm:w-[70%] lg:relative lg:top-auto lg:right-auto lg:col-span-5 lg:w-full lg:opacity-100">
-          <div className="relative aspect-square">
-            <div className="absolute inset-[12%] rounded-full bg-primary/30 blur-[90px]" aria-hidden />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/hero.webp"
-              alt=""
-              width={1024}
-              height={1024}
-              fetchPriority="high"
-              decoding="async"
-              className="animate-float relative h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(circle_at_50%_50%,#000_52%,transparent_71%)]"
-            />
           </div>
         </div>
       </div>

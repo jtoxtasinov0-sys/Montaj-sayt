@@ -34,7 +34,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <PageHero eyebrow={d.tiers.eyebrow} title={d.jobs.title} subtitle={d.jobs.subtitle}>
+      <PageHero title={d.jobs.title} subtitle={d.jobs.subtitle}>
         <div className="flex flex-wrap items-center gap-2">
           <Link href={qs({ tier: undefined, page: 1 })} className={cn("chip h-9 px-4 text-sm", !f.tier && "chip-primary")}>
             {d.common.all}

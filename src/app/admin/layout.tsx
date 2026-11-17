@@ -27,10 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <SiteHeader overDark={false} />
       <div className="container-x pt-28 pb-20">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="eyebrow">Admin panel</span>
-            <h1 className="h-hero mt-2 text-4xl">Boshqaruv</h1>
-          </div>
+          <h1 className="h-hero text-4xl">Boshqaruv</h1>
           <p className="text-xs text-muted">{admin.email}</p>
         </div>
         <div className="glass sticky top-[68px] z-30 -mx-1 mb-8 rounded-full p-1">

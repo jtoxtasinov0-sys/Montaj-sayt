@@ -39,20 +39,20 @@ async function receipt() {
 
 const EDITORS = [
   { name: "Aziz Karimov", level: "PRO", price: 45, city: "Toshkent", cats: ["youtube", "ads"], exp: 6, head: "YouTube va reklama montaji, 6 yillik tajriba" },
-  { name: "Malika Yusupova", level: "PRO", price: 35, city: "Toshkent", cats: ["reels", "music"], exp: 4, head: "Trenddagi Reels va musiqiy kliplar" },
+  { name: "Malika Yusupova", level: "PRO", price: 35, city: "Toshkent", cats: ["reels", "motion"], exp: 4, head: "Trenddagi Reels va dinamik qisqa kliplar" },
   { name: "Jasur Toshmatov", level: "MIDDLE", price: 25, city: "Samarqand", cats: ["wedding", "color"], exp: 3, head: "To‘y kliplari va kinematografik rang" },
   { name: "Dilnoza Rahimova", level: "PRO", price: 60, city: "Toshkent", cats: ["motion", "ads"], exp: 7, head: "Motion dizayn va 3D animatsiya" },
   { name: "Sardor Aliyev", level: "MIDDLE", price: 22, city: "Buxoro", cats: ["podcast", "youtube"], exp: 2, head: "Podkast va intervyu montaji" },
   { name: "Nodira Xasanova", level: "BEGINNER", price: 12, city: "Farg‘ona", cats: ["reels"], exp: 1, head: "Instagram Reels, tez va arzon" },
-  { name: "Bekzod Ergashev", level: "MIDDLE", price: 28, city: "Namangan", cats: ["music", "color"], exp: 3, head: "Klip montaji va DaVinci rang" },
+  { name: "Bekzod Ergashev", level: "MIDDLE", price: 28, city: "Namangan", cats: ["youtube", "color"], exp: 3, head: "YouTube montaji va DaVinci rang" },
   { name: "Shahzoda Nazarova", level: "BEGINNER", price: 15, city: "Andijon", cats: ["reels", "youtube"], exp: 1, head: "YouTube Shorts va vlog montaji" },
   { name: "Otabek Murodov", level: "PRO", price: 80, city: "Toshkent", cats: ["ads", "motion", "color"], exp: 9, head: "Brendlar uchun premium reklama roliklari" },
-  { name: "Kamola Saidova", level: "MIDDLE", price: 38, city: "Toshkent", cats: ["wedding", "music"], exp: 4, head: "Hissiyotli to‘y filmlari" },
+  { name: "Kamola Saidova", level: "MIDDLE", price: 38, city: "Toshkent", cats: ["wedding", "color"], exp: 4, head: "Hissiyotli to‘y filmlari" },
   { name: "Rustam Qodirov", level: "BEGINNER", price: 18, city: "Qarshi", cats: ["podcast", "reels"], exp: 1, head: "Podkastdan qisqa kliplar kesish" },
   { name: "Madina Olimova", level: "MIDDLE", price: 48, city: "Samarqand", cats: ["youtube", "motion"], exp: 5, head: "YouTube kanallar uchun to‘liq montaj" },
 ] as const;
 
-const STILLS = ["wedding.webp", "car.webp", "music.webp", "podcast.webp", "travel.webp", "food.webp"];
+const STILLS = ["wedding.webp", "car.webp", "reels.webp", "podcast.webp", "travel.webp", "food.webp"];
 const SKILLS = ["Premiere Pro", "After Effects", "DaVinci Resolve", "CapCut", "Final Cut Pro", "Photoshop", "Cinema 4D", "Blender"];
 const COMMENTS = [
   "Juda tez va sifatli ishladi, rahmat!",
@@ -129,10 +129,10 @@ async function main() {
       const still = STILLS[(i + k) % STILLS.length];
       items.push({
         editorId: p.id,
-        title: ["To‘y klipi — Registon", "Avto reklama", "Musiqiy klip", "Podkast epizodi", "Tog‘ sayohati vlog", "Osh — food reklama"][STILLS.indexOf(still)],
+        title: ["To‘y klipi — Registon", "Avto reklama", "Shahar Reels’i", "Podkast epizodi", "Tog‘ sayohati vlog", "Osh — food reklama"][STILLS.indexOf(still)],
         url: `https://t.me/montajchi_demo/${i * 10 + k}`,
         provider: "telegram",
-        category: ["wedding", "ads", "music", "podcast", "youtube", "ads"][STILLS.indexOf(still)],
+        category: ["wedding", "ads", "reels", "podcast", "youtube", "ads"][STILLS.indexOf(still)],
         coverKey: await cover(still),
         sort: k,
       });
@@ -221,7 +221,7 @@ async function main() {
     { t: "YouTube kanal uchun haftalik montaj", b: 35, c: "youtube" },
     { t: "To‘y klipi (Samarqand), 4 daqiqa", b: 45, c: "wedding" },
     { t: "Logo animatsiyasi va intro", b: 22, c: "motion" },
-    { t: "Musiqiy klip montaji + rang", b: 75, c: "music" },
+    { t: "Brend uchun imidj rolik + rang", b: 75, c: "ads" },
     { t: "Podkastdan 8 ta qisqa klip", b: 12, c: "podcast" },
   ];
   for (const [k, j] of jobs.entries()) {

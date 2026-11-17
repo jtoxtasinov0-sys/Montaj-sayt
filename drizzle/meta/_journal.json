@@ -8,6 +8,13 @@
       "when": 1794868925963,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794908584803,
+      "tag": "0001_remove_music_category",
+      "breakpoints": true
     }
   ]
 }

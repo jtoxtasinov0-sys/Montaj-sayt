@@ -37,7 +37,7 @@ export default async function EditorsPage({ searchParams }: { searchParams: Prom
 
   return (
     <>
-      <PageHero eyebrow={d.nav.editors} title={d.editors.title} subtitle={d.editors.subtitle}>
+      <PageHero title={d.editors.title} subtitle={d.editors.subtitle}>
         <div className="flex flex-wrap gap-2">
           <Link href={qs({ tier: undefined, page: 1 })} className={cn("chip h-9 px-4 text-sm", !filters.tier && "chip-primary")}>
             {d.common.all}

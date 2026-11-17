@@ -9,7 +9,6 @@ export const CATEGORIES = [
   { key: "youtube", image: "/images/cat/youtube.webp" },
   { key: "wedding", image: "/images/cat/wedding.webp" },
   { key: "ads", image: "/images/cat/ads.webp" },
-  { key: "music", image: "/images/cat/music.webp" },
   { key: "motion", image: "/images/cat/motion.webp" },
   { key: "podcast", image: "/images/cat/podcast.webp" },
   { key: "color", image: "/images/cat/color.webp" },

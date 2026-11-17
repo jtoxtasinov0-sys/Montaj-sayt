@@ -38,7 +38,7 @@ export async function SiteFooter() {
       <div className="container-x">
         <p
           aria-hidden
-          className="h-display pointer-events-none select-none bg-gradient-to-b from-fg/15 to-transparent bg-clip-text text-center text-[22vw] leading-[0.8] text-transparent lg:text-[15rem]"
+          className="h-display pointer-events-none pb-[0.16em] text-center text-[18.5vw] leading-none whitespace-nowrap text-fg/[0.16] select-none [mask-image:linear-gradient(to_bottom,#000_35%,rgba(0,0,0,0.2))] lg:text-[14rem]"
         >
           {SITE_NAME}
         </p>

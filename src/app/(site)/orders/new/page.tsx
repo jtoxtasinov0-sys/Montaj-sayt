@@ -22,7 +22,7 @@ export default async function NewOrderPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHero eyebrow={d.nav.postJob} title={p ? fmt(d.order.newDirect, { name: p.displayName }) : d.order.newTitle} subtitle={p ? p.headline : d.order.newPublic} />
+      <PageHero title={p ? fmt(d.order.newDirect, { name: p.displayName }) : d.order.newTitle} subtitle={p ? p.headline : d.order.newPublic} />
       <div className="container-x mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
         <ActionForm action={createOrder} className="card space-y-5 p-6 sm:p-8">
           {p && <input type="hidden" name="editor" value={p.slug} />}
