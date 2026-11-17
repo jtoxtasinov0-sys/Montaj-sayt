@@ -1,6 +1,6 @@
 export const uz = {
   meta: {
-    title: "MontajHub — videomontajorlar platformasi",
+    title: "Montajchi — videomontajorlar platformasi",
     description:
       "Boshlang’ich montajordan professionalgacha: portfolio, reyting va buyurtmalar bitta joyda. Montajor toping yoki o’z mijozlaringizni toping.",
   },

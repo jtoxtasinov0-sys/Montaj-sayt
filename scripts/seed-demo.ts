@@ -2,7 +2,7 @@
  * DEMO ma'lumotlar (faqat test/ko'rsatish uchun!). Productionda ishlatmang.
  *   npm run db:seed-demo           — demo ma'lumot qo'shish
  *   npm run db:seed-demo -- --reset — demo ma'lumotlarni o'chirish
- * Barcha demo foydalanuvchilar "@montajhub.demo" domenida.
+ * Barcha demo foydalanuvchilar "@montajchi.demo" domenida.
  */
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -64,13 +64,13 @@ const COMMENTS = [
 ];
 
 async function reset() {
-  await db.delete(s.users).where(like(s.users.email, "%@montajhub.demo"));
+  await db.delete(s.users).where(like(s.users.email, "%@montajchi.demo"));
   console.log("Demo ma'lumotlar o'chirildi");
 }
 
 async function main() {
   if (process.argv.includes("--reset")) return reset();
-  const exists = await db.select({ id: s.users.id }).from(s.users).where(like(s.users.email, "%@montajhub.demo")).limit(1);
+  const exists = await db.select({ id: s.users.id }).from(s.users).where(like(s.users.email, "%@montajchi.demo")).limit(1);
   if (exists.length) {
     console.log("Demo ma'lumotlar allaqachon bor. Qayta yaratish: npm run db:seed-demo -- --reset && npm run db:seed-demo");
     return;
@@ -80,7 +80,7 @@ async function main() {
     .insert(s.users)
     .values(
       ["Anvar Mirzayev", "Gulnora Tursunova", "Farrux Abdullayev", "Lola Ismoilova"].map((name, i) => ({
-        email: `client${i + 1}@montajhub.demo`,
+        email: `client${i + 1}@montajchi.demo`,
         name,
         telegram: `client_demo_${i + 1}`,
       })),
@@ -91,7 +91,7 @@ async function main() {
   for (const [i, e] of EDITORS.entries()) {
     const [u] = await db
       .insert(s.users)
-      .values({ email: `editor${i + 1}@montajhub.demo`, name: e.name, createdAt: new Date(Date.now() - (200 - i * 12) * DAY) })
+      .values({ email: `editor${i + 1}@montajchi.demo`, name: e.name, createdAt: new Date(Date.now() - (200 - i * 12) * DAY) })
       .returning();
     const slug = e.name.toLowerCase().split(" ")[0].replace(/[^a-z]/g, "") + "-edits";
     const [p] = await db
@@ -130,7 +130,7 @@ async function main() {
       items.push({
         editorId: p.id,
         title: ["To‘y klipi — Registon", "Avto reklama", "Musiqiy klip", "Podkast epizodi", "Tog‘ sayohati vlog", "Osh — food reklama"][STILLS.indexOf(still)],
-        url: `https://t.me/montajhub_demo/${i * 10 + k}`,
+        url: `https://t.me/montajchi_demo/${i * 10 + k}`,
         provider: "telegram",
         category: ["wedding", "ads", "music", "podcast", "youtube", "ads"][STILLS.indexOf(still)],
         coverKey: await cover(still),

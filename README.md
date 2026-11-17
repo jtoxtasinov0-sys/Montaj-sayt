@@ -1,4 +1,4 @@
-# MontajHub — videomontajorlar platformasi
+# Montajchi — videomontajorlar platformasi
 
 Boshlang‘ich montajordan professionalgacha: portfolio, narx, halol reyting va buyurtmalar bitta joyda.
 Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qorong‘i/yorug‘ mavzu bitta tugma bilan almashadi.

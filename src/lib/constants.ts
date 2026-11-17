@@ -1,4 +1,4 @@
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? "MontajHub";
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? "Montajchi";
 
 export const LOCALES = ["uz", "ru", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -45,6 +45,6 @@ export const LIMITS = {
 
 /** Test uchun to'lov kartalari — admin paneldan o'zgartiriladi */
 export const DEFAULT_CARDS = [
-  { type: "VISA", number: "4000 1234 5678 9010", holder: "MONTAJHUB TEST", bank: "Test bank" },
-  { type: "UZCARD", number: "8600 1234 5678 9012", holder: "MONTAJHUB TEST", bank: "Test bank" },
+  { type: "VISA", number: "4000 1234 5678 9010", holder: "MONTAJCHI TEST", bank: "Test bank" },
+  { type: "UZCARD", number: "8600 1234 5678 9012", holder: "MONTAJCHI TEST", bank: "Test bank" },
 ];

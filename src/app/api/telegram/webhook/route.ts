@@ -69,7 +69,7 @@ async function handleMessage(msg: { chat: { id: number }; from?: TgUser; text?: 
   if (cmd === "/start" || cmd === "/id") {
     await reply(
       [
-        "<b>MontajHub admin bot</b>",
+        "<b>Montajchi admin bot</b>",
         `Chat ID: <code>${msg.chat.id}</code>`,
         msg.from ? `Sizning ID: <code>${msg.from.id}</code>` : "",
         "",

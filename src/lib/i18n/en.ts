@@ -2,7 +2,7 @@ import type { Dict } from "./uz";
 
 export const en: Dict = {
   meta: {
-    title: "MontajHub — the platform for video editors",
+    title: "Montajchi — the platform for video editors",
     description:
       "From beginner editors to pros: portfolios, ratings and orders in one place. Hire a video editor or find your next clients.",
   },
