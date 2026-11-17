@@ -52,7 +52,7 @@ const EDITORS = [
   { name: "Madina Olimova", level: "MIDDLE", price: 48, city: "Samarqand", cats: ["youtube", "motion"], exp: 5, head: "YouTube kanallar uchun to‘liq montaj" },
 ] as const;
 
-const STILLS = ["wedding.webp", "car.webp", "reels.webp", "podcast.webp", "travel.webp", "food.webp"];
+const STILLS = ["wedding-hijab.webp", "car.webp", "reels.webp", "podcast-hosts.webp", "travel.webp", "food.webp"];
 const SKILLS = ["Premiere Pro", "After Effects", "DaVinci Resolve", "CapCut", "Final Cut Pro", "Photoshop", "Cinema 4D", "Blender"];
 const COMMENTS = [
   "Juda tez va sifatli ishladi, rahmat!",

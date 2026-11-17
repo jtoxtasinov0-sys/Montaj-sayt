@@ -260,10 +260,10 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
 
 // ---------- Kadrlar (kino lentasi) ----------
 const STILLS = [
-  { src: "/images/stills/wedding.webp", cat: "wedding" },
+  { src: "/images/stills/wedding-hijab.webp", cat: "wedding" },
   { src: "/images/stills/car.webp", cat: "ads" },
   { src: "/images/stills/reels.webp", cat: "reels" },
-  { src: "/images/stills/podcast.webp", cat: "podcast" },
+  { src: "/images/stills/podcast-hosts.webp", cat: "podcast" },
   { src: "/images/stills/travel.webp", cat: "youtube" },
   { src: "/images/stills/food.webp", cat: "ads" },
 ];

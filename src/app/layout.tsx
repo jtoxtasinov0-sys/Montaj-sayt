@@ -20,9 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: SITE_NAME,
       title: d.meta.title,
       description: d.meta.description,
-      images: [{ url: "/images/og.jpg", width: 1200, height: 630 }],
+      images: [{ url: "/images/og-clapper.jpg", width: 1200, height: 630 }],
     },
-    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: ["/images/og.jpg"] },
+    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: ["/images/og-clapper.jpg"] },
   };
 }
 

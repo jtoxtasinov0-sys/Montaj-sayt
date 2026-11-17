@@ -47,8 +47,10 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: securityHeaders },
       {
+        // 1 kun kesh. Rasm almashtirilsa — yangi fayl nomi bering (masalan hero-v2.webp),
+        // aks holda brauzerlar eski rasmni ko'rsatishda davom etadi.
         source: "/images/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }],
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
     ];
   },

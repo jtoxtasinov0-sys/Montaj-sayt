@@ -72,7 +72,7 @@ export function HeroVisual() {
       <div className="absolute inset-[14%] rounded-full bg-primary/30 blur-[90px]" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/hero.webp"
+        src="/images/hero-clapper.webp"
         alt=""
         width={1024}
         height={1024}
