@@ -35,10 +35,10 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
       {rows.length === 0 && <p className="card p-8 text-center text-sm text-muted">To&apos;lovlar yo&apos;q</p>}
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(({ p, email, name, slug }) => (
-          <article key={p.id} className="card flex gap-4 p-4">
+          <article key={p.id} className="card flex gap-3 p-3 sm:gap-4 sm:p-4">
             <a href={`/api/files/${p.receiptKey}`} target="_blank" rel="noopener" className="shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/api/files/${p.receiptKey}`} alt="Chek" className="h-36 w-28 rounded-xl border border-line object-cover" loading="lazy" />
+              <img src={`/api/files/${p.receiptKey}`} alt="Chek" className="h-28 w-20 rounded-xl border border-line object-cover sm:h-36 sm:w-28" loading="lazy" />
             </a>
             <div className="min-w-0 flex-1 space-y-1.5 text-sm">
               <div className="flex items-start justify-between gap-2">
@@ -55,7 +55,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
                     kod {p.payCode}
                   </span>
                 )}{" "}
-                · TOP {p.planName} · {p.days} kun · vazn {p.weight}
+                · TOP {p.planName} · {p.days} kun
               </p>
               <p className="text-xs text-muted">
                 {p.method} · {p.createdAt.toISOString().slice(0, 16).replace("T", " ")}
