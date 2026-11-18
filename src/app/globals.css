@@ -879,6 +879,25 @@ html[data-io] [data-reveal]:not([data-in]) {
   .neon {
     --gm: color-mix(in oklab, var(--ga) 50%, var(--gb));
     --hi: var(--gm);
+    /* kometa boshi: qorong'ida oq, yorug'da to'yingan pushti (oq fonda oq ko'rinmaydi) */
+    --cw: var(--ga);
+    /* asosiy (xira) aylana va ikki kometa: ko'k dumli va pushti dumli, boshi yorqin */
+    --base: conic-gradient(
+      color-mix(in oklab, var(--hi) 60%, transparent),
+      color-mix(in oklab, var(--gb) 55%, transparent) 70deg 110deg,
+      color-mix(in oklab, var(--hi) 60%, transparent) 180deg,
+      color-mix(in oklab, var(--ga) 55%, transparent) 250deg 290deg,
+      color-mix(in oklab, var(--hi) 60%, transparent)
+    );
+    --comets: conic-gradient(
+      transparent 0deg 95deg,
+      var(--gb) 160deg,
+      var(--cw) 178deg,
+      transparent 180deg 275deg,
+      var(--ga) 340deg,
+      var(--cw) 358deg,
+      transparent 360deg
+    );
     position: absolute;
     inset: -1px;
     z-index: -1;
@@ -887,7 +906,12 @@ html[data-io] [data-reveal]:not([data-in]) {
     transition: opacity 0.5s ease;
   }
   .dark .neon {
-    --hi: color-mix(in oklab, #fff 78%, var(--gm));
+    --hi: color-mix(in oklab, #fff 70%, var(--gm));
+    --cw: #fff;
+    --ring-w: 1.5px;
+  }
+  :root:not(.dark) .neon {
+    --ring-w: 2px;
   }
   .neon-accent {
     --ga: var(--accent);
@@ -906,44 +930,36 @@ html[data-io] [data-reveal]:not([data-in]) {
     width: 260%;
     aspect-ratio: 1;
     translate: -50% -50%;
-    /* pushti ↔ ko'k, oraliqda aralash rang — ikki tomon */
-    background: conic-gradient(var(--gm), var(--gb) 90deg, var(--gm) 180deg, var(--ga) 270deg, var(--gm));
-    animation: spin 6s linear infinite;
+    background: var(--comets), var(--base);
+    animation: spin 4.5s linear infinite;
   }
-  /* Keng, xira nur */
+  /* Keng, xira nur — asosan ranglar */
   .neon > .neon-halo {
     inset: -4px;
-    filter: blur(36px);
-    opacity: calc(var(--halo) * 0.6);
+    filter: blur(34px);
+    opacity: calc(var(--halo) * 0.7);
     animation: glow-breathe 5s ease-in-out infinite;
   }
-  /* Yaqin nur — chegaraga yopishgan */
+  .neon > .neon-halo > b {
+    background: conic-gradient(var(--gm), var(--gb) 90deg, var(--gm) 180deg, var(--ga) 270deg, var(--gm));
+  }
+  /* Yaqin nur — kometalar ostida yorqin dog'lar, ular bilan birga yuguradi */
   .neon > .neon-glow {
-    filter: blur(11px);
-    opacity: var(--halo);
+    inset: -1px;
+    filter: blur(9px);
+    opacity: calc(var(--halo) * 1.5);
   }
   .neon > .neon-plate {
     background: var(--plate);
   }
-  /* Chegara chizig'i: qorong'ida rang o'tishlarida oqish yaltirash */
+  /* Chegara chizig'i */
   .neon > .neon-ring {
-    padding: 1px;
+    padding: var(--ring-w, 1.5px);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-  }
-  .neon > .neon-ring > b {
-    background: conic-gradient(
-      var(--hi),
-      var(--gb) 70deg,
-      var(--gb) 110deg,
-      var(--hi) 180deg,
-      var(--ga) 250deg,
-      var(--ga) 290deg,
-      var(--hi)
-    );
   }
   /* Spotlight kartalardagi `> *` qoidasidan ustun turishi uchun */
   [data-spotlight] > .neon {
@@ -974,16 +990,18 @@ html[data-io] [data-reveal]:not([data-in]) {
   /* ---------- Bo'lim foni (komponent: <Aura />) ---------- */
   .aura {
     --tile: clamp(46px, 6.6vw, 88px);
-    --gap: 4px;
-    /* Plitka ranglari: chap (a) → o'ng (b) aralashmasi, chetga qarab asos (base) rangiga o'tadi */
-    --ta: #6b16e8;
-    --tb: #c24dff;
-    --tbase: #efe8ff;
-    --tsheen: rgba(255, 255, 255, 0.42);
-    --tedge: rgba(255, 255, 255, 0.7);
-    --tline: rgba(255, 255, 255, 0.22);
-    --tdrop: rgba(90, 20, 190, 0.55);
-    --tglint: rgba(255, 255, 255, 0.8);
+    --gap: 3px;
+    /* Plitkalar ortidagi umumiy nur maydoni (referens: muzli binafsha shisha).
+       f1 — yadro, f2 — atrofidagi binafsha, f3 — chapdagi lilak, f4 — o'ngdagi pushti, fbase — chetlar */
+    --f1: #8424ee;
+    --f2: rgba(166, 92, 255, 0.92);
+    --f3: rgba(190, 150, 255, 0.8);
+    --f4: rgba(228, 140, 250, 0.78);
+    --fbase: rgba(236, 226, 252, 0.85);
+    --sk: 1;
+    --tedge: rgba(255, 255, 255, 0.6);
+    --tdim: rgba(110, 50, 190, 0.12);
+    --tinner: rgba(255, 255, 255, 0.2);
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -1036,39 +1054,53 @@ html[data-io] [data-reveal]:not([data-in]) {
     mask: linear-gradient(to bottom, transparent, #000 20%, #000 70%, transparent);
   }
   .aura-tiles {
+    --step: calc(var(--tile) + var(--gap));
     position: absolute;
     left: 50%;
     bottom: calc(var(--gap) * -1);
     translate: -50% 0;
     display: grid;
     gap: var(--gap);
+    /* eng baland ustunlar tepasi fonga erib ketadi */
+    -webkit-mask: linear-gradient(to top, #000 50%, rgba(0, 0, 0, 0.35) 85%, transparent);
+    mask: linear-gradient(to top, #000 50%, rgba(0, 0, 0, 0.35) 85%, transparent);
   }
+  /* Har plitka umumiy maydonning o'z bo'lagini ko'rsatadi (+ bir-ikki px siljish — shishadagi sinish),
+     ustida yaltirash va yorug' qirralar */
   .aura-tiles > i {
-    position: relative;
+    --x: calc(var(--c) * var(--step) * -1 + var(--jx));
+    --y: calc(var(--r) * var(--step) * -1 + var(--jy));
+    --fs: calc(var(--cols) * var(--step)) calc(var(--rows) * var(--step));
     width: var(--tile);
     aspect-ratio: 1;
-    border-radius: calc(var(--tile) * 0.13);
-    background:
-      linear-gradient(150deg, var(--tsheen), transparent 55%),
-      color-mix(in oklab, color-mix(in oklab, var(--ta), var(--tb) var(--h)) var(--t), var(--tbase));
+    border-radius: calc(var(--tile) * 0.1);
+    background-color: var(--fbase);
+    background-image:
+      linear-gradient(140deg, rgba(255, 255, 255, calc(var(--s) * var(--sk))), transparent 58%),
+      radial-gradient(ellipse 24% 46% at var(--fx) var(--fy), var(--f1), transparent 74%),
+      radial-gradient(ellipse 46% 90% at var(--fx) var(--fy), var(--f2), transparent 78%),
+      radial-gradient(ellipse 32% 70% at calc(var(--fx) - 20%) 95%, var(--f3), transparent 74%),
+      radial-gradient(ellipse 36% 72% at calc(var(--fx) + 34%) 88%, var(--f4), transparent 74%);
+    background-size:
+      100% 100%,
+      var(--fs),
+      var(--fs),
+      var(--fs),
+      var(--fs);
+    background-position:
+      0 0,
+      var(--x) var(--y),
+      var(--x) var(--y),
+      var(--x) var(--y),
+      var(--x) var(--y);
+    background-repeat: no-repeat;
     box-shadow:
-      inset 0 1px 0 var(--tedge),
-      inset 0 0 0 1px var(--tline),
-      0 12px 26px -16px var(--tdrop);
+      inset 1px 1px 0 var(--tedge),
+      inset -1px -1px 0 var(--tdim),
+      inset 0 0 calc(var(--tile) * 0.22) var(--tinner);
   }
   .aura-tiles > i.x {
     visibility: hidden;
-  }
-  /* Vaqti-vaqti bilan shisha plitka yaltirab o'tadi */
-  .aura-tiles > i.g::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(150deg, var(--tglint), transparent 65%);
-    opacity: 0;
-    animation: tile-glint 9s ease-in-out infinite;
-    animation-delay: var(--gd, 0s);
   }
   /* Yorug' mavzuda plitkalar ustidagi kartalar — muzli shisha: binafsha rang xira ko'rinib turadi.
      Faqat plitkali fonda (doim qorong'i TOP bo'limida plitka yo'q — u yerga tegmaydi) */
@@ -1084,15 +1116,17 @@ html[data-io] [data-reveal]:not([data-in]) {
   }
 
   /* Hero: plitkalar ikkala mavzuda. Qorong'ida — qora shisha, ichidan pushti/ko'k/binafsha yorug'lik */
+  /* Qorong'ida ham referensdagi o'sha binafsha muzli shisha — faqat chetlari qorong'ilikka erib ketadi */
   .dark .aura-hero {
-    --ta: #d23be6;
-    --tb: #4b52ff;
-    --tbase: #0b0a19;
-    --tsheen: rgba(255, 255, 255, 0.09);
-    --tedge: rgba(255, 255, 255, 0.17);
-    --tline: rgba(255, 255, 255, 0.05);
-    --tdrop: rgba(0, 0, 0, 0.6);
-    --tglint: rgba(255, 255, 255, 0.32);
+    --f1: #8a2bf0;
+    --f2: rgba(164, 96, 255, 0.9);
+    --f3: rgba(186, 146, 255, 0.72);
+    --f4: rgba(232, 140, 250, 0.7);
+    --fbase: rgba(150, 110, 240, 0.1);
+    --sk: 0.75;
+    --tedge: rgba(255, 255, 255, 0.3);
+    --tdim: rgba(40, 0, 90, 0.25);
+    --tinner: rgba(255, 255, 255, 0.1);
   }
   .dark .aura-hero .aura-cols {
     display: block;
@@ -1587,18 +1621,6 @@ html[data-io] [data-reveal]:not([data-in]) {
     opacity: 0;
     filter: blur(6px);
     transform: translate3d(0, -12px, 0);
-  }
-}
-@keyframes tile-glint {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  7% {
-    opacity: 1;
-  }
-  18% {
-    opacity: 0;
   }
 }
 @keyframes glow-orbit {

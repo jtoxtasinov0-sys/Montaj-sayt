@@ -79,20 +79,19 @@ export function Neon({
   );
 }
 
-type Tile = { t: number; h: number; o: number; g?: number } | null;
+type Tile = { c: number; r: number; s: number; jx: number; jy: number; o: number } | null;
 
-/** Plitkalar xaritasi. `peak` — o'rtada baland "tepalik" (narx bo'limi), `wave` — notekis to'lqin (hero). */
-function tileMap(seed: number, cols: number, rows: number, shape: "peak" | "wave"): Tile[] {
+/**
+ * Plitkalar xaritasi. `peak` — o'rtada baland "tepalik" (narx bo'limi), `wave` — notekis zinapoya (hero).
+ * Rang plitkada emas: hamma plitka bitta umumiy nur maydonining o'z bo'lagini ko'rsatadi (CSS), shuning
+ * uchun binafsha yadro bir necha plitka orqali silliq porlaydi — referensdagi muzli shisha bloklar kabi.
+ * Har plitka maydonni bir-ikki piksel siljitib ko'rsatadi (shishadagi sinish) va o'z yaltirashiga ega.
+ */
+function tileMap(seed: number, cols: number, rows: number, shape: "peak" | "wave") {
   const r = rand(seed);
-  let cx: number;
-  let cy: number;
   let tops: number[];
-  let spread: number;
   if (shape === "peak") {
-    // Binafsha "yadro" pastki o'rtadan biroz chaproqda (referensdagidek)
-    cx = (cols - 1) * 0.47;
-    cy = rows - 0.8;
-    spread = 0.36;
+    const cx = (cols - 1) * 0.47;
     tops = Array.from({ length: cols }, (_, c) => {
       const edge = Math.abs(c - cx) / cx; // 0 — o'rta, 1 — chet
       const noise = Math.floor(r() * 3) - 1;
@@ -101,9 +100,6 @@ function tileMap(seed: number, cols: number, rows: number, shape: "peak" | "wave
     });
   } else {
     // Referensdagi zinapoya: ustunlar balandligi notekis to'lqin bo'lib o'zgaradi
-    cx = (cols - 1) * 0.42;
-    cy = rows - 0.6;
-    spread = 0.42;
     const p1 = r() * Math.PI * 2;
     const p2 = r() * Math.PI * 2;
     tops = Array.from({ length: cols }, (_, c) => {
@@ -111,47 +107,49 @@ function tileMap(seed: number, cols: number, rows: number, shape: "peak" | "wave
       return Math.max(1, Math.min(rows - 1, rows - Math.round(h * rows)));
     });
   }
-  const out: Tile[] = [];
+  const tiles: Tile[] = [];
   for (let i = 0; i < rows * cols; i++) {
     const row = Math.floor(i / cols);
     const c = i % cols;
     if (row < tops[c]) {
-      out.push(null);
+      tiles.push(null);
       continue;
     }
-    const dx = (c - cx) / (cols * spread);
-    const dy = (row - cy) / (rows * 1.1);
-    const near = Math.max(0, 1 - Math.hypot(dx, dy));
-    const t = Math.min(96, Math.max(6, Math.pow(near, 0.8) * 96 + (r() - 0.5) * 24));
-    // yuqori qirradagi plitkalar biroz xiraroq — "ko'tarilib, eriyotgan" ko'rinish
-    const o = row === tops[c] ? 0.7 + r() * 0.25 : 1;
-    const h = Math.round(Math.max(0, Math.min(1, (c - cx) / cx + 0.5)) * 100);
-    out.push({ t, h, o });
+    tiles.push({
+      c,
+      r: row,
+      s: 0.16 + r() * 0.3,
+      jx: Math.round((r() - 0.5) * 10),
+      jy: Math.round((r() - 0.5) * 10),
+      o: row === tops[c] ? 0.75 + r() * 0.2 : 1,
+    });
   }
-  // Ba'zi plitkalarda vaqti-vaqti bilan shisha yaltiraydi (alohida tasodif — xarita o'zgarmaydi)
-  const g = rand(seed * 7 + 1);
-  for (const tile of out) if (tile && g() < 0.13) tile.g = g() * 9;
-  return out;
+  return tiles;
 }
 
 /**
  * Bo'lim foni (ikkala referens):
  *  - `section` — qorong'ida nuqtali to'r (chapda pushti, o'ngda ko'k), yorug'da binafsha shisha plitkalar;
  *  - `dots` — faqat nuqtali to'r (doim qorong'i TOP bo'limi);
- *  - `hero` — shisha plitkalar ikkala mavzuda: yorug'da binafsha, qorong'ida qora shisha ichidan
- *    pushti/ko'k/binafsha yorug'lik.
+ *  - `hero` — shisha plitkalar ikkala mavzuda: yorug'da referensdagidek binafsha muzli shisha,
+ *    qorong'ida o'sha shisha qorong'ilikdan porlab chiqadi (chetlari shaffof).
+ * `fx`/`fy` — binafsha yadroning plitkalar maydonidagi o'rni (%).
  */
 export function Aura({
   seed = 9,
   variant = "section",
   cols = 23,
   rows = 5,
+  fx = 47,
+  fy = 88,
   className,
 }: {
   seed?: number;
   variant?: "section" | "dots" | "hero";
   cols?: number;
   rows?: number;
+  fx?: number;
+  fy?: number;
   className?: string;
 }) {
   const tiles = variant !== "dots" ? tileMap(seed, cols, rows, variant === "hero" ? "wave" : "peak") : null;
@@ -162,18 +160,30 @@ export function Aura({
       {tiles && (
         <>
           <div className="aura-cols" />
-          <div className="aura-tiles" style={{ gridTemplateColumns: `repeat(${cols}, var(--tile))` } as Css}>
-            {tiles.map((tile, i) =>
-              tile ? (
+          <div
+            className="aura-tiles"
+            style={
+              {
+                gridTemplateColumns: `repeat(${cols}, var(--tile))`,
+                "--cols": cols,
+                "--rows": rows,
+                "--fx": `${fx}%`,
+                "--fy": `${fy}%`,
+              } as Css
+            }
+          >
+            {tiles.map((t, i) =>
+              t ? (
                 <i
                   key={i}
-                  className={tile.g !== undefined ? "g" : undefined}
                   style={
                     {
-                      "--t": `${tile.t.toFixed(0)}%`,
-                      "--h": `${tile.h}%`,
-                      ...(tile.g !== undefined && { "--gd": `${tile.g.toFixed(2)}s` }),
-                      opacity: tile.o.toFixed(2),
+                      "--c": t.c,
+                      "--r": t.r,
+                      "--s": t.s.toFixed(2),
+                      "--jx": `${t.jx}px`,
+                      "--jy": `${t.jy}px`,
+                      opacity: t.o.toFixed(2),
                     } as Css
                   }
                 />

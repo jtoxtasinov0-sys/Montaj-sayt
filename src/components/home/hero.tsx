@@ -24,8 +24,8 @@ export function Hero({ d, stats, light }: Props) {
           ichidan pushti/ko'k yorug'lik. Qorong'ida tepada porlovchi shar va yulduzlar ham bor. */}
       <Stars className="absolute inset-0 -z-10 hidden opacity-70 dark:block" />
       {/* Telefonda hero baland — plitkalar ko'proq qator, kamroq ustun bo'lib pastki yarmini egallaydi */}
-      <Aura variant="hero" seed={21} rows={6} className="hidden sm:block" />
-      <Aura variant="hero" seed={4} cols={11} rows={10} className="sm:hidden" />
+      <Aura variant="hero" seed={21} rows={6} fx={40} fy={86} className="hidden sm:block" />
+      <Aura variant="hero" seed={4} cols={11} rows={10} fx={42} fy={86} className="sm:hidden" />
       <div className="orb-wrap -z-10 hidden dark:block" aria-hidden>
         <span className="orb-ring">
           <span />
