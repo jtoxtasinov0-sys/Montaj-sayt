@@ -20,9 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: SITE_NAME,
       title: d.meta.title,
       description: d.meta.description,
-      images: [{ url: "/images/og-clapper.jpg", width: 1200, height: 630 }],
+      // Havola ko'rinishi (Telegram, Facebook...) — bosh sahifadagi hero. Rasm o'zgarsa yangi fayl nomi
+      // bering: Telegram va brauzerlar eski rasmni shu manzil bo'yicha uzoq saqlaydi.
+      images: [{ url: "/images/og-home.jpg", width: 1200, height: 630, alt: d.meta.title }],
     },
-    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: ["/images/og-clapper.jpg"] },
+    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: ["/images/og-home.jpg"] },
   };
 }
 
