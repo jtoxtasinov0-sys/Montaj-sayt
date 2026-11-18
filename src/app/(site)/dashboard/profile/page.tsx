@@ -1,9 +1,9 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { saveEditorProfile } from "@/actions/profile";
-import { Avatar } from "@/components/avatar";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
 import { getDict } from "@/lib/i18n";
@@ -108,13 +108,12 @@ export default async function ProfileFormPage() {
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <div className="card space-y-4 p-6">
           <div className="flex items-center gap-4">
-            <Avatar name={p?.displayName ?? user.name} avatarKey={p?.avatarKey} image={user.image} size={64} />
+            <ProfileAvatar name={p?.displayName ?? user.name} avatarKey={p?.avatarKey} image={user.image} size={64} />
             <div className="text-sm">
               <p className="font-medium">{f.avatar}</p>
               <p className="text-xs text-muted">{f.avatarHint}</p>
             </div>
           </div>
-          <input name="avatar" type="file" accept="image/jpeg,image/png,image/webp" className="input" />
           <label className="check w-full">
             <input type="checkbox" name="isAvailable" defaultChecked={p?.isAvailable ?? true} /> {f.available}
           </label>

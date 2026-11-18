@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { env } from "@/lib/env";
+import { keyFromUploadUrl } from "@/lib/uploads-url";
 
 /** Google profili bo'yicha foydalanuvchini topish yoki yaratish */
 export async function upsertGoogleUser(p: { sub: string; email: string; name?: string; picture?: string }) {
@@ -23,7 +24,8 @@ export async function upsertGoogleUser(p: { sub: string; email: string; name?: s
         googleId: p.sub,
         email,
         name: user.name || p.name || email.split("@")[0],
-        image: p.picture ?? user.image,
+        // O'zi yuklagan rasmni har kirishda Google rasmi bilan almashtirmaymiz
+        image: keyFromUploadUrl(user.image) ? user.image : (p.picture ?? user.image),
         lastLoginAt: new Date(),
         ...(isAdminEmail ? { role: "ADMIN" as const } : {}),
       })
