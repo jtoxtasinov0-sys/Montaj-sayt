@@ -8,14 +8,15 @@ export function LogoMark({ className }: { className?: string }) {
     <svg viewBox="0 0 32 32" className={cn("h-8 w-8", className)} aria-hidden>
       <defs>
         <linearGradient id="lm-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#7d86ff" />
-          <stop offset="1" stopColor="#3d4ce4" />
+          {/* Mavzu rangidan: qorong'ida ko'k, yorug'da binafsha */}
+          <stop offset="0" style={{ stopColor: "color-mix(in oklab, var(--primary-2) 80%, white)" }} />
+          <stop offset="1" style={{ stopColor: "var(--primary)" }} />
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx="9" fill="url(#lm-g)" />
       <path d="M12 9.2 23.6 16 12 22.8Z" fill="#fff" />
       <path d="M8.5 21.5 23 10.5" stroke="url(#lm-g)" strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="25" cy="7" r="2.3" fill="#ff8a5c" />
+      <circle cx="25" cy="7" r="2.3" fill="#ff4fd8" />
     </svg>
   );
 }

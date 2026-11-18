@@ -48,41 +48,92 @@ export function SplitText({
 }
 
 /**
- * Ramka bo'ylab aylanuvchi yumshoq nur (FXIFY referensi kabi): qarama-qarshi tomonlarda ikkita
- * bir xil nur, ikkalasi ramka yo'li bo'ylab o'zgarmas tezlikda yuradi.
- *  - SVG chiziq qatlamlari (`n1…n6`) — ramkaning o'zidagi nur: o'rtasi yorqin, uchlari asta so'nadi.
- *    `stroke-dashoffset` bilan siljiydi va burchakni aniq aylanib o'tadi.
- *  - `nb` — yumshoq yorug'lik: ketma-ket uchta dumaloq dog' (burilmaydi — burchakda "sakramaydi").
- * O'lcham, yo'l va uzunlikni MotionRoot ota elementdan o'lchab qo'yadi.
- * `inside` — ota `overflow: hidden` bo'lsa (tugmalar).
+ * Nurli ramka (referens: qorong'i qidiruv paneli): chapda pushti, o'ngda ko'k — ingichka gradient
+ * chegara, yuqori qirrasi oqish, atrofida shu ranglardagi yumshoq nur. Harakatlanmaydi, faqat asta
+ * "nafas oladi". Yorug' mavzuda — binafsha/pushti.
+ * Ota elementning orqa fonini qoplaydi (z-index: -1), shuning uchun nur faqat tashqarida ko'rinadi.
+ * Qatlamlar: ::before — yaqin nur, .neon-halo — keng nur, .neon-plate — karta foni, ::after — chegara.
  */
 export function Neon({
   tone = "blue",
-  inside,
   className,
 }: {
-  /** accent — pullik ajratish (TOP montajor, ommabop reja) */
+  /** accent — pullik ajratish (TOP montajor, ommabop reja): pushti → tilla */
   tone?: "blue" | "accent";
-  inside?: boolean;
   className?: string;
 }) {
   return (
-    <span aria-hidden className={cn("neon", tone === "accent" && "neon-accent", inside && "neon-inside", className)}>
-      <i className="nb k0" />
-      <i className="nb k1" />
-      <i className="nb k2" />
-      <i className="nb k0 t2" />
-      <i className="nb k1 t2" />
-      <i className="nb k2 t2" />
-      <svg>
-        <rect className="n1" data-f="1" />
-        <rect className="n2" data-f="0.78" />
-        <rect className="n3" data-f="0.58" />
-        <rect className="n4" data-f="0.4" />
-        <rect className="n5" data-f="0.24" />
-        <rect className="n6" data-f="0.1" />
-      </svg>
+    <span aria-hidden className={cn("neon", tone === "accent" && "neon-accent", className)}>
+      <i className="neon-halo" />
+      <i className="neon-plate" />
     </span>
+  );
+}
+
+/**
+ * Bo'lim foni (ikkala referens bitta komponentda, mavzuga qarab biri ko'rinadi):
+ *  - qorong'i: nuqtali to'r, chapda pushti, o'ngda ko'k rang maydoni bilan bo'yalgan;
+ *  - yorug': pastdan ko'tarilgan binafsha shisha plitkalar (zinapoya qirrali) + ingichka ustun chiziqlari.
+ * `tiles={false}` — faqat nuqtalar (doim qorong'i bo'limlar uchun).
+ */
+export function Aura({
+  seed = 9,
+  tiles = true,
+  cols = 23,
+  rows = 5,
+  className,
+}: {
+  seed?: number;
+  tiles?: boolean;
+  cols?: number;
+  rows?: number;
+  className?: string;
+}) {
+  const r = rand(seed);
+  // Binafsha "yadro" pastki o'rtadan biroz chaproqda (referensdagidek)
+  const cx = (cols - 1) * 0.47;
+  const cy = rows - 0.8;
+  const tops = Array.from({ length: cols }, (_, c) => {
+    const edge = Math.abs(c - cx) / cx; // 0 — o'rta, 1 — chet
+    const noise = Math.floor(r() * 3) - 1;
+    // eng baland ustun ham yuqori qatorga chiqmaydi — sarlavha matni ustiga tushmasin
+    return Math.max(1, Math.min(rows - 1, Math.round(rows * (0.12 + 0.6 * edge)) + noise));
+  });
+  return (
+    <div aria-hidden className={cn("aura", tiles && "aura-tiled", className)}>
+      <div className="aura-haze" />
+      <div className="aura-dots" />
+      {tiles && (
+        <>
+          <div className="aura-cols" />
+          <div className="aura-tiles" style={{ gridTemplateColumns: `repeat(${cols}, var(--tile))` } as Css}>
+            {Array.from({ length: rows * cols }, (_, i) => {
+              const row = Math.floor(i / cols);
+              const c = i % cols;
+              if (row < tops[c]) return <i key={i} className="x" />;
+              const dx = (c - cx) / (cols * 0.36);
+              const dy = (row - cy) / (rows * 1.1);
+              const near = Math.max(0, 1 - Math.hypot(dx, dy));
+              const t = Math.min(96, Math.max(6, Math.pow(near, 0.8) * 96 + (r() - 0.5) * 24));
+              // yuqori qirradagi plitkalar biroz xiraroq — "ko'tarilib, eriyotgan" ko'rinish
+              const fade = row === tops[c] ? 0.7 + r() * 0.25 : 1;
+              return (
+                <i
+                  key={i}
+                  style={
+                    {
+                      "--t": `${t.toFixed(0)}%`,
+                      "--h": `${Math.round(Math.max(0, Math.min(1, (c - cx) / cx + 0.5)) * 100)}%`,
+                      opacity: fade.toFixed(2),
+                    } as Css
+                  }
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -118,30 +169,6 @@ export function Particles({ count = 22, seed = 7, className }: { count?: number;
           />
         );
       })}
-    </div>
-  );
-}
-
-/** Perspektivali to'r pol + unda yuguruvchi nurlar (narx bo'limlari ostida) */
-export function Floor({ className, beams = 7 }: { className?: string; beams?: number }) {
-  const r = rand(beams * 31);
-  return (
-    <div aria-hidden className={cn("floor", className)}>
-      <div className="floor-plane">
-        {Array.from({ length: beams }, (_, i) => {
-          // to'r chiziqlari 20 ta ustunga bo'lingan — nurlar aynan chiziq ustidan yuradi
-          const col = 3 + Math.floor(r() * 15);
-          return (
-            <span
-              key={i}
-              className="floor-beam"
-              style={{ "--x": `${col * 5}%`, "--t": `${(3.2 + r() * 3).toFixed(2)}s`, "--bd": `${(-r() * 6).toFixed(2)}s` } as Css}
-            />
-          );
-        })}
-        <span className="floor-sweep" />
-      </div>
-      <div className="floor-glow" />
     </div>
   );
 }

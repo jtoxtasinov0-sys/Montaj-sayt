@@ -10,7 +10,7 @@ export function PageHero({ title, subtitle, children }: { title: string; subtitl
       <Stars className="absolute inset-0 -z-10 opacity-60" />
       <div
         aria-hidden
-        className="absolute -top-[480px] left-1/2 -z-10 aspect-square w-[900px] -translate-x-1/2 rounded-full shadow-[0_30px_80px_-10px_rgba(255,138,92,0.45),0_60px_160px_10px_rgba(61,76,228,0.4),inset_0_-30px_60px_-20px_rgba(255,150,110,0.5)] ring-1 ring-[#ffaa82]/30"
+        className="absolute -top-[480px] left-1/2 -z-10 aspect-square w-[900px] -translate-x-1/2 rounded-full shadow-[0_30px_80px_-10px_rgba(255,79,216,0.45),0_60px_160px_10px_rgba(61,76,228,0.4),inset_0_-30px_60px_-20px_rgba(255,110,225,0.5)] ring-1 ring-[#ffaa82]/30"
       />
       <div className="container-x pt-32 pb-12 sm:pb-16">
         <h1 className="h-hero fade-up text-[clamp(2.4rem,6vw,4.6rem)] text-balance">{title}</h1>

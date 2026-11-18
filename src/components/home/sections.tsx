@@ -23,7 +23,7 @@ import { CountUp } from "@/components/client-effects";
 import { EditorCard } from "@/components/editor-card";
 import { Sparkle } from "@/components/icons";
 import { LogoMark } from "@/components/logo";
-import { Floor, Neon, Particles, PixelGrid, SplitText } from "@/components/motion";
+import { Aura, Neon, Particles, PixelGrid, SplitText } from "@/components/motion";
 import { Stars } from "@/components/stars";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
 import { CATEGORIES, SOFTWARE } from "@/lib/constants";
@@ -159,7 +159,7 @@ export function HowItWorks({ d }: { d: Dict }) {
   );
 }
 
-// ---------- Narx bo'limlari (FXIFY: "Choose what's best for you" — 3D kartalar, nurli pol) ----------
+// ---------- Narx bo'limlari: qorong'ida — pushti/ko'k nuqtali fon, yorug'da — binafsha shisha plitkalar ----------
 export function TiersSection({
   d,
   tiers,
@@ -170,10 +170,9 @@ export function TiersSection({
   counts: Record<number, { editors: number; jobs: number }>;
 }) {
   return (
-    <section data-anim className="relative isolate overflow-x-clip">
-      <Floor className="-z-10 !h-[46%]" />
-      <Particles count={16} seed={5} className="-z-10" />
-      <div className="container-x py-24">
+    <section data-anim className="relative isolate overflow-hidden">
+      <Aura seed={5} />
+      <div className="container-x pt-24 pb-28">
         <SectionHead title={d.tiers.title} subtitle={d.tiers.subtitle} />
         {/* Nur faqat o'rtadagi kartada; sichqoncha boshqa kartaga o'tsa — nur ham o'tadi */}
         <div className="neon-group grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -434,10 +433,8 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
   return (
     <section id="top" data-anim className="mx-2 scroll-mt-20 sm:mx-3">
       <div className="dark relative isolate overflow-hidden rounded-[2rem] border border-line bg-[#05050f] px-4 py-20 text-fg sm:px-8 lg:py-28">
-        <Stars className="absolute inset-0 -z-10 opacity-60" />
-        <Particles count={26} seed={17} className="-z-10" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-[radial-gradient(ellipse_50%_70%_at_50%_100%,rgba(61,76,228,0.45),transparent_70%)]" />
-        <Floor className="-z-10 !h-[42%]" beams={9} />
+        <Stars className="absolute inset-0 -z-10 opacity-40" />
+        <Aura tiles={false} className="aura-promo" />
         <div className="container-x !px-0 grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <h2 className="h-section text-[clamp(2.4rem,5vw,4.4rem)] text-balance">
@@ -465,7 +462,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
                 style={delay(i * 120)}
                 className={cn(
                   "card flex flex-col p-6",
-                  p.isPopular && "is-featured bg-gradient-to-b from-primary/25 to-transparent sm:-translate-y-4",
+                  p.isPopular && "is-featured sm:-translate-y-4",
                 )}
               >
                 <Neon tone={p.isPopular ? "accent" : "blue"} />

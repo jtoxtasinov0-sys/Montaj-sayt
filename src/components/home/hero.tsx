@@ -68,8 +68,7 @@ export function Hero({ d, stats }: Props) {
           </p>
 
           <div className="fade-up mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "0.55s" }}>
-            <Link href="/editors" className="btn btn-primary btn-halo btn-lg pr-2.5">
-              <Neon inside />
+            <Link href="/editors" className="btn btn-primary btn-glow btn-lg pr-2.5">
               {d.hero.ctaFind}
               <span className="btn-arrow !mr-0">
                 <ArrowRight className="h-4 w-4" />
