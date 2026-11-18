@@ -4,6 +4,9 @@
  */
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Montaj Club";
 
+/** Bosh sahifadagi TOP montajorlar soni */
+export const HOME_TOP_COUNT = 8;
+
 export const LOCALES = ["uz", "ru", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "uz";

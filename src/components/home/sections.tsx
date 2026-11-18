@@ -26,9 +26,10 @@ import { LogoMark, Wordmark } from "@/components/logo";
 import { Aura, Neon, Particles, PixelGrid, SplitText } from "@/components/motion";
 import { Stars } from "@/components/stars";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
-import { CATEGORIES, SITE_NAME, SOFTWARE } from "@/lib/constants";
+import { CATEGORIES, HOME_TOP_COUNT, SITE_NAME, SOFTWARE } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
 import { fmt, type Dict } from "@/lib/i18n";
+import { joinNames, planLevels, type PlanLevel } from "@/lib/plan-levels";
 import { cn, formatUzs } from "@/lib/utils";
 
 type Css = React.CSSProperties & Record<`--${string}`, string | number>;
@@ -429,7 +430,16 @@ export function RatingSection({ d }: { d: Dict }) {
 }
 
 // ---------- TOP rejalar ----------
+/** Reja TOP ro'yxatida qayerda turishini bitta jumlada tushuntiradi */
+function levelText(d: Dict, l: PlanLevel) {
+  if (!l.higher.length) return d.promo.levelTop;
+  const list = (names: string[]) => joinNames(names, d.promo.and);
+  const over = l.lower.length ? fmt(d.promo.levelOverPlans, { plans: list(l.lower) }) : d.promo.levelOverFree;
+  return `${over} ${fmt(d.promo.levelBelow, { plans: list(l.higher) })}`;
+}
+
 export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) {
+  const levels = planLevels(plans);
   return (
     <section id="top" data-anim className="mx-2 scroll-mt-20 sm:mx-3">
       <div className="dark relative isolate overflow-hidden rounded-[2rem] border border-line bg-[#05050f] px-4 py-20 text-fg sm:px-8 lg:py-28">
@@ -453,50 +463,58 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
               className="animate-float mx-auto mt-6 w-64 mix-blend-screen [mask-image:radial-gradient(circle,#000_50%,transparent_70%)] lg:mx-0 lg:w-80"
             />
           </div>
-          <div className="neon-group grid gap-3 sm:grid-cols-3">
-            {plans.map((p, i) => (
-              <div
-                key={p.id}
-                data-reveal="3d"
-                data-spotlight
-                style={delay(i * 120)}
-                className={cn(
-                  "card flex flex-col p-6",
-                  p.isPopular && "is-featured sm:-translate-y-4",
-                )}
-              >
-                <Neon tone={p.isPopular ? "accent" : "blue"} />
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted">{p.name}</span>
-                  {p.isPopular && (
-                    <span className="chip chip-accent">
-                      <Flame className="h-3 w-3" /> {d.promo.popular}
-                    </span>
+          <div>
+            <div className="neon-group grid gap-3 sm:grid-cols-3">
+              {plans.map((p, i) => (
+                <div
+                  key={p.id}
+                  data-reveal="3d"
+                  data-spotlight
+                  style={delay(i * 120)}
+                  className={cn(
+                    "card flex flex-col p-6",
+                    p.isPopular && "is-featured sm:-translate-y-4",
                   )}
-                </div>
-                <div className="mt-6 text-4xl font-extralight tracking-tighter">{formatUzs(p.priceUzs)}</div>
-                <div className="text-sm text-muted">
-                  {d.common.uzs} / {fmt(d.promo.perDays, { days: p.days })}
-                </div>
-                <ul className="my-6 space-y-2.5 text-sm">
-                  {d.promo.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary-2" /> {f}
-                    </li>
-                  ))}
-                  <li className="flex items-center gap-2 text-muted">
-                    <TrendingUp className="h-4 w-4 text-accent" />
-                    {fmt(d.promo.weight, { w: i + 1 })}
-                  </li>
-                </ul>
-                <Link
-                  href={`/dashboard/promote?plan=${p.id}`}
-                  className={cn("btn mt-auto w-full", p.isPopular ? "btn-primary" : "btn-ghost")}
                 >
-                  {d.promo.cta}
-                </Link>
-              </div>
-            ))}
+                  <Neon tone={p.isPopular ? "accent" : "blue"} />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted">{p.name}</span>
+                    {p.isPopular && (
+                      <span className="chip chip-accent">
+                        <Flame className="h-3 w-3" /> {d.promo.popular}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-6 text-4xl font-extralight tracking-tighter">{formatUzs(p.priceUzs)}</div>
+                  <div className="text-sm text-muted">
+                    {d.common.uzs} / {fmt(d.promo.perDays, { days: p.days })}
+                  </div>
+                  <ul className="my-6 space-y-2.5 text-sm">
+                    {d.promo.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-primary-2" /> {f}
+                      </li>
+                    ))}
+                    <li className="text-muted">
+                      <span className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 shrink-0 text-accent" />
+                        {fmt(d.promo.weight, { w: levels.get(p.id)!.level })}
+                      </span>
+                      <span className="mt-1.5 block pl-6 text-[0.8rem] leading-snug">{levelText(d, levels.get(p.id)!)}</span>
+                    </li>
+                  </ul>
+                  <Link
+                    href={`/dashboard/promote?plan=${p.id}`}
+                    className={cn("btn mt-auto w-full", p.isPopular ? "btn-primary" : "btn-ghost")}
+                  >
+                    {d.promo.cta}
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <p data-reveal className="mt-8 max-w-2xl text-sm leading-relaxed text-muted">
+              {fmt(d.promo.howNote, { n: HOME_TOP_COUNT })}
+            </p>
           </div>
         </div>
       </div>
