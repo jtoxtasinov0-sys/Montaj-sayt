@@ -30,8 +30,10 @@ const TICKS = ["00:00", "00:05", "00:10", "00:15"];
 /**
  * Hero belgisi — montaj studiyasi (kodda chizilgan, rasm emas).
  * Bitta oyna ichida montaj (taymlayn), harakat (egri chiziqlar), rang (g'ildiraklar) va 3D (kub)
- * birlashgan. Kirishda oyna ko'tarilib chiqadi, panellar har tomondan uchib kelib yig'iladi;
- * keyin yengil "suzadi", pleyhed yuradi, ish maydoni yorlig'i navbat bilan almashadi.
+ * birlashgan. Kirishda oyna ko'tarilib chiqadi, panellar har tomondan prujina bilan uchib kelib
+ * joyiga "o'tirib" qoladi; suzish esa boshidanoq ketayotgani uchun hech qachon to'xtab qolmaydi.
+ * Panel o'zgaruvchilari: --fx/--fy/--fr — qayerdan va qanday burilib uchib keladi, --d — kechikish,
+ * --t / --rt — tebranish va og'ish davri (har xil — harakat takrorlanmaydi), --b — faza.
  * Hamma o'lchamlar konteyner kengligiga (cqw) bog'liq — telefonda ham aynan shunday ko'rinadi.
  */
 export function HeroStudio() {
@@ -141,7 +143,7 @@ export function HeroStudio() {
       </div>
 
       {/* ---- Suzuvchi panellar (har biri o'z tomonidan uchib keladi) ---- */}
-      <div className="st-float st-graph" style={{ "--z": "9cqw", "--fx": "-14cqw", "--fy": "-10cqw", "--d": "0.55s", "--b": "0s" } as Css}>
+      <div className="st-float st-graph" style={{ "--z": "9cqw", "--fx": "-14cqw", "--fy": "-10cqw", "--fr": "-6deg", "--d": "0.5s", "--t": "4.6s", "--rt": "7s", "--b": "-1.2s" } as Css}>
         <div className="st-panel st-gpanel">
           {/* Tezlik grafigi: ish oralig'i, qiymat to'ri, ikki "qo'ng'iroq" egri chiziq, kalit kadrlar va pleyhed */}
           <svg viewBox="0 0 240 118" className="st-curve">
@@ -192,7 +194,7 @@ export function HeroStudio() {
         </div>
       </div>
 
-      <div className="st-float st-cubebox" style={{ "--z": "7cqw", "--fx": "14cqw", "--fy": "-12cqw", "--d": "0.7s", "--b": "-2s" } as Css}>
+      <div className="st-float st-cubebox" style={{ "--z": "7cqw", "--fx": "14cqw", "--fy": "-12cqw", "--fr": "6deg", "--d": "0.62s", "--t": "4s", "--rt": "6.2s", "--b": "-3.1s" } as Css}>
         <div className="st-panel st-3d">
           <div className="st-grid3d" />
           <div className="st-cube">
@@ -203,14 +205,14 @@ export function HeroStudio() {
         </div>
       </div>
 
-      <div className="st-float st-meters" style={{ "--z": "6cqw", "--fx": "12cqw", "--fy": "0cqw", "--d": "0.85s", "--b": "-1s" } as Css}>
+      <div className="st-float st-meters" style={{ "--z": "6cqw", "--fx": "12cqw", "--fy": "0cqw", "--fr": "5deg", "--d": "0.74s", "--t": "3.6s", "--rt": "5.6s", "--b": "-2.2s" } as Css}>
         <div className="st-panel">
           <span className="st-m" style={{ "--s": "0.9s" } as Css} />
           <span className="st-m" style={{ "--s": "1.15s" } as Css} />
         </div>
       </div>
 
-      <div className="st-float st-tools" style={{ "--z": "8cqw", "--fx": "-12cqw", "--fy": "2cqw", "--d": "0.95s", "--b": "-3s" } as Css}>
+      <div className="st-float st-tools" style={{ "--z": "8cqw", "--fx": "-12cqw", "--fy": "2cqw", "--fr": "-5deg", "--d": "0.82s", "--t": "4.2s", "--rt": "6.6s", "--b": "-4s" } as Css}>
         <div className="st-panel">
           {[MousePointer2, Scissors, PenTool, Type, Hand, Crop].map((I, i) => (
             <I key={i} className={i === 1 ? "st-on" : undefined} />
@@ -218,7 +220,7 @@ export function HeroStudio() {
         </div>
       </div>
 
-      <div className="st-float st-wheels" style={{ "--z": "10cqw", "--fx": "-10cqw", "--fy": "12cqw", "--d": "1.05s", "--b": "-1.5s" } as Css}>
+      <div className="st-float st-wheels" style={{ "--z": "10cqw", "--fx": "-10cqw", "--fy": "12cqw", "--fr": "-4deg", "--d": "0.9s", "--t": "4.8s", "--rt": "7.4s", "--b": "-2.6s" } as Css}>
         <div className="st-panel">
           {["Lift", "Gamma", "Gain"].map((l, i) => (
             <span key={l} className="st-wheel">
@@ -229,22 +231,22 @@ export function HeroStudio() {
         </div>
       </div>
 
-      <div className="st-float st-tile st-t1" style={{ "--z": "12cqw", "--fx": "0cqw", "--fy": "-12cqw", "--d": "1.15s", "--b": "-2.5s" } as Css}>
+      <div className="st-float st-tile st-t1" style={{ "--z": "12cqw", "--fx": "0cqw", "--fy": "-12cqw", "--fr": "-8deg", "--d": "1s", "--t": "3.2s", "--rt": "5.2s", "--b": "-1.7s" } as Css}>
         <div className="st-panel">
           <span className="st-fxt">fx</span>
         </div>
       </div>
-      <div className="st-float st-tile st-t2" style={{ "--z": "11cqw", "--fx": "10cqw", "--fy": "10cqw", "--d": "1.25s", "--b": "-0.5s" } as Css}>
+      <div className="st-float st-tile st-t2" style={{ "--z": "11cqw", "--fx": "10cqw", "--fy": "10cqw", "--fr": "8deg", "--d": "1.08s", "--t": "3.5s", "--rt": "5.6s", "--b": "-3.4s" } as Css}>
         <div className="st-panel">
           <Clapperboard />
         </div>
       </div>
-      <div className="st-float st-tile st-t3" style={{ "--z": "13cqw", "--fx": "6cqw", "--fy": "-10cqw", "--d": "1.3s", "--b": "-3.5s" } as Css}>
+      <div className="st-float st-tile st-t3" style={{ "--z": "13cqw", "--fx": "6cqw", "--fy": "-10cqw", "--fr": "8deg", "--d": "1.14s", "--t": "3s", "--rt": "4.8s", "--b": "-0.6s" } as Css}>
         <div className="st-panel">
           <Camera />
         </div>
       </div>
-      <div className="st-float st-tile st-t4" style={{ "--z": "12cqw", "--fx": "-6cqw", "--fy": "10cqw", "--d": "1.35s", "--b": "-1.2s" } as Css}>
+      <div className="st-float st-tile st-t4" style={{ "--z": "12cqw", "--fx": "-6cqw", "--fy": "10cqw", "--fr": "-8deg", "--d": "1.2s", "--t": "3.4s", "--rt": "5.4s", "--b": "-2.9s" } as Css}>
         <div className="st-panel">
           <Wand2 />
           <Sparkles className="st-spark" />

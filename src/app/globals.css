@@ -687,14 +687,20 @@ details.faq[open]::details-content {
 
 /* ============ Hero: montaj studiyasi (kodda chizilgan illyustratsiya) ============
    Barcha o'lchamlar .studio kengligiga nisbatan (cqw) — har qanday ekranda bir xil ko'rinadi.
-   Kirish: oyna ko'tarilib chiqadi (0.25s), panellar har tomondan uchib kelib yig'iladi (0.55–1.35s),
-   so'ng sekin suzadi. Pleyhed 8 soniyada taymlayn bo'ylab yuradi va 55% da klipni "kesadi". */
+   Kirish: oyna ko'tarilib chiqadi (0.25s), panellar har tomondan prujina bilan uchib kelib (0.5–1.2s)
+   joyiga yumshoq "o'tiradi". Suzish (tebranish + og'ish + sahna chayqalishi) birinchi kadrdanoq
+   harakatda — panel qo'nganda to'xtab qolish yoki keyin birdan "sakrash" yo'q.
+   Pleyhed 8 soniyada taymlayn bo'ylab yuradi va 55% da klipni "kesadi". */
 @layer components {
   .studio {
     --st-bg: #12121c;
     --st-panel: rgb(26 26 40 / 0.94);
     --st-line: rgb(255 255 255 / 0.08);
     --st-teal: #36e2c6;
+    /* Sinus kabi silliq: uchlarida sekinlashadi, lekin hech qachon keskin to'xtamaydi */
+    --st-sine: cubic-bezier(0.37, 0, 0.63, 1);
+    /* Prujina (linear() qo'llab-quvvatlanmasa — yengil "orqaga qaytish" egri chizig'i) */
+    --st-spring: cubic-bezier(0.34, 1.28, 0.5, 1);
     position: relative;
     width: min(100%, 40rem);
     margin-inline: auto;
@@ -713,7 +719,13 @@ details.faq[open]::details-content {
     transform-style: preserve-3d;
     transform: rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
     transition: transform 0.9s var(--ease-out);
-    animation: st-sway 16s ease-in-out 1.3s infinite;
+    /* Manfiy kechikish: sahna 0° dan, allaqachon harakatda boshlanadi (avval -10° ga sakrar edi) */
+    animation: st-sway 9s var(--st-sine) -4.5s infinite alternate;
+  }
+  @supports (transition-timing-function: linear(0, 1)) {
+    .studio {
+      --st-spring: linear(0, 0.05, 0.171, 0.328, 0.493, 0.649, 0.784, 0.893, 0.974, 1.03, 1.064, 1.08, 1.083, 1.078, 1.067, 1.053, 1.04, 1.027, 1.016, 1.007, 1.001, 0.997, 0.994, 0.993, 0.993, 0.994, 0.995, 0.996, 1);
+    }
   }
   /* Telefonda uzluksiz 3D aylanish matnni xiralashtiradi (brauzer qatlamni past aniqlikda chizadi) —
      u yerda sahna tekis: suzish, pleyhed, yorliqlar va orqa nur qoladi, matn tiniq. */
@@ -1000,7 +1012,8 @@ details.faq[open]::details-content {
   .st-playhead {
     position: absolute;
     inset: -1.6cqw 0 -0.4cqw;
-    animation: st-play 8s linear 1.6s infinite;
+    /* backwards — boshlanguncha ham boshlang'ich nuqtada turadi (avval 0 → 20% ga sakrar edi) */
+    animation: st-play 8s linear 1.6s infinite backwards;
   }
   .st-playhead::before,
   .st-playhead::after {
@@ -1034,14 +1047,21 @@ details.faq[open]::details-content {
     filter: drop-shadow(0 0.4cqw 0.6cqw rgb(0 0 0 / 0.6));
   }
 
-  /* ---- Suzuvchi panellar ---- */
+  /* ---- Suzuvchi panellar ----
+     Tashqi qatlam (.st-float): chuqurlik (translate Z) va prujinali kirish (transform).
+     Ichki panel: suzish — yuqori-past tebranish va yengil og'ish har xil davrda, alternate bilan.
+     Ikkalasining uchlari hech qachon bir vaqtga to'g'ri kelmaydi, shuning uchun panel to'xtab qolmaydi;
+     manfiy kechikish tufayli suzish kirish paytidayoq ketadi — qo'nish suzishga silliq ulanadi. */
   .st-float {
     position: absolute;
     z-index: 2;
     translate: 0 0 var(--z, 0);
+    animation: st-in 1.25s var(--st-spring) var(--d) both;
+  }
+  .st-float > .st-panel {
     animation:
-      st-in 0.9s cubic-bezier(0.2, 0.9, 0.2, 1) var(--d) both,
-      st-bob 6s ease-in-out var(--b) infinite;
+      st-bob var(--t, 6s) var(--st-sine) var(--b, 0s) infinite alternate,
+      st-wob var(--rt, 9s) var(--st-sine) var(--b, 0s) infinite alternate;
   }
   .st-panel {
     position: relative;
@@ -1110,7 +1130,7 @@ details.faq[open]::details-content {
   }
   /* Grafik pleyhedi ham taymlayn bilan birga yuradi */
   .st-gph {
-    animation: st-gph 8s linear 1.6s infinite;
+    animation: st-gph 8s linear 1.6s infinite backwards;
   }
   .st-gtools {
     display: flex;
@@ -1342,10 +1362,14 @@ details.faq[open]::details-content {
     filter: none;
   }
 }
+/* Uzoqdan (orqaroqdan, kichik va burilgan holda) uchib keladi; opacity prujinadan oldinroq to'ladi */
 @keyframes st-in {
   from {
     opacity: 0;
-    transform: translate(var(--fx), var(--fy)) scale(0.8) rotate(-4deg);
+    transform: translate3d(var(--fx), var(--fy), -10cqw) scale(0.78) rotate(var(--fr, -5deg));
+  }
+  45% {
+    opacity: 1;
   }
   to {
     opacity: 1;
@@ -1353,23 +1377,29 @@ details.faq[open]::details-content {
   }
 }
 @keyframes st-bob {
-  0%,
-  100% {
-    translate: 0 0 var(--z, 0);
+  from {
+    translate: -0.4cqw 1.1cqw;
   }
-  50% {
-    translate: 0 -1.4cqw var(--z, 0);
+  to {
+    translate: 0.4cqw -1.1cqw;
+  }
+}
+@keyframes st-wob {
+  from {
+    rotate: -1.6deg;
+  }
+  to {
+    rotate: 1.6deg;
   }
 }
 /* Butun sahna bir xil ritmda chayqaladi — panellar oyna oldida turgani uchun chuqurlik seziladi.
-   "rotate" alohida xususiyat: kirish animatsiyasidagi "transform" bilan to'qnashmaydi. */
+   "rotate" alohida xususiyat: StudioTilt'ning "transform"i bilan to'qnashmaydi. */
 @keyframes st-sway {
-  0%,
-  100% {
-    rotate: 0.3 1 0 -10deg;
+  from {
+    rotate: 0.3 1 0 -9deg;
   }
-  50% {
-    rotate: 0.3 1 0 10deg;
+  to {
+    rotate: 0.3 1 0 9deg;
   }
 }
 @keyframes st-spin {
