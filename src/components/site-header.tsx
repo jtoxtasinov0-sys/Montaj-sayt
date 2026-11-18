@@ -20,9 +20,11 @@ export async function SiteHeader({ overDark = true }: { overDark?: boolean } = {
   const account = user ? (
     <div className="flex items-center gap-2">
       {user.role === "ADMIN" && (
-        <Link href="/admin" className="btn btn-ghost btn-sm" title={d.common.admin}>
+        // Telefonda tor joy: u yerda admin tugmasi menyu ichida va kabinetda bor
+        <Link href="/admin" className="btn btn-ghost btn-sm max-sm:hidden" title={d.common.admin}>
           <Shield className="h-4 w-4" />
-          <span className="hidden xl:inline">{d.common.admin}</span>
+          {/* lg'da yuqori menyu pillalari chiqadi — joy tor, shuning uchun u yerda faqat belgi */}
+          <span className="hidden md:inline lg:hidden xl:inline">{d.common.admin}</span>
         </Link>
       )}
       <Link href="/dashboard" className="btn btn-ghost btn-sm pl-1.5" title={d.common.dashboard}>
@@ -53,6 +55,11 @@ export async function SiteHeader({ overDark = true }: { overDark?: boolean } = {
             footer={
               <>
                 <LangSwitcher current={locale} label={d.common.language} />
+                {user?.role === "ADMIN" && (
+                  <Link href="/admin" className="btn btn-ghost btn-lg">
+                    <Shield className="h-5 w-5" /> {d.common.admin}
+                  </Link>
+                )}
                 {user ? (
                   <Link href="/dashboard" className="btn btn-primary btn-lg">
                     <LayoutDashboard className="h-5 w-5" /> {d.common.dashboard}
