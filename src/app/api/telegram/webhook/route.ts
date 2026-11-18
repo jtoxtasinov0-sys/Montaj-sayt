@@ -3,6 +3,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { editorProfiles, orders, payments, users } from "@/db/schema";
+import { SITE_NAME } from "@/lib/constants";
 import { env } from "@/lib/env";
 import { approvePayment, rejectPayment } from "@/lib/payments";
 import { escapeHtml, tgCall } from "@/lib/telegram";
@@ -69,7 +70,7 @@ async function handleMessage(msg: { chat: { id: number }; from?: TgUser; text?: 
   if (cmd === "/start" || cmd === "/id") {
     await reply(
       [
-        "<b>Montajchi admin bot</b>",
+        `<b>${escapeHtml(SITE_NAME)} admin bot</b>`,
         `Chat ID: <code>${msg.chat.id}</code>`,
         msg.from ? `Sizning ID: <code>${msg.from.id}</code>` : "",
         "",
