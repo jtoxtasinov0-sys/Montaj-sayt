@@ -106,6 +106,19 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
+/* Telefon himoyasi: grid ustunini uzun bir qatorli matn (truncate) kengaytirib yubormasin.
+   Aks holda sahifa ekrandan kengayib, telefonda yonga surilib/kichrayib ketadi. */
+:where(.grid) > * {
+  min-width: 0;
+}
+/* iPhone 16px dan kichik maydonga bosilganda sahifani kattalashtirib yuboradi — telefonda 16px */
+@media (max-width: 767px), (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
 ::selection {
   background: color-mix(in oklab, var(--primary) 70%, transparent);
   color: #fff;
@@ -131,17 +144,23 @@ img {
 @layer components {
 /* ============ Tipografiya (Nymera uslubi: ingichka, katta) ============ */
 .h-display {
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-weight: 250;
   letter-spacing: -0.055em;
   line-height: 0.92;
 }
 /* Asosiy sarlavha — qalin (REDSUN referensi) */
 .h-hero {
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1;
 }
 .h-section {
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-weight: 300;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -521,14 +540,6 @@ input[type="file"].input::file-selector-button {
   animation-play-state: paused;
 }
 
-/* Kino lentasi chetlari */
-.film-edge {
-  background-image: radial-gradient(circle, var(--bg) 3px, transparent 3.5px);
-  background-size: 22px 12px;
-  background-repeat: repeat-x;
-  height: 12px;
-}
-
 /* FAQ */
 details.faq summary {
   list-style: none;
@@ -674,102 +685,821 @@ details.faq[open]::details-content {
   animation: float 8s ease-in-out infinite;
 }
 
-/* ============ Hero: montaj taymlayni ============
-   Bitta sikl (6s): pleyhed chapdan o'ngga yuradi, 62% da V1 klipini kesadi —
-   chaqnash, qaychi va klipning o'ng bo'lagi ajralishi aynan shu lahzaga bog'langan. */
+/* ============ Hero: montaj studiyasi (kodda chizilgan illyustratsiya) ============
+   Barcha o'lchamlar .studio kengligiga nisbatan (cqw) — har qanday ekranda bir xil ko'rinadi.
+   Kirish: oyna ko'tarilib chiqadi (0.25s), panellar har tomondan uchib kelib yig'iladi (0.55–1.35s),
+   so'ng sekin suzadi. Pleyhed 8 soniyada taymlayn bo'ylab yuradi va 55% da klipni "kesadi". */
 @layer components {
-  .tl-label {
+  .studio {
+    --st-bg: #12121c;
+    --st-panel: rgb(26 26 40 / 0.94);
+    --st-line: rgb(255 255 255 / 0.08);
+    --st-teal: #36e2c6;
+    position: relative;
+    width: min(100%, 40rem);
+    margin-inline: auto;
+    aspect-ratio: 10 / 8.6;
+    container-type: inline-size;
+    color: rgb(255 255 255 / 0.82);
+    font-size: 1.4cqw;
+    line-height: 1.2;
+    user-select: none;
+    perspective: 150cqw;
+  }
+  /* Ichki sahna: sekin 3D chayqalish; tashqi qatlam (StudioTilt) sichqonchaga qarab og'adi */
+  .studio > .st-stage {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
+    transition: transform 0.9s var(--ease-out);
+    animation: st-sway 16s ease-in-out 1.3s infinite;
+  }
+  /* Telefonda uzluksiz 3D aylanish matnni xiralashtiradi (brauzer qatlamni past aniqlikda chizadi) —
+     u yerda sahna tekis: suzish, pleyhed, yorliqlar va orqa nur qoladi, matn tiniq. */
+  @media (max-width: 767px) {
+    .studio {
+      perspective: none;
+    }
+    .studio > .st-stage {
+      transform-style: flat;
+      animation: none;
+    }
+  }
+  .st-light {
+    position: absolute;
+    inset: -12% -8%;
+    border-radius: 999px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      color-mix(in oklab, var(--primary-2) 70%, transparent) 50deg,
+      transparent 110deg,
+      color-mix(in oklab, var(--accent) 60%, transparent) 170deg,
+      transparent 230deg,
+      color-mix(in oklab, var(--st-teal) 45%, transparent) 290deg,
+      transparent 360deg
+    );
+    -webkit-mask: radial-gradient(closest-side, #000 30%, transparent 100%);
+    mask: radial-gradient(closest-side, #000 30%, transparent 100%);
+    filter: blur(5cqw);
+    opacity: 0;
+    animation:
+      st-fade 2s ease 0.4s forwards,
+      st-spin 22s linear infinite;
+  }
+  .st-halo {
+    position: absolute;
+    inset: 14% 8%;
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 40%, color-mix(in oklab, var(--primary-2) 75%, transparent), transparent 60%),
+      radial-gradient(circle at 70% 70%, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%);
+    filter: blur(8cqw);
+    opacity: 0;
+    animation:
+      st-fade 1.6s ease 0.6s forwards,
+      st-breathe 7s ease-in-out 2.2s infinite;
+  }
+  .st-win {
+    position: absolute;
+    left: 11%;
+    top: 12%;
+    width: 78%;
+    height: 72%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) 41%;
+    overflow: hidden;
+    border-radius: 3cqw;
+    background: linear-gradient(160deg, #1a1a28, var(--st-bg) 45%);
+    border: 1px solid var(--st-line);
+    box-shadow:
+      0 0 0 0.45cqw color-mix(in oklab, var(--primary-2) 45%, transparent),
+      0 5cqw 9cqw -3cqw rgb(0 0 0 / 0.7);
+    animation: st-win-in 1s cubic-bezier(0.2, 0.9, 0.2, 1) 0.25s both;
+  }
+  .st-bar {
     display: flex;
     align-items: center;
-    height: 0.875rem;
+    gap: 2cqw;
+    padding: 1.5cqw 2.2cqw;
+    border-bottom: 1px solid var(--st-line);
   }
-  .tl-track {
+  .st-dots {
+    display: flex;
+    gap: 0.8cqw;
+  }
+  .st-dots > i {
+    width: 1.2cqw;
+    height: 1.2cqw;
+    border-radius: 999px;
+    background: #ff5f6d;
+  }
+  .st-dots > i:nth-child(2) {
+    background: #ffbd4a;
+  }
+  .st-dots > i:nth-child(3) {
+    background: #3fd07a;
+  }
+  .st-tabs {
     position: relative;
-    height: 0.875rem;
-    border-radius: 0.3rem;
-    background: color-mix(in oklab, var(--fg) 6%, transparent);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 30cqw;
+    /* Chap tomonini "Graph Editor", o'ng chetini 3D panel yopadi — yorliqlar ko'rinadigan oraliqda */
+    margin-left: auto;
+    margin-right: 11cqw;
+    padding: 0.4cqw;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.05);
+    font-size: 1.35cqw;
+    text-align: center;
   }
-  .tl-clip {
+  .st-tabs > span:not(.st-tab-pill) {
+    position: relative;
+    padding: 0.55cqw 0;
+    color: rgb(255 255 255 / 0.7);
+  }
+  .st-tab-pill {
+    position: absolute;
+    top: 0.4cqw;
+    bottom: 0.4cqw;
+    left: 0.4cqw;
+    width: calc((100% - 0.8cqw) / 4);
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary-2), var(--accent));
+    opacity: 0.9;
+    animation: st-tab 12s cubic-bezier(0.7, 0, 0.2, 1) 1.6s infinite;
+  }
+  .st-tc {
+    font-family: ui-monospace, monospace;
+    font-size: 1.5cqw;
+    font-weight: 600;
+    color: var(--st-teal);
+  }
+  .st-tlhead {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.2cqw;
+  }
+  .st-tlhead > .st-ruler {
+    flex: 1;
+  }
+  .st-transport {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 1.8cqw;
+    padding: 0.9cqw 1cqw;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+  }
+  .st-transport > svg {
+    width: 1.9cqw;
+    height: 1.9cqw;
+    color: rgb(255 255 255 / 0.7);
+  }
+  .st-transport > .st-playbtn {
+    width: 2.4cqw;
+    height: 2.4cqw;
+    color: var(--st-teal);
+    fill: var(--st-teal);
+  }
+  .st-body {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    gap: 2.2cqw;
+    min-height: 0;
+    padding: 2cqw 2.2cqw;
+  }
+  .st-h {
+    margin-bottom: 0.9cqw;
+    font-size: 1.45cqw;
+    color: rgb(255 255 255 / 0.9);
+  }
+  .st-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto 1.1cqw;
+    align-items: center;
+    gap: 1cqw;
+    padding: 0.55cqw 0;
+    border-bottom: 1px solid rgb(255 255 255 / 0.04);
+    color: rgb(255 255 255 / 0.6);
+    font-size: 1.3cqw;
+  }
+  .st-v {
+    color: #5aa9ff;
+  }
+  .st-kf {
+    width: 0.9cqw;
+    height: 0.9cqw;
+    rotate: 45deg;
+    background: #ffd166;
+    animation: st-blink 2.4s ease-in-out calc(var(--i) * 0.3s + 1.6s) infinite;
+  }
+  .st-view {
+    position: relative;
+    align-self: start;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 1.6cqw;
+    box-shadow: 0 1.5cqw 3cqw -1cqw rgb(0 0 0 / 0.6);
+  }
+  .st-view > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .st-sun {
+    animation: st-sun 8s ease-in-out infinite;
+  }
+  .st-rec {
+    position: absolute;
+    top: 1cqw;
+    left: 1.2cqw;
+    font-size: 1cqw;
+    letter-spacing: 0.1em;
+    color: #fff;
+  }
+  .st-rec::before {
+    content: "";
+    display: inline-block;
+    width: 0.8cqw;
+    height: 0.8cqw;
+    margin-right: 0.5cqw;
+    border-radius: 999px;
+    background: #ff4f6d;
+    animation: rec 1.6s ease-in-out infinite;
+  }
+  .st-tl {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.9cqw;
+    min-height: 0;
+    padding: 1.2cqw 2.2cqw 1.8cqw;
+    border-top: 1px solid var(--st-line);
+    background: rgb(0 0 0 / 0.18);
+  }
+  .st-ruler {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.5cqw;
+    font-family: ui-monospace, monospace;
+    font-size: 1.1cqw;
+    color: rgb(255 255 255 / 0.4);
+    background: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 1px, transparent 1px 1.8cqw) bottom / 100% 0.5cqw no-repeat;
+  }
+  .st-tracks {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1.25fr;
+    gap: 0.7cqw;
+  }
+  .st-track {
+    position: relative;
+    border-radius: 0.8cqw;
+    background: rgb(255 255 255 / 0.04);
+  }
+  .st-clip {
     position: absolute;
     top: 0;
     bottom: 0;
-    border-radius: 0.3rem;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0 1cqw;
+    border-radius: 0.8cqw;
+    font-size: 1.2cqw;
+    white-space: nowrap;
+    color: rgb(255 255 255 / 0.92);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
   }
-  .tl-playhead {
-    animation: tl-play 6s linear infinite;
+  .st-c-purple {
+    background: linear-gradient(90deg, #8b5cff, #c58bff);
   }
-  .tl-cut-right {
-    animation: tl-cut 6s linear infinite;
+  .st-c-blue {
+    background: linear-gradient(90deg, #2f7bff, #36d1c4);
   }
-  .tl-flash {
+  .st-cut {
+    animation: st-cut 8s linear 1.6s infinite;
+  }
+  .st-audio {
+    display: flex;
+    align-items: center;
+    gap: 0.35cqw;
+    padding: 0 0.8cqw;
+  }
+  .st-audio > i {
+    flex: 1;
+    border-radius: 999px;
+    background: var(--st-teal);
+    opacity: 0.75;
+    animation: st-wave 1.1s ease-in-out calc(var(--i) * -73ms) infinite alternate;
+  }
+  /* Pleyhed: to'liq kenglikdagi qatlam 0 → 100% siljiydi, chiziq uning chap chetida */
+  .st-playhead {
     position: absolute;
-    top: -3px;
-    bottom: -3px;
-    width: 2px;
-    margin-left: -1px;
-    border-radius: 2px;
-    background: #fff;
-    box-shadow: 0 0 12px 2px var(--accent);
+    inset: -1.6cqw 0 -0.4cqw;
+    animation: st-play 8s linear 1.6s infinite;
+  }
+  .st-playhead::before,
+  .st-playhead::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    background: var(--st-teal);
+  }
+  .st-playhead::before {
+    top: 0;
+    bottom: 0;
+    width: 0.35cqw;
+    margin-left: -0.175cqw;
+    box-shadow: 0 0 1.4cqw var(--st-teal);
+  }
+  .st-playhead::after {
+    top: -0.2cqw;
+    width: 1.8cqw;
+    height: 1.8cqw;
+    margin-left: -0.9cqw;
+    border-radius: 0.5cqw 0.5cqw 1cqw 1cqw;
+  }
+  .st-cursor {
+    position: absolute;
+    left: 0.6cqw;
+    top: 58%;
+    width: 2.8cqw;
+    height: 2.8cqw;
+    color: #fff;
+    fill: #fff;
+    filter: drop-shadow(0 0.4cqw 0.6cqw rgb(0 0 0 / 0.6));
+  }
+
+  /* ---- Suzuvchi panellar ---- */
+  .st-float {
+    position: absolute;
+    z-index: 2;
+    translate: 0 0 var(--z, 0);
+    animation:
+      st-in 0.9s cubic-bezier(0.2, 0.9, 0.2, 1) var(--d) both,
+      st-bob 6s ease-in-out var(--b) infinite;
+  }
+  .st-panel {
+    position: relative;
+    padding: 1.6cqw;
+    border-radius: 2cqw;
+    background: var(--st-panel);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    box-shadow:
+      0 2.5cqw 5cqw -1cqw rgb(0 0 0 / 0.65),
+      inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+  .st-graph {
+    left: 0;
+    top: 2%;
+    width: 40%;
+  }
+  .st-gpanel {
+    padding: 1.3cqw 1.4cqw 1.1cqw;
+    background: linear-gradient(180deg, rgb(32 32 46 / 0.96), rgb(22 22 34 / 0.96));
+  }
+  .st-curve {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  .st-g-area {
+    fill: rgb(255 255 255 / 0.06);
+  }
+  .st-g-mark {
+    fill: var(--st-teal);
+  }
+  .st-g-grid {
+    stroke: rgb(255 255 255 / 0.06);
+    stroke-width: 0.6;
+  }
+  .st-g-label {
+    font-size: 7.5px;
+    fill: rgb(255 255 255 / 0.45);
+  }
+  .st-c1 {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.35));
+    animation: st-draw 1.6s cubic-bezier(0.6, 0, 0.2, 1) 1.2s forwards;
+  }
+  .st-c2 {
+    stroke: #f4c430;
+    fill: #f4c430;
+    stroke-width: 1.2;
     opacity: 0;
-    animation: tl-flash 6s linear infinite;
+    animation: st-fade 0.6s ease 1.9s forwards;
   }
-  .tl-scissors {
-    color: var(--muted);
-    animation: tl-snip 6s linear infinite;
+  .st-g-head {
+    stroke: var(--st-teal);
+    stroke-width: 1.6;
+    filter: drop-shadow(0 0 3px var(--st-teal));
   }
-  /* Ekrandan tashqarida — hech narsa aylanmaydi */
-  .hero-visual[data-paused],
-  .hero-visual[data-paused] * {
-    animation-play-state: paused !important;
+  .st-g-dot {
+    fill: var(--st-teal);
+    stroke: #14141f;
+    stroke-width: 1;
+  }
+  /* Grafik pleyhedi ham taymlayn bilan birga yuradi */
+  .st-gph {
+    animation: st-gph 8s linear 1.6s infinite;
+  }
+  .st-gtools {
+    display: flex;
+    align-items: center;
+    gap: 1.3cqw;
+    margin-top: 0.6cqw;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .st-gtools > svg {
+    width: 1.6cqw;
+    height: 1.6cqw;
+  }
+  .st-gslider {
+    position: relative;
+    flex: 1;
+    height: 0.35cqw;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+  }
+  .st-gslider > i {
+    position: absolute;
+    top: 50%;
+    left: 38%;
+    width: 1.2cqw;
+    height: 1.2cqw;
+    margin: -0.6cqw;
+    border-radius: 999px;
+    background: #d9d9e6;
+  }
+  .st-cubebox {
+    right: 0;
+    top: 0;
+    width: 24%;
+  }
+  .st-3d {
+    aspect-ratio: 1;
+    overflow: hidden;
+    padding: 0;
+    perspective: 40cqw;
+  }
+  .st-grid3d {
+    position: absolute;
+    inset: -40% -40% -10%;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+    background-size: 2.6cqw 2.6cqw;
+    transform: rotateX(64deg) translateY(18%);
+  }
+  .st-cube {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 8.5cqw;
+    height: 8.5cqw;
+    margin: -4.25cqw;
+    transform-style: preserve-3d;
+    animation: st-rot 10s linear infinite;
+  }
+  .st-face {
+    position: absolute;
+    inset: 0;
+    border: 0.25cqw solid #ff9f43;
+    background: rgb(255 159 67 / 0.08);
+  }
+  .st-f {
+    transform: translateZ(4.25cqw);
+  }
+  .st-b {
+    transform: rotateY(180deg) translateZ(4.25cqw);
+  }
+  .st-l {
+    transform: rotateY(-90deg) translateZ(4.25cqw);
+  }
+  .st-r {
+    transform: rotateY(90deg) translateZ(4.25cqw);
+  }
+  .st-t {
+    transform: rotateX(90deg) translateZ(4.25cqw);
+  }
+  .st-d {
+    transform: rotateX(-90deg) translateZ(4.25cqw);
+  }
+  .st-meters {
+    right: 0.5%;
+    top: 36%;
+    width: 9%;
+  }
+  .st-meters > .st-panel {
+    display: flex;
+    gap: 0.8cqw;
+    height: 21cqw;
+    padding: 1.2cqw;
+  }
+  .st-m {
+    flex: 1;
+    border-radius: 0.5cqw;
+    background: linear-gradient(to top, #2fe08a 0 60%, #ffd166 60% 82%, #ff5f6d 82%);
+    animation: st-meter var(--s) ease-in-out infinite alternate;
+  }
+  .st-tools {
+    left: 0.5%;
+    top: 38%;
+    width: 8.5%;
+  }
+  .st-tools > .st-panel {
+    display: grid;
+    justify-items: center;
+    gap: 1.3cqw;
+    padding: 1.6cqw 0;
+  }
+  .st-tools svg {
+    width: 2.8cqw;
+    height: 2.8cqw;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .st-tools svg.st-on {
+    color: var(--st-teal);
+  }
+  .st-wheels {
+    left: 6%;
+    bottom: 0.5%;
+    width: 42%;
+  }
+  .st-wheels > .st-panel {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2cqw;
+  }
+  .st-wheel {
+    display: grid;
+    justify-items: center;
+    gap: 0.7cqw;
+    font-size: 1.05cqw;
+  }
+  .st-wheel > em {
+    font-style: normal;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .st-wheel > i {
+    position: relative;
+    width: 9cqw;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background:
+      radial-gradient(circle, #1d1d2c 0 52%, transparent 53%),
+      conic-gradient(#ff5f6d, #ffd166, #2fe08a, #36d1c4, #4f7cff, #c06bff, #ff5f6d);
+    box-shadow: inset 0 0 0 0.3cqw rgb(0 0 0 / 0.35);
+  }
+  .st-wheel > i::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1.3cqw;
+    height: 1.3cqw;
+    margin: -0.65cqw;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 0.8cqw rgb(255 255 255 / 0.8);
+    animation: st-puck 6s ease-in-out calc(var(--i) * -2s) infinite;
+  }
+  .st-tile > .st-panel {
+    display: grid;
+    place-items: center;
+    width: 7.5cqw;
+    height: 7.5cqw;
+    padding: 0;
+    border-radius: 1.8cqw;
+  }
+  .st-tile svg {
+    width: 3.2cqw;
+    height: 3.2cqw;
+  }
+  .st-t1 {
+    left: 45%;
+    top: 3.5%;
+  }
+  .st-fxt {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 3.4cqw;
+    color: #fff;
+  }
+  .st-t2 {
+    right: 3%;
+    bottom: 9%;
+  }
+  .st-t2 svg {
+    color: #c58bff;
+  }
+  .st-t3 {
+    left: 61%;
+    top: 4%;
+  }
+  .st-t3 svg {
+    color: var(--st-teal);
+  }
+  .st-t4 {
+    left: 1%;
+    bottom: 19%;
+  }
+  .st-t4 svg {
+    color: #ffd166;
+  }
+  .st-t4 .st-spark {
+    position: absolute;
+    top: 0.8cqw;
+    right: 0.8cqw;
+    width: 1.6cqw;
+    height: 1.6cqw;
+    animation: st-blink 1.8s ease-in-out infinite;
   }
 }
-@keyframes tl-play {
+@keyframes st-fade {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes st-win-in {
   from {
+    opacity: 0;
+    transform: translateY(5cqw) scale(0.94);
+    filter: blur(1cqw);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes st-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--fx), var(--fy)) scale(0.8) rotate(-4deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes st-bob {
+  0%,
+  100% {
+    translate: 0 0 var(--z, 0);
+  }
+  50% {
+    translate: 0 -1.4cqw var(--z, 0);
+  }
+}
+/* Butun sahna bir xil ritmda chayqaladi — panellar oyna oldida turgani uchun chuqurlik seziladi.
+   "rotate" alohida xususiyat: kirish animatsiyasidagi "transform" bilan to'qnashmaydi. */
+@keyframes st-sway {
+  0%,
+  100% {
+    rotate: 0.3 1 0 -10deg;
+  }
+  50% {
+    rotate: 0.3 1 0 10deg;
+  }
+}
+@keyframes st-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes st-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.7;
+    scale: 0.92;
+  }
+}
+@keyframes st-tab {
+  0%,
+  22% {
     transform: translateX(0);
+  }
+  25%,
+  47% {
+    transform: translateX(100%);
+  }
+  50%,
+  72% {
+    transform: translateX(200%);
+  }
+  75%,
+  97% {
+    transform: translateX(300%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+/* Taymkod ustiga chiqmasligi uchun 20% dan boshlanadi */
+@keyframes st-play {
+  from {
+    transform: translateX(20%);
   }
   to {
     transform: translateX(100%);
   }
 }
-@keyframes tl-cut {
-  0%,
-  62% {
-    transform: translateX(0);
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+/* Pleyhed 55% ga yetgan lahza (20% + 80% × 0.44) — o'ng bo'lak biroz suriladi */
+@keyframes st-gph {
+  from {
+    transform: translateX(-84px);
   }
-  68%,
-  100% {
-    transform: translateX(5px);
+  to {
+    transform: translateX(104px);
   }
 }
-@keyframes tl-flash {
+@keyframes st-cut {
   0%,
-  61.5% {
-    opacity: 0;
+  44% {
+    transform: none;
   }
-  62.5% {
-    opacity: 1;
-  }
-  72%,
+  48%,
   100% {
-    opacity: 0;
+    transform: translateX(0.8cqw);
   }
 }
-@keyframes tl-snip {
-  0%,
-  60% {
-    color: var(--muted);
-    transform: none;
+@keyframes st-wave {
+  from {
+    transform: scaleY(1);
   }
-  63% {
-    color: var(--accent);
-    transform: scale(1.3) rotate(-12deg);
+  to {
+    transform: scaleY(0.4);
   }
-  75%,
+}
+@keyframes st-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes st-rot {
+  from {
+    transform: rotateX(-24deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-24deg) rotateY(360deg);
+  }
+}
+@keyframes st-meter {
+  0% {
+    clip-path: inset(62% 0 0 0 round 0.5cqw);
+  }
+  35% {
+    clip-path: inset(22% 0 0 0 round 0.5cqw);
+  }
+  65% {
+    clip-path: inset(44% 0 0 0 round 0.5cqw);
+  }
   100% {
-    color: var(--muted);
-    transform: none;
+    clip-path: inset(8% 0 0 0 round 0.5cqw);
+  }
+}
+@keyframes st-puck {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(1.6cqw, -1cqw);
+  }
+  50% {
+    transform: translate(-0.6cqw, -1.8cqw);
+  }
+  75% {
+    transform: translate(-1.6cqw, 0.6cqw);
+  }
+}
+@keyframes st-sun {
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes st-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes rec {
+  50% {
+    opacity: 0.25;
   }
 }
 .rise > span:not(.hidden) {
@@ -791,19 +1521,6 @@ details.faq[open]::details-content {
     scroll-behavior: auto !important;
   }
   .mock-tilt {
-    animation: none !important;
-  }
-  /* Taymlayn: harakat yo'q, lekin kesish lahzasi statik kadr sifatida ko'rinadi */
-  .tl-playhead {
-    animation: none !important;
-    transform: translateX(64%);
-  }
-  .tl-cut-right {
-    animation: none !important;
-    transform: translateX(5px);
-  }
-  .tl-flash,
-  .tl-scissors {
     animation: none !important;
   }
 }
@@ -858,12 +1575,6 @@ html[data-io] [data-reveal]:not([data-in]) {
 [data-reveal="line"][data-in=""] {
   animation-name: rv-line;
   animation-duration: 1.4s;
-}
-
-@property --arc {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
 }
 
 @layer components {
@@ -1164,73 +1875,6 @@ html[data-io] [data-reveal]:not([data-in]) {
   .hdr-in nav > a {
     animation: nav-in 0.8s var(--ease-out) backwards;
     animation-delay: calc(0.2s + var(--n, 0) * 70ms);
-  }
-
-  /* ---------- Hero (qorong'i mavzu): tepada porlovchi shar va undan tarqaluvchi to'lqin-halqa ----------
-     8s sikl: halqa shar ostida "tabassum" yoy bo'lib paydo bo'ladi, kengayib pushti rangga kiradi va so'nadi. */
-  .orb-wrap {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: clamp(170px, 23vw, 330px);
-    aspect-ratio: 1;
-    translate: -50% -44%;
-    pointer-events: none;
-  }
-  .orb {
-    position: absolute;
-    inset: 0;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle at 50% 82%, rgba(220, 224, 255, 0.95) 0%, rgba(138, 146, 255, 0.85) 16%, transparent 46%),
-      radial-gradient(circle at 50% 60%, #4b57e8 0%, #2a33a8 42%, #141760 70%, #0a0a26 100%);
-    box-shadow:
-      0 0 0 1px rgba(170, 178, 255, 0.28),
-      0 12px 60px 6px rgba(61, 76, 228, 0.6),
-      0 40px 160px 40px rgba(61, 76, 228, 0.32),
-      inset 0 -18px 40px -12px rgba(220, 224, 255, 0.6);
-    animation: orb-breathe 8s ease-in-out infinite;
-  }
-  .orb-ring {
-    position: absolute;
-    inset: -16%;
-    border-radius: 999px;
-    filter: drop-shadow(0 0 3px #ffd6f6) drop-shadow(0 0 14px rgba(255, 79, 216, 0.85));
-    opacity: 0;
-    animation: orb-ring 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
-  }
-  .orb-ring > span {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.6px;
-    background: conic-gradient(
-      from calc(180deg - var(--arc) / 2),
-      transparent 0deg,
-      #ff4fd8 calc(var(--arc) * 0.2),
-      #fff calc(var(--arc) * 0.5),
-      #ff4fd8 calc(var(--arc) * 0.8),
-      transparent var(--arc),
-      transparent 360deg
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: orb-arc 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
-  }
-  /* Ikkinchi, xiraroq to'lqin — birinchisidan biroz keyin */
-  .orb-ring-2,
-  .orb-ring-2 > span {
-    animation-delay: 0.45s;
-  }
-  .orb-ring-2 {
-    filter: drop-shadow(0 0 10px rgba(255, 79, 216, 0.6));
-  }
-  .orb-ring-2 > span {
-    padding: 1px;
-    opacity: 0.55;
   }
 
   /* ---------- Zarrachalar ---------- */
@@ -1666,45 +2310,6 @@ html[data-io] [data-reveal]:not([data-in]) {
   }
   50% {
     opacity: 1;
-  }
-}
-@keyframes orb-breathe {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  45% {
-    filter: brightness(1.22);
-  }
-}
-@keyframes orb-ring {
-  0% {
-    opacity: 0;
-    transform: scale(0.86);
-  }
-  7% {
-    opacity: 1;
-  }
-  42% {
-    opacity: 1;
-    transform: scale(1.3);
-  }
-  72%,
-  100% {
-    opacity: 0;
-    transform: scale(2.5);
-  }
-}
-@keyframes orb-arc {
-  0% {
-    --arc: 60deg;
-  }
-  42% {
-    --arc: 220deg;
-  }
-  72%,
-  100% {
-    --arc: 300deg;
   }
 }
 @keyframes particle {

@@ -49,15 +49,16 @@ export default async function DashboardOrders() {
                   <Link
                     key={p.id}
                     href={`/orders/${p.orderId}`}
-                    className="flex items-center gap-4 rounded-2xl border border-line bg-card px-4 py-3.5 hover:border-line-strong"
+                    className="flex items-center gap-3 rounded-2xl border border-line bg-card px-4 py-3.5 hover:border-line-strong sm:gap-4"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{p.orderTitle}</p>
                       <p className="text-xs text-muted">
                         ${p.priceUsd} · {fmt(d.profile.delivery, { n: p.days })} · {formatDate(p.createdAt, locale)}
                       </p>
+                      <StatusBadge status={p.orderStatus} label={d.orderStatus[p.orderStatus]} className="mt-2 sm:hidden" />
                     </div>
-                    <StatusBadge status={p.orderStatus} label={d.orderStatus[p.orderStatus]} />
+                    <StatusBadge status={p.orderStatus} label={d.orderStatus[p.orderStatus]} className="max-sm:hidden" />
                   </Link>
                 ))
               )}

@@ -33,7 +33,8 @@ export async function SiteHeader({ overDark = true }: { overDark?: boolean } = {
       </Link>
     </div>
   ) : (
-    <Link href="/login" className="btn btn-primary btn-sm">
+    // 360px dan tor ekranda sig'maydi — u yerda "Kirish" menyu ichida
+    <Link href="/login" className="btn btn-primary btn-sm max-[359px]:hidden">
       {d.common.login}
     </Link>
   );

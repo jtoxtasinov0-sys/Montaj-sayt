@@ -150,10 +150,10 @@ export default async function EditorProfilePage({ params }: Params) {
           { icon: Clock, v: onTimePct !== null ? `${onTimePct}%` : "—", l: d.rating.onTime },
           { icon: Calendar, v: formatDate(data.userCreatedAt, locale), l: d.profile.memberSince },
         ].map((s) => (
-          <div key={s.l} data-spotlight className="card p-5">
+          <div key={s.l} data-spotlight className="card p-4 sm:p-5">
             <s.icon className="h-5 w-5 text-primary-2" />
             <div className="mt-4 text-3xl font-light tracking-tight">{s.v}</div>
-            <div className="mt-1 flex items-center gap-2 text-xs text-muted">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
               {s.l} {s.extra}
             </div>
           </div>

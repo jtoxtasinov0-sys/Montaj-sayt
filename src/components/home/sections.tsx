@@ -309,41 +309,6 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
 }
 
 // ---------- Kadrlar (kino lentasi) ----------
-const STILLS = [
-  { src: "/images/stills/wedding-hijab.webp", cat: "wedding" },
-  { src: "/images/stills/car.webp", cat: "ads" },
-  { src: "/images/stills/reels.webp", cat: "reels" },
-  { src: "/images/stills/podcast-hosts.webp", cat: "podcast" },
-  { src: "/images/stills/travel.webp", cat: "youtube" },
-  { src: "/images/stills/food.webp", cat: "ads" },
-];
-
-export function ShowcaseStrip({ d }: { d: Dict }) {
-  return (
-    // overflow-x-clip: qiya (-1°) lenta burchaklari sahifani yonga surmasin
-    <section className="overflow-x-clip py-12">
-      <div className="container-x">
-        <SectionHead title={d.showcase.title} />
-      </div>
-      <div data-reveal="fade" className="marquee -rotate-1" style={{ "--speed": "60s" } as React.CSSProperties}>
-        {[0, 1].map((k) => (
-          <div key={k} className="marquee-track !gap-3 !pr-3" aria-hidden={k === 1}>
-            {STILLS.map((s, i) => (
-              <figure key={i} className="w-[min(78vw,420px)] shrink-0 overflow-hidden rounded-2xl bg-[#0b0b16] p-0">
-                <div className="film-edge mx-2 my-1.5 opacity-60" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s.src} alt="" loading="lazy" decoding="async" width={1280} height={714} className="aspect-video w-full object-cover" />
-                <div className="film-edge mx-2 my-1.5 opacity-60" />
-                <figcaption className="sr-only">{d.categories[s.cat]}</figcaption>
-              </figure>
-            ))}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 // ---------- Reyting tizimi (FXIFY: "Why choose" bento — ikonka, nurli ulanishlar, radar) ----------
 export function RatingSection({ d }: { d: Dict }) {
   const items = [
