@@ -15,6 +15,7 @@ import {
   TopEditorsSection,
 } from "@/components/home/sections";
 import { cookies } from "next/headers";
+import { HOME_TOP_COUNT } from "@/lib/constants";
 import { getHomeStats, getPlans, getTierCounts, getTiers, getTopEditors } from "@/lib/data";
 import { getDict } from "@/lib/i18n";
 
@@ -23,7 +24,7 @@ export default async function HomePage() {
     cookies(),
     getDict(),
     getHomeStats(),
-    getTopEditors(8),
+    getTopEditors(HOME_TOP_COUNT),
     getTiers(),
     getTierCounts(),
     getPlans(),

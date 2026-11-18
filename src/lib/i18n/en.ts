@@ -146,6 +146,13 @@ export const en: Dict = {
     popular: "Popular",
     features: ["Shown first in the catalog", "“TOP” badge", "Featured on the homepage"],
     weight: "Priority level: {w}",
+    levelTop: "Highest spot: you appear first in the TOP list.",
+    levelOverFree: "You rank above regular profiles.",
+    levelOverPlans: "You rank above {plans} editors.",
+    levelBelow: "Only {plans} editors rank higher.",
+    and: "and",
+    howNote:
+      "Within the same level, editors with a higher rating (reviews and on-time delivery) come first. The homepage shows the first {n} editors of the list.",
   },
   faq: {
     title: "Frequently asked questions",

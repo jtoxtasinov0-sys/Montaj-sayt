@@ -144,6 +144,13 @@ export const uz = {
     popular: "Ommabop",
     features: ["Katalog boshida ko’rinish", "“TOP” belgisi", "Bosh sahifada chiqish"],
     weight: "Ustuvorlik darajasi: {w}",
+    levelTop: "Eng yuqori o’rin: TOP ro’yxatida hammadan oldin chiqasiz.",
+    levelOverFree: "Oddiy profillardan yuqorida turasiz.",
+    levelOverPlans: "{plans} olganlardan yuqorida turasiz.",
+    levelBelow: "Sizdan yuqorida faqat {plans} olganlar.",
+    and: "va",
+    howNote:
+      "Bir xil darajadagilar orasida reytingi (baho va o’z vaqtida topshirish) yuqori montajor oldinda turadi. Bosh sahifada ro’yxatning birinchi {n} montajori chiqadi.",
   },
   faq: {
     title: "Ko’p beriladigan savollar",
