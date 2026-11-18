@@ -64,7 +64,7 @@ function caption(row: NonNullable<Awaited<ReturnType<typeof loadPayment>>>) {
     `👤 <b>${escapeHtml(row.editorName)}</b> (${escapeHtml(row.email)})`,
     `🔗 ${escapeHtml(env.appUrl)}/editors/${escapeHtml(row.slug)}`,
     `💰 <b>${formatUzs(p.amountUzs)} so'm</b>${p.payCode ? ` (${formatUzs(p.amountUzs - p.payCode)} + kod <b>${p.payCode}</b>)` : ""}`,
-    `📅 ${p.days} kun · vazn ${p.weight}`,
+    `📅 ${p.days} kun`,
     `🏦 Karta: ${escapeHtml(p.method)}`,
     p.payerNote ? `📝 ${escapeHtml(p.payerNote)}` : null,
     p.status === "PENDING" && row.sameAmount > 0

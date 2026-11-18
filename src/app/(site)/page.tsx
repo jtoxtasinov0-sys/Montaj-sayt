@@ -8,20 +8,17 @@ import {
   HowItWorks,
   PromoSection,
   RatingSection,
-  ShowcaseStrip,
   SoftwareMarquee,
   StatsStrip,
   TiersSection,
   TopEditorsSection,
 } from "@/components/home/sections";
-import { cookies } from "next/headers";
 import { HOME_TOP_COUNT } from "@/lib/constants";
 import { getHomeStats, getPlans, getTierCounts, getTiers, getTopEditors } from "@/lib/data";
 import { getDict } from "@/lib/i18n";
 
 export default async function HomePage() {
-  const [jar, d, stats, top, tiers, counts, plans] = await Promise.all([
-    cookies(),
+  const [d, stats, top, tiers, counts, plans] = await Promise.all([
     getDict(),
     getHomeStats(),
     getTopEditors(HOME_TOP_COUNT),
@@ -33,7 +30,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero d={d} stats={stats} light={jar.get("theme")?.value === "light"} />
+      <Hero d={d} />
       <SoftwareMarquee />
       <StatsStrip d={d} s={stats} />
       <div className="h-20" />
@@ -41,7 +38,6 @@ export default async function HomePage() {
       <TiersSection d={d} tiers={tiers} counts={counts} />
       <CategoriesSection d={d} />
       <TopEditorsSection d={d} editors={top} />
-      <ShowcaseStrip d={d} />
       <RatingSection d={d} />
       <PromoSection d={d} plans={plans} />
       <FaqSection d={d} />

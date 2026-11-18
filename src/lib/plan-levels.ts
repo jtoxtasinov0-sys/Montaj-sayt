@@ -26,3 +26,8 @@ export function planLevels(plans: Plan[]): Map<number, PlanLevel> {
 export function joinNames(names: string[], and: string) {
   return names.length < 2 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} ${and} ${names.at(-1)}`;
 }
+
+/** Vazn (ustuvorlik raqami) → reja nomi, masalan 20 → "Pro". Mos reja bo'lmasa — raqamning o'zi */
+export function planNameByWeight(plans: Pick<PromotionPlan, "name" | "weight">[], weight: number) {
+  return plans.find((p) => p.weight === weight)?.name ?? `#${weight}`;
+}

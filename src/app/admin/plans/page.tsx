@@ -25,7 +25,7 @@ function PlanForm({ plan, used }: { plan?: PromotionPlan; used?: number }) {
         <Field label="Muddat (kun)">
           <input name="days" type="number" required min={1} max={90} defaultValue={plan?.days ?? 10} className="input" />
         </Field>
-        <Field label="Vazn (yuqori = tepada)">
+        <Field label="Ustuvorlik raqami" hint="Kattaroq raqam = katalogda yuqoriroq">
           <input name="weight" type="number" required min={1} max={1000} defaultValue={plan?.weight ?? 10} className="input" />
         </Field>
         <Field label="Tartib">
@@ -54,11 +54,36 @@ export default async function AdminPlans() {
   const used = await Promise.all(plans.map((p) => slotUsage(p.weight, NO_EDITOR)));
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted">
-        Vazn qancha katta bo&apos;lsa, montajor katalogda shuncha yuqorida turadi. Faol TOP ustiga yangi reja olinsa, muddat qo&apos;shiladi va
-        kattaroq vazn saqlanadi. Bir rejadagilar har soatda navbat bilan eng tepaga chiqadi. &quot;Joylar soni&quot; to&apos;lsa, montajor shu
-        rejani tanlay olmaydi (tekshirilayotgan to&apos;lovlar ham joy band qiladi; rad etilsa joy bo&apos;shaydi).
-      </p>
+      <div className="card space-y-3 p-5 text-sm leading-relaxed">
+        <p className="font-medium">Katalogda kim qayerda turadi?</p>
+        <p className="flex flex-wrap items-center gap-2">
+          <span className="text-muted">Hozirgi tartib:</span>
+          {[...plans]
+            .sort((a, b) => b.weight - a.weight)
+            .map((p, i) => (
+              <span key={p.id} className="flex items-center gap-2">
+                {i > 0 && <span className="text-muted">→</span>}
+                <span className="chip chip-primary">
+                  {i + 1}. {p.name}
+                </span>
+              </span>
+            ))}
+          <span className="text-muted">→ TOP olmaganlar (reyting bo&apos;yicha)</span>
+        </p>
+        <ul className="list-disc space-y-1 pl-5 text-muted">
+          <li>
+            <b className="font-medium text-fg">Ustuvorlik raqami</b> faqat rejalarni bir-biridan yuqori qo&apos;yish uchun: raqami kattasi tepada
+            turadi. Raqamning o&apos;zi hech narsani anglatmaydi — 10/20/30 o&apos;rniga 1/2/3 yozsangiz ham xuddi shunday ishlaydi. Faqat har bir
+            rejaga <b className="font-medium text-fg">har xil</b> raqam bering.
+          </li>
+          <li>Bir rejadagilar har soatda navbat bilan eng tepaga chiqadi — hammaga teng vaqt.</li>
+          <li>
+            <b className="font-medium text-fg">Joylar soni</b> to&apos;lsa, montajor shu rejani tanlay olmaydi. Tekshirilayotgan to&apos;lov ham joy
+            band qiladi, rad etilsa joy bo&apos;shaydi.
+          </li>
+          <li>TOP faol bo&apos;lgan montajor yana to&apos;lasa, kunlar oxiriga qo&apos;shiladi.</li>
+        </ul>
+      </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {plans.map((p, i) => (
           <PlanForm key={p.id} plan={p} used={used[i].used} />

@@ -25,8 +25,14 @@ export function AvailableToast({
     try {
       if (sessionStorage.getItem("toast-dismissed")) return;
     } catch {}
-    const t = setTimeout(() => setShow(true), 4000);
-    return () => clearTimeout(t);
+    // Birinchi ekran (hero) toza qolsin: foydalanuvchi pastga tushgandan keyingina chiqadi
+    const onScroll = () => {
+      if (window.scrollY < window.innerHeight * 0.8) return;
+      window.removeEventListener("scroll", onScroll);
+      setTimeout(() => setShow(true), 1200);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
   if (!show) return null;
   const close = () => {
@@ -48,7 +54,7 @@ export function AvailableToast({
       <Link href={`/editors/${slug}`} onClick={close} className="btn btn-light btn-sm shrink-0">
         {cta}
       </Link>
-      <button type="button" onClick={close} aria-label={closeLabel} className="absolute top-2 right-2 text-white/60 hover:text-white">
+      <button type="button" onClick={close} aria-label={closeLabel} className="absolute top-0.5 right-0.5 grid h-9 w-9 place-items-center rounded-full text-white/60 hover:text-white">
         <X className="h-4 w-4" />
       </button>
     </div>

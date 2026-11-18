@@ -93,11 +93,13 @@ export async function adminGrantBoost(editorId: string, _p: ActionState, fd: For
   return guarded({ key: "adm-boost", ...A }, async ({ user }) => {
     if (!uuid.safeParse(editorId).success) return fail("Noto'g'ri ID");
     const days = Number.parseInt(str(fd, "days"), 10);
-    const weight = Number.parseInt(str(fd, "weight"), 10);
-    if (!(days >= 1 && days <= 90 && weight >= 1 && weight <= 1000)) return fail("Kun 1–90, vazn 1–1000");
-    await grantBoost(editorId, days, weight, { label: user.email, actorId: user.id });
+    const planId = Number.parseInt(str(fd, "planId"), 10);
+    if (!(days >= 1 && days <= 90)) return fail("Kun soni 1 dan 90 gacha bo'lsin");
+    const [plan] = Number.isFinite(planId) ? await db.select().from(promotionPlans).where(eq(promotionPlans.id, planId)).limit(1) : [];
+    if (!plan) return fail("Rejani tanlang");
+    await grantBoost(editorId, days, plan.weight, { label: user.email, actorId: user.id });
     revalidatePath("/admin/editors");
-    return ok("TOP berildi");
+    return ok(`TOP ${plan.name} — ${days} kunga berildi`);
   });
 }
 

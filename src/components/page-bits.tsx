@@ -50,7 +50,7 @@ export function Empty({ children, className }: { children: React.ReactNode; clas
   return <div className={cn("card grid place-items-center p-10 text-center text-sm text-muted", className)}>{children}</div>;
 }
 
-export function StatusBadge({ status, label }: { status: string; label: string }) {
+export function StatusBadge({ status, label, className }: { status: string; label: string; className?: string }) {
   const tone: Record<string, string> = {
     OPEN: "bg-primary/15 text-primary-2 border-primary/30",
     PENDING: "bg-warn/15 text-warn border-warn/30",
@@ -61,7 +61,7 @@ export function StatusBadge({ status, label }: { status: string; label: string }
     APPROVED: "bg-success/15 text-success border-success/30",
     REJECTED: "bg-danger/10 text-danger border-danger/30",
   };
-  return <span className={cn("chip", tone[status])}>{label}</span>;
+  return <span className={cn("chip", tone[status], className)}>{label}</span>;
 }
 
 export function Field({ label, hint, children, className }: { label: string; hint?: string; children: React.ReactNode; className?: string }) {
