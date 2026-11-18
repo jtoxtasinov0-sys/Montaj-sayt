@@ -14,11 +14,13 @@ import {
   TiersSection,
   TopEditorsSection,
 } from "@/components/home/sections";
+import { cookies } from "next/headers";
 import { getHomeStats, getPlans, getTierCounts, getTiers, getTopEditors } from "@/lib/data";
 import { getDict } from "@/lib/i18n";
 
 export default async function HomePage() {
-  const [d, stats, top, tiers, counts, plans] = await Promise.all([
+  const [jar, d, stats, top, tiers, counts, plans] = await Promise.all([
+    cookies(),
     getDict(),
     getHomeStats(),
     getTopEditors(8),
@@ -30,7 +32,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero d={d} stats={stats} />
+      <Hero d={d} stats={stats} light={jar.get("theme")?.value === "light"} />
       <SoftwareMarquee />
       <StatsStrip d={d} s={stats} />
       <div className="h-20" />

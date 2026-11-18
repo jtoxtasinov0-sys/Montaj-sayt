@@ -48,11 +48,12 @@ export function SplitText({
 }
 
 /**
- * Nurli ramka (referens: qorong'i qidiruv paneli): chapda pushti, o'ngda ko'k — ingichka gradient
- * chegara, yuqori qirrasi oqish, atrofida shu ranglardagi yumshoq nur. Harakatlanmaydi, faqat asta
- * "nafas oladi". Yorug' mavzuda — binafsha/pushti.
- * Ota elementning orqa fonini qoplaydi (z-index: -1), shuning uchun nur faqat tashqarida ko'rinadi.
- * Qatlamlar: ::before — yaqin nur, .neon-halo — keng nur, .neon-plate — karta foni, ::after — chegara.
+ * Nurli ramka (referens: qorong'i qidiruv paneli): pushti va ko'k ranglar ingichka chegara bo'ylab
+ * to'xtovsiz aylanadi, atrofidagi yumshoq nur ham shu ranglarda birga aylanadi. Qorong'ida yuqori
+ * nuqtasi oqish; yorug' mavzuda — binafsha/pushti.
+ * Har qatlamda katta kvadrat konus-gradient (`b`) transform bilan aylanadi (GPU), qatlamning o'zi esa
+ * karta shaklida kesilgan — shuning uchun burchaklarda ham silliq, sahifani qayta chizmaydi.
+ * Ota elementning orqa fonini qoplaydi (z-index: -1): nur faqat tashqarida ko'rinadi, matn ustida qoladi.
  */
 export function Neon({
   tone = "blue",
@@ -64,72 +65,122 @@ export function Neon({
 }) {
   return (
     <span aria-hidden className={cn("neon", tone === "accent" && "neon-accent", className)}>
-      <i className="neon-halo" />
+      <i className="neon-halo">
+        <b />
+      </i>
+      <i className="neon-glow">
+        <b />
+      </i>
       <i className="neon-plate" />
+      <i className="neon-ring">
+        <b />
+      </i>
     </span>
   );
 }
 
+type Tile = { t: number; h: number; o: number; g?: number } | null;
+
+/** Plitkalar xaritasi. `peak` — o'rtada baland "tepalik" (narx bo'limi), `wave` — notekis to'lqin (hero). */
+function tileMap(seed: number, cols: number, rows: number, shape: "peak" | "wave"): Tile[] {
+  const r = rand(seed);
+  let cx: number;
+  let cy: number;
+  let tops: number[];
+  let spread: number;
+  if (shape === "peak") {
+    // Binafsha "yadro" pastki o'rtadan biroz chaproqda (referensdagidek)
+    cx = (cols - 1) * 0.47;
+    cy = rows - 0.8;
+    spread = 0.36;
+    tops = Array.from({ length: cols }, (_, c) => {
+      const edge = Math.abs(c - cx) / cx; // 0 — o'rta, 1 — chet
+      const noise = Math.floor(r() * 3) - 1;
+      // eng baland ustun ham yuqori qatorga chiqmaydi — sarlavha matni ustiga tushmasin
+      return Math.max(1, Math.min(rows - 1, Math.round(rows * (0.12 + 0.6 * edge)) + noise));
+    });
+  } else {
+    // Referensdagi zinapoya: ustunlar balandligi notekis to'lqin bo'lib o'zgaradi
+    cx = (cols - 1) * 0.42;
+    cy = rows - 0.6;
+    spread = 0.42;
+    const p1 = r() * Math.PI * 2;
+    const p2 = r() * Math.PI * 2;
+    tops = Array.from({ length: cols }, (_, c) => {
+      const h = 0.5 + 0.24 * Math.sin(c * 0.47 + p1) + 0.13 * Math.sin(c * 1.21 + p2) + (r() - 0.5) * 0.18;
+      return Math.max(1, Math.min(rows - 1, rows - Math.round(h * rows)));
+    });
+  }
+  const out: Tile[] = [];
+  for (let i = 0; i < rows * cols; i++) {
+    const row = Math.floor(i / cols);
+    const c = i % cols;
+    if (row < tops[c]) {
+      out.push(null);
+      continue;
+    }
+    const dx = (c - cx) / (cols * spread);
+    const dy = (row - cy) / (rows * 1.1);
+    const near = Math.max(0, 1 - Math.hypot(dx, dy));
+    const t = Math.min(96, Math.max(6, Math.pow(near, 0.8) * 96 + (r() - 0.5) * 24));
+    // yuqori qirradagi plitkalar biroz xiraroq — "ko'tarilib, eriyotgan" ko'rinish
+    const o = row === tops[c] ? 0.7 + r() * 0.25 : 1;
+    const h = Math.round(Math.max(0, Math.min(1, (c - cx) / cx + 0.5)) * 100);
+    out.push({ t, h, o });
+  }
+  // Ba'zi plitkalarda vaqti-vaqti bilan shisha yaltiraydi (alohida tasodif — xarita o'zgarmaydi)
+  const g = rand(seed * 7 + 1);
+  for (const tile of out) if (tile && g() < 0.13) tile.g = g() * 9;
+  return out;
+}
+
 /**
- * Bo'lim foni (ikkala referens bitta komponentda, mavzuga qarab biri ko'rinadi):
- *  - qorong'i: nuqtali to'r, chapda pushti, o'ngda ko'k rang maydoni bilan bo'yalgan;
- *  - yorug': pastdan ko'tarilgan binafsha shisha plitkalar (zinapoya qirrali) + ingichka ustun chiziqlari.
- * `tiles={false}` — faqat nuqtalar (doim qorong'i bo'limlar uchun).
+ * Bo'lim foni (ikkala referens):
+ *  - `section` — qorong'ida nuqtali to'r (chapda pushti, o'ngda ko'k), yorug'da binafsha shisha plitkalar;
+ *  - `dots` — faqat nuqtali to'r (doim qorong'i TOP bo'limi);
+ *  - `hero` — shisha plitkalar ikkala mavzuda: yorug'da binafsha, qorong'ida qora shisha ichidan
+ *    pushti/ko'k/binafsha yorug'lik.
  */
 export function Aura({
   seed = 9,
-  tiles = true,
+  variant = "section",
   cols = 23,
   rows = 5,
   className,
 }: {
   seed?: number;
-  tiles?: boolean;
+  variant?: "section" | "dots" | "hero";
   cols?: number;
   rows?: number;
   className?: string;
 }) {
-  const r = rand(seed);
-  // Binafsha "yadro" pastki o'rtadan biroz chaproqda (referensdagidek)
-  const cx = (cols - 1) * 0.47;
-  const cy = rows - 0.8;
-  const tops = Array.from({ length: cols }, (_, c) => {
-    const edge = Math.abs(c - cx) / cx; // 0 — o'rta, 1 — chet
-    const noise = Math.floor(r() * 3) - 1;
-    // eng baland ustun ham yuqori qatorga chiqmaydi — sarlavha matni ustiga tushmasin
-    return Math.max(1, Math.min(rows - 1, Math.round(rows * (0.12 + 0.6 * edge)) + noise));
-  });
+  const tiles = variant !== "dots" ? tileMap(seed, cols, rows, variant === "hero" ? "wave" : "peak") : null;
   return (
-    <div aria-hidden className={cn("aura", tiles && "aura-tiled", className)}>
+    <div aria-hidden className={cn("aura", `aura-${variant}`, variant === "section" && "aura-tiled", className)}>
       <div className="aura-haze" />
-      <div className="aura-dots" />
+      {variant !== "hero" && <div className="aura-dots" />}
       {tiles && (
         <>
           <div className="aura-cols" />
           <div className="aura-tiles" style={{ gridTemplateColumns: `repeat(${cols}, var(--tile))` } as Css}>
-            {Array.from({ length: rows * cols }, (_, i) => {
-              const row = Math.floor(i / cols);
-              const c = i % cols;
-              if (row < tops[c]) return <i key={i} className="x" />;
-              const dx = (c - cx) / (cols * 0.36);
-              const dy = (row - cy) / (rows * 1.1);
-              const near = Math.max(0, 1 - Math.hypot(dx, dy));
-              const t = Math.min(96, Math.max(6, Math.pow(near, 0.8) * 96 + (r() - 0.5) * 24));
-              // yuqori qirradagi plitkalar biroz xiraroq — "ko'tarilib, eriyotgan" ko'rinish
-              const fade = row === tops[c] ? 0.7 + r() * 0.25 : 1;
-              return (
+            {tiles.map((tile, i) =>
+              tile ? (
                 <i
                   key={i}
+                  className={tile.g !== undefined ? "g" : undefined}
                   style={
                     {
-                      "--t": `${t.toFixed(0)}%`,
-                      "--h": `${Math.round(Math.max(0, Math.min(1, (c - cx) / cx + 0.5)) * 100)}%`,
-                      opacity: fade.toFixed(2),
+                      "--t": `${tile.t.toFixed(0)}%`,
+                      "--h": `${tile.h}%`,
+                      ...(tile.g !== undefined && { "--gd": `${tile.g.toFixed(2)}s` }),
+                      opacity: tile.o.toFixed(2),
                     } as Css
                   }
                 />
-              );
-            })}
+              ) : (
+                <i key={i} className="x" />
+              ),
+            )}
           </div>
         </>
       )}

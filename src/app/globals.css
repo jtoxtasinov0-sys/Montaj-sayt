@@ -28,11 +28,10 @@
   --shadow: 0 1px 2px rgba(30, 10, 70, 0.04), 0 14px 36px -14px rgba(60, 20, 140, 0.16);
   --neon-c1: #7a2ff0;
   --neon-tip: #b98cff;
-  /* Nurli ramka: chap (a) → o'ng (b), karta foni (plate), yuqori qirra yaltirashi (hi) */
+  /* Nurli ramka: chap (a) → o'ng (b), karta foni (plate), nur kuchi (halo) */
   --ga: #d13fd6;
   --gb: #6d3bff;
   --plate: #ffffff;
-  --ring-hi: rgba(255, 255, 255, 0);
   --halo: 0.5;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -64,7 +63,6 @@
   --ga: #ff3fd1;
   --gb: #3b5bff;
   --plate: linear-gradient(180deg, #0b0b17, #040409);
-  --ring-hi: rgba(255, 255, 255, 0.85);
   --halo: 0.75;
   color-scheme: dark;
 }
@@ -689,7 +687,7 @@ details.faq[open]::details-content {
     position: relative;
     height: 0.875rem;
     border-radius: 0.3rem;
-    background: rgb(255 255 255 / 0.045);
+    background: color-mix(in oklab, var(--fg) 6%, transparent);
   }
   .tl-clip {
     position: absolute;
@@ -870,14 +868,17 @@ html[data-io] [data-reveal]:not([data-in]) {
 
 @layer components {
   /* ---------- Nurli ramka (komponent: <Neon />) ----------
-     Referens: qorong'i qidiruv paneli. Ingichka gradient chegara (chap pushti → o'ng ko'k, yuqori
-     qirra oqish) va atrofida shu ranglardagi yumshoq nur. Statik — faqat keng nur asta "nafas oladi".
-     Ota elementning ichida z-index: -1 bilan turadi: o'z fonini (plate) chizadi, matn esa ustida qoladi. */
+     Referens: qorong'i qidiruv paneli. Pushti va ko'k ranglar ingichka chegara bo'ylab to'xtovsiz
+     aylanadi; atrofidagi yumshoq nur ham ular bilan birga aylanadi.
+     Har qatlam karta shaklida kesilgan, ichida katta kvadrat konus-gradient (`b`) transform bilan
+     aylanadi — GPU'da, sahifani qayta chizmasdan. Ramka ota element ichida z-index: -1 bilan turadi:
+     o'z fonini (plate) chizadi, matn esa ustida qoladi. */
   :where(:has(> .neon)) {
     isolation: isolate;
   }
   .neon {
-    --g: linear-gradient(90deg, var(--ga), color-mix(in oklab, var(--ga) 50%, var(--gb)) 50%, var(--gb));
+    --gm: color-mix(in oklab, var(--ga) 50%, var(--gb));
+    --hi: var(--gm);
     position: absolute;
     inset: -1px;
     z-index: -1;
@@ -885,52 +886,64 @@ html[data-io] [data-reveal]:not([data-in]) {
     pointer-events: none;
     transition: opacity 0.5s ease;
   }
+  .dark .neon {
+    --hi: color-mix(in oklab, #fff 78%, var(--gm));
+  }
   .neon-accent {
     --ga: var(--accent);
     --gb: #ffb547;
   }
-  /* Yaqin nur — chegaraga yopishgan */
-  .neon::before,
-  .neon > .neon-halo {
-    content: "";
+  .neon > i {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: var(--g);
+    overflow: hidden;
   }
-  .neon::before {
-    filter: blur(12px);
-    opacity: var(--halo);
+  .neon > i > b {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 260%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    /* pushti ↔ ko'k, oraliqda aralash rang — ikki tomon */
+    background: conic-gradient(var(--gm), var(--gb) 90deg, var(--gm) 180deg, var(--ga) 270deg, var(--gm));
+    animation: spin 6s linear infinite;
   }
   /* Keng, xira nur */
   .neon > .neon-halo {
-    inset: -6px;
-    filter: blur(38px);
-    opacity: calc(var(--halo) * 0.55);
+    inset: -4px;
+    filter: blur(36px);
+    opacity: calc(var(--halo) * 0.6);
     animation: glow-breathe 5s ease-in-out infinite;
   }
+  /* Yaqin nur — chegaraga yopishgan */
+  .neon > .neon-glow {
+    filter: blur(11px);
+    opacity: var(--halo);
+  }
   .neon > .neon-plate {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
     background: var(--plate);
   }
-  /* Chegara chizig'i */
-  .neon::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
+  /* Chegara chizig'i: qorong'ida rang o'tishlarida oqish yaltirash */
+  .neon > .neon-ring {
     padding: 1px;
-    background:
-      linear-gradient(180deg, var(--ring-hi), transparent 3.5rem),
-      radial-gradient(5rem 2.5rem at 100% 100%, color-mix(in oklab, var(--ring-hi) 70%, transparent), transparent),
-      var(--g);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
+  }
+  .neon > .neon-ring > b {
+    background: conic-gradient(
+      var(--hi),
+      var(--gb) 70deg,
+      var(--gb) 110deg,
+      var(--hi) 180deg,
+      var(--ga) 250deg,
+      var(--ga) 290deg,
+      var(--hi)
+    );
   }
   /* Spotlight kartalardagi `> *` qoidasidan ustun turishi uchun */
   [data-spotlight] > .neon {
@@ -953,20 +966,24 @@ html[data-io] [data-reveal]:not([data-in]) {
     }
   }
 
-  /* Asosiy tugma: chapda pushti, o'ngda ko'k nur (ramka bilan bir xil til) */
-  .btn-glow,
-  .btn-glow:hover {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
-      -12px 6px 30px -10px var(--ga),
-      12px 6px 30px -10px var(--gb),
-      0 14px 40px -14px var(--gb);
+  /* Asosiy tugma: pushti va ko'k nur tugma atrofida aylanadi (ramka bilan bir xil til) */
+  .btn-glow {
+    animation: glow-orbit 6s linear infinite;
   }
 
   /* ---------- Bo'lim foni (komponent: <Aura />) ---------- */
   .aura {
     --tile: clamp(46px, 6.6vw, 88px);
     --gap: 4px;
+    /* Plitka ranglari: chap (a) → o'ng (b) aralashmasi, chetga qarab asos (base) rangiga o'tadi */
+    --ta: #6b16e8;
+    --tb: #c24dff;
+    --tbase: #efe8ff;
+    --tsheen: rgba(255, 255, 255, 0.42);
+    --tedge: rgba(255, 255, 255, 0.7);
+    --tline: rgba(255, 255, 255, 0.22);
+    --tdrop: rgba(90, 20, 190, 0.55);
+    --tglint: rgba(255, 255, 255, 0.8);
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -1027,19 +1044,31 @@ html[data-io] [data-reveal]:not([data-in]) {
     gap: var(--gap);
   }
   .aura-tiles > i {
+    position: relative;
     width: var(--tile);
     aspect-ratio: 1;
     border-radius: calc(var(--tile) * 0.13);
     background:
-      linear-gradient(150deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 55%),
-      color-mix(in oklab, color-mix(in oklab, #6b16e8, #c24dff var(--h)) var(--t), #efe8ff);
+      linear-gradient(150deg, var(--tsheen), transparent 55%),
+      color-mix(in oklab, color-mix(in oklab, var(--ta), var(--tb) var(--h)) var(--t), var(--tbase));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.7),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-      0 12px 26px -16px rgba(90, 20, 190, 0.55);
+      inset 0 1px 0 var(--tedge),
+      inset 0 0 0 1px var(--tline),
+      0 12px 26px -16px var(--tdrop);
   }
   .aura-tiles > i.x {
     visibility: hidden;
+  }
+  /* Vaqti-vaqti bilan shisha plitka yaltirab o'tadi */
+  .aura-tiles > i.g::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(150deg, var(--tglint), transparent 65%);
+    opacity: 0;
+    animation: tile-glint 9s ease-in-out infinite;
+    animation-delay: var(--gd, 0s);
   }
   /* Yorug' mavzuda plitkalar ustidagi kartalar — muzli shisha: binafsha rang xira ko'rinib turadi.
      Faqat plitkali fonda (doim qorong'i TOP bo'limida plitka yo'q — u yerga tegmaydi) */
@@ -1052,6 +1081,34 @@ html[data-io] [data-reveal]:not([data-in]) {
   .dark .aura-cols,
   .dark .aura-tiles {
     display: none;
+  }
+
+  /* Hero: plitkalar ikkala mavzuda. Qorong'ida — qora shisha, ichidan pushti/ko'k/binafsha yorug'lik */
+  .dark .aura-hero {
+    --ta: #d23be6;
+    --tb: #4b52ff;
+    --tbase: #0b0a19;
+    --tsheen: rgba(255, 255, 255, 0.09);
+    --tedge: rgba(255, 255, 255, 0.17);
+    --tline: rgba(255, 255, 255, 0.05);
+    --tdrop: rgba(0, 0, 0, 0.6);
+    --tglint: rgba(255, 255, 255, 0.32);
+  }
+  .dark .aura-hero .aura-cols {
+    display: block;
+  }
+  .dark .aura-hero .aura-tiles {
+    display: grid;
+  }
+  .aura-hero .aura-haze {
+    background:
+      radial-gradient(ellipse 44% 58% at 40% 100%, color-mix(in oklab, var(--gb) 22%, transparent), transparent 72%),
+      radial-gradient(ellipse 30% 44% at 62% 100%, color-mix(in oklab, var(--ga) 18%, transparent), transparent 72%);
+  }
+  .dark .aura-hero .aura-haze {
+    background:
+      radial-gradient(ellipse 44% 58% at 38% 100%, color-mix(in oklab, var(--ga) 30%, transparent), transparent 72%),
+      radial-gradient(ellipse 36% 50% at 64% 100%, color-mix(in oklab, var(--gb) 36%, transparent), transparent 72%);
   }
   /* TOP bo'limi: rang maydonlari rejalar ortida (o'ngda) */
   @media (min-width: 1024px) {
@@ -1075,9 +1132,8 @@ html[data-io] [data-reveal]:not([data-in]) {
     animation-delay: calc(0.2s + var(--n, 0) * 70ms);
   }
 
-  /* ---------- Hero (FXIFY): porlovchi shar, to'lqin-halqa, ufq chaqnashi ----------
-     Uchalasi bitta 8s siklga bog'langan: halqa shar ostida "tabassum" yoy bo'lib paydo bo'ladi,
-     kengayib pushti rangga kiradi va so'nadi; shu payt pastda ufq yoyi, keyin chiziq chaqnaydi. */
+  /* ---------- Hero (qorong'i mavzu): tepada porlovchi shar va undan tarqaluvchi to'lqin-halqa ----------
+     8s sikl: halqa shar ostida "tabassum" yoy bo'lib paydo bo'ladi, kengayib pushti rangga kiradi va so'nadi. */
   .orb-wrap {
     position: absolute;
     left: 50%;
@@ -1141,46 +1197,6 @@ html[data-io] [data-reveal]:not([data-in]) {
   .orb-ring-2 > span {
     padding: 1px;
     opacity: 0.55;
-  }
-  .hero-dome {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: 135%;
-    height: 34%;
-    translate: -50% 62%;
-    border-radius: 50%;
-    border-top: 2px solid #ff6fdf;
-    background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(61, 76, 228, 0.35), transparent 70%);
-    box-shadow:
-      0 -6px 24px -6px rgba(255, 79, 216, 0.9),
-      0 -30px 90px -20px rgba(255, 79, 216, 0.45);
-    mask-image: linear-gradient(90deg, transparent 4%, #000 30%, #000 70%, transparent 96%);
-    opacity: 0;
-    animation: hero-dome 8s ease-in-out infinite;
-    pointer-events: none;
-  }
-  .hero-flare {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 79, 216, 0.3) 12%,
-      #ff4fd8 34%,
-      #ffd6f6 50%,
-      #ff4fd8 66%,
-      rgba(255, 79, 216, 0.3) 88%,
-      transparent
-    );
-    filter: drop-shadow(0 0 6px #ff4fd8) drop-shadow(0 0 18px rgba(255, 79, 216, 0.6));
-    opacity: 0;
-    transform: scaleX(0.2);
-    animation: hero-flare 8s cubic-bezier(0.33, 0.6, 0.3, 1) infinite;
-    pointer-events: none;
   }
 
   /* ---------- Zarrachalar ---------- */
@@ -1573,6 +1589,45 @@ html[data-io] [data-reveal]:not([data-in]) {
     transform: translate3d(0, -12px, 0);
   }
 }
+@keyframes tile-glint {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0;
+  }
+}
+@keyframes glow-orbit {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+      -13px 0 30px -9px var(--ga),
+      13px 0 30px -9px var(--gb);
+  }
+  25% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+      0 -11px 30px -9px var(--ga),
+      0 11px 30px -9px var(--gb);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+      13px 0 30px -9px var(--ga),
+      -13px 0 30px -9px var(--gb);
+  }
+  75% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+      0 11px 30px -9px var(--ga),
+      0 -11px 30px -9px var(--gb);
+  }
+}
 @keyframes glow-breathe {
   0%,
   100% {
@@ -1628,41 +1683,6 @@ html[data-io] [data-reveal]:not([data-in]) {
   72%,
   100% {
     --arc: 300deg;
-  }
-}
-@keyframes hero-dome {
-  0%,
-  22% {
-    opacity: 0;
-    transform: scaleX(0.75);
-  }
-  40% {
-    opacity: 1;
-  }
-  62%,
-  100% {
-    opacity: 0;
-    transform: scaleX(1);
-  }
-}
-@keyframes hero-flare {
-  0%,
-  38% {
-    opacity: 0;
-    transform: scaleX(0.15);
-  }
-  55% {
-    opacity: 1;
-    transform: scaleX(0.75);
-  }
-  72% {
-    opacity: 0.9;
-    transform: scaleX(1.05);
-  }
-  88%,
-  100% {
-    opacity: 0;
-    transform: scaleX(1.1);
   }
 }
 @keyframes particle {

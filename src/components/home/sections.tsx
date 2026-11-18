@@ -434,7 +434,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
     <section id="top" data-anim className="mx-2 scroll-mt-20 sm:mx-3">
       <div className="dark relative isolate overflow-hidden rounded-[2rem] border border-line bg-[#05050f] px-4 py-20 text-fg sm:px-8 lg:py-28">
         <Stars className="absolute inset-0 -z-10 opacity-40" />
-        <Aura tiles={false} className="aura-promo" />
+        <Aura variant="dots" className="aura-promo" />
         <div className="container-x !px-0 grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <h2 className="h-section text-[clamp(2.4rem,5vw,4.4rem)] text-balance">

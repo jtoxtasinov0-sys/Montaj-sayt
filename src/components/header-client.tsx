@@ -8,8 +8,13 @@ import { cn } from "@/lib/utils";
 
 type NavItem = { href: string; label: string };
 
-/** overDark: sahifa tepasida qorong'i hero bo'lsa — skroll qilinmaguncha header qorong'i uslubda */
+/**
+ * overDark: sahifa tepasida qorong'i hero bo'lsa — skroll qilinmaguncha header qorong'i uslubda.
+ * Bosh sahifa hero'si mavzuga moslashadi — u yerda header ham mavzuni kuzatadi.
+ */
 export function HeaderShell({ children, overDark = true }: { children: React.ReactNode; overDark?: boolean }) {
+  const path = usePathname();
+  const forceDark = overDark && path !== "/";
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 12);
@@ -22,7 +27,7 @@ export function HeaderShell({ children, overDark = true }: { children: React.Rea
       className={cn(
         "hdr-in fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled ? "glass border-x-0 border-t-0 py-2" : "border-b border-transparent py-4",
-        !scrolled && overDark && "dark text-fg",
+        !scrolled && forceDark && "dark text-fg",
       )}
     >
       {children}

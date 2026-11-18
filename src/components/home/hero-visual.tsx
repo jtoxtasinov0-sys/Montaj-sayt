@@ -23,8 +23,13 @@ function timecode(ms: number) {
   return `00:${p(mm)}:${p(ss)}:${p(ff)}`;
 }
 
-/** Klapper (3D render) + jonli montaj taymlayni: pleyhed yuradi, klipni kesadi, taymkod sanaydi */
-export function HeroVisual() {
+/**
+ * Klapper (3D render) + jonli montaj taymlayni: pleyhed yuradi, klipni kesadi, taymkod sanaydi.
+ * Rasm ikki xil: qorong'ida — qora fonli render (screen bilan qo'shiladi), yorug'da — o'sha render
+ * shaffof fonli "shisha" nusxasi. Joriy mavzunikigina darhol yuklanadi, ikkinchisi faqat mavzu
+ * almashtirilganda (lazy + display:none — brauzer uni oldindan yuklamaydi).
+ */
+export function HeroVisual({ light = false }: { light?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const tc = useRef<HTMLSpanElement>(null);
@@ -76,14 +81,26 @@ export function HeroVisual() {
         alt=""
         width={1024}
         height={1024}
-        fetchPriority="high"
+        loading={light ? "lazy" : "eager"}
+        fetchPriority={light ? "auto" : "high"}
         decoding="async"
-        className="animate-float relative h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(circle_at_50%_50%,#000_55%,transparent_72%)]"
+        className="animate-float relative hidden h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(circle_at_50%_50%,#000_55%,transparent_72%)] dark:block"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/hero-clapper-glass.webp"
+        alt=""
+        width={768}
+        height={768}
+        loading={light ? "eager" : "lazy"}
+        fetchPriority={light ? "high" : "auto"}
+        decoding="async"
+        className="animate-float relative h-full w-full object-contain dark:hidden"
       />
 
       {/* Montaj taymlayni */}
       <div
-        className="fade-up absolute inset-x-[2%] bottom-[2%] rounded-2xl border border-white/10 bg-[#0a0a1f]/70 p-3 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md sm:inset-x-[4%] sm:p-3.5 lg:right-[8%] lg:left-[-6%]"
+        className="fade-up absolute inset-x-[2%] bottom-[2%] rounded-2xl border border-line bg-card p-3 shadow-[0_24px_60px_-24px_rgba(70,20,150,0.4)] backdrop-blur-md sm:inset-x-[4%] sm:p-3.5 lg:right-[8%] lg:left-[-6%] dark:border-white/10 dark:bg-[#0a0a1f]/70 dark:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)]"
         style={{ animationDelay: "0.9s" }}
       >
         <div className="mb-2.5 flex items-center justify-between text-[0.7rem] text-muted">
