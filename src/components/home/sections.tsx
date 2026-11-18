@@ -16,6 +16,7 @@ import {
   Settings,
   Star,
   TrendingUp,
+  Users,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
@@ -495,6 +496,11 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
                         <Check className="h-4 w-4 text-primary-2" /> {f}
                       </li>
                     ))}
+                    {p.slots > 0 && (
+                      <li className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary-2" /> {fmt(d.promo.slots, { n: p.slots })}
+                      </li>
+                    )}
                     <li className="text-muted">
                       <span className="flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 shrink-0 text-accent" />

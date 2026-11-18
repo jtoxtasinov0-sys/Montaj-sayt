@@ -13,6 +13,9 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qo
 - Xizmatlar va narxlar (narxni montajor o‘zi belgilaydi)
 - Narx bo‘limlaridagi ($10–20, $20–30, $30–40, $40–50, $50+) ochiq buyurtmalarga taklif yuborish
 - **TOP ga chiqish**: 10 kunlik reja (Start 30 000 / Pro 40 000 / Premium 50 000 so‘m — admin paneldan o‘zgaradi). Ko‘proq to‘lagan yuqoriroqda turadi
+  - **To‘lov kodi:** har bir to‘lovchiga summaga 100–999 so‘m qo‘shiladi (masalan 50 000 → 50 437). Bankda “+50 437” ko‘rsangiz — kimning puli ekanini chek ochmasdan bilasiz. Sahifada nega shuncha ko‘p ekani ochiq tushuntirilgan
+  - **Joylar soni cheklangan** (boshlang‘ich: Premium 5, Pro 10, Start 15 — admin paneldan o‘zgaradi). Tekshirilayotgan to‘lov ham joy band qiladi; joy qolmasa reja tanlanmaydi
+- Profil rasmi: kabinetda rasm ustiga bosib almashtiriladi, doira ichida surib/kattalashtirib kesiladi
 
 **Mijozlar uchun**
 - Montajor katalogi: narx bo‘limi, yo‘nalish, daraja, qidiruv, saralash
@@ -24,7 +27,7 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qo
 - 60% — Bayes o‘rtacha bahosi (kam baholi yangi montajorlar ham adolatli ko‘rinadi)
 - 25% — o‘z vaqtida topshirilgan ishlar ulushi
 - 15% — yakunlangan ishlar soni
-- Katalog tartibi: avval TOP (to‘lov vazni bo‘yicha), keyin reyting balli
+- Katalog tartibi: avval TOP (reja vazni bo‘yicha), keyin reyting balli. Bir xil rejadagilar **har soatda navbat bilan** almashadi: n kishi bo‘lsa, har biri n soatda bir marta 1-o‘rinda turadi
 
 **Admin panel** (`/admin`, faqat adminlarga ko‘rinadi — boshqalarga 404)
 - Dashboard: tushum, foydalanuvchilar, buyurtmalar statistikasi
@@ -95,11 +98,18 @@ Muqobil: hammasini bitta `docker-compose.yml` bilan (Dokploy → *Docker Compose
 4. Client ID va Secret ni `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` ga yozing.
 
 ### Telegram bot sozlash
-1. [@BotFather](https://t.me/BotFather) → `/newbot` → tokenni `TELEGRAM_BOT_TOKEN` ga.
-2. `TELEGRAM_WEBHOOK_SECRET` ga tasodifiy satr (`openssl rand -hex 32`).
-3. Deploy qiling, saytga admin bo‘lib kiring → **Admin → Sozlamalar → “Webhookni ulash”**.
-4. Botga `/start` yozing — u **chat ID** va **sizning ID** ni ko‘rsatadi. Ularni `TELEGRAM_ADMIN_CHAT_ID` va `TELEGRAM_ADMIN_IDS` ga yozib, qayta deploy qiling. (Guruh ishlatsangiz — botni guruhga qo‘shing va guruhda `/start` yozing.)
-5. “Test xabar” tugmasi bilan tekshiring.
+Sayt `https://` domenda ishlayotgan bo‘lishi kerak (Telegram oddiy `http` yoki IP manzilga xabar yubormaydi).
+
+1. Telegram’da [@BotFather](https://t.me/BotFather) → `/newbot` → bot nomi (masalan *Montaj Club Admin*) va username (oxiri `bot` bilan tugaydi). BotFather bergan **tokenni** `TELEGRAM_BOT_TOKEN` ga yozing.
+2. `TELEGRAM_WEBHOOK_SECRET` ga uzun tasodifiy satr yozing (`openssl rand -hex 32` yoki istalgan 40+ harf/raqam).
+3. Dokploy’da shu ikkisini **Environment** ga qo‘shib, **qayta deploy** qiling.
+4. Saytga admin Gmail bilan kiring → **Admin → Sozlamalar → “Webhookni ulash”** → “Webhook ulandi ✅”.
+5. Botingizni oching va `/start` yozing — bot **Chat ID** va **Sizning ID** ni yozadi.
+   - Xabarlar bir nechta adminga kelsin desangiz: Telegram’da guruh oching, botni qo‘shing va guruhda `/start` yozing — guruhning Chat ID si (minus bilan boshlanadi) chiqadi.
+6. Chat ID ni `TELEGRAM_ADMIN_CHAT_ID` ga, tugmani bosa oladigan odamlarning ID larini `TELEGRAM_ADMIN_IDS` ga (vergul bilan) yozib, **qayta deploy** qiling.
+7. **Admin → Sozlamalar → “Test xabar”** — botdan xabar kelsa, tayyor.
+
+Shundan keyin har bir yangi to‘lov chek rasmi bilan botga keladi: bankda summani (kodni) ko‘rib **✅ Tasdiqlash** ni bossangiz, TOP darhol yoqiladi.
 
 ### To‘lov kartalari
 Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 9012`). **Admin → Sozlamalar → To‘lov kartalari** dan o‘zingizning haqiqiy kartangizni kiriting.

@@ -49,7 +49,13 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
               </div>
               <p className="truncate text-xs text-muted">{email}</p>
               <p>
-                <b className="text-lg font-light">{formatUzs(p.amountUzs)} so&apos;m</b> · TOP {p.planName} · {p.days} kun · vazn {p.weight}
+                <b className="text-lg font-light">{formatUzs(p.amountUzs)} so&apos;m</b>
+                {p.payCode > 0 && (
+                  <span className="chip chip-primary ml-2 align-middle" title="To'lov kodi: bankdagi summaning oxirgi raqamlari">
+                    kod {p.payCode}
+                  </span>
+                )}{" "}
+                · TOP {p.planName} · {p.days} kun · vazn {p.weight}
               </p>
               <p className="text-xs text-muted">
                 {p.method} · {p.createdAt.toISOString().slice(0, 16).replace("T", " ")}

@@ -1,7 +1,7 @@
 import { LogOut } from "lucide-react";
 import type { Metadata } from "next";
-import { Avatar } from "@/components/avatar";
 import { DashNav } from "@/components/dash-nav";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Stars } from "@/components/stars";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { fmt, getDict } from "@/lib/i18n";
@@ -32,7 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="container-x flex flex-col gap-6 pt-28 pb-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Avatar name={user.name || user.email} avatarKey={editor?.avatarKey} image={user.image} size={56} />
+              <ProfileAvatar name={user.name || user.email} avatarKey={editor?.avatarKey} image={user.image} size={56} />
               <div>
                 <h1 className="h-hero text-3xl sm:text-4xl">{fmt(d.dashboard.hello, { name: user.name.split(" ")[0] || "👋" })}</h1>
                 <p className="text-sm text-muted">{user.email}</p>

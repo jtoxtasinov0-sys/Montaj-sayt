@@ -150,6 +150,7 @@ const planSchema = z.object({
   priceUzs: z.coerce.number().int().min(1000).max(100_000_000),
   weight: z.coerce.number().int().min(1).max(1000),
   sort: z.coerce.number().int().min(0).max(100),
+  slots: z.coerce.number().int().min(0).max(1000),
 });
 
 export async function adminSavePlan(planId: number | null, _p: ActionState, fd: FormData): Promise<ActionState> {
@@ -160,6 +161,7 @@ export async function adminSavePlan(planId: number | null, _p: ActionState, fd: 
       priceUzs: str(fd, "priceUzs"),
       weight: str(fd, "weight"),
       sort: str(fd, "sort") || "0",
+      slots: str(fd, "slots") || "0",
     });
     if (!parsed.success) return fail("Maydonlarni to'g'ri to'ldiring");
     const values = { ...parsed.data, isActive: fd.get("isActive") === "on", isPopular: fd.get("isPopular") === "on" };

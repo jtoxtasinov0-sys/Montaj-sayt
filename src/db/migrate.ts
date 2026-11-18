@@ -32,9 +32,9 @@ export async function runMigrations() {
     const [{ count: planCount }] = await db.select({ count: sql<number>`count(*)::int` }).from(promotionPlans);
     if (planCount === 0) {
       await db.insert(promotionPlans).values([
-        { name: "Start", days: 10, priceUzs: 30000, weight: 10, sort: 1 },
-        { name: "Pro", days: 10, priceUzs: 40000, weight: 20, sort: 2, isPopular: true },
-        { name: "Premium", days: 10, priceUzs: 50000, weight: 30, sort: 3 },
+        { name: "Start", days: 10, priceUzs: 30000, weight: 10, sort: 1, slots: 15 },
+        { name: "Pro", days: 10, priceUzs: 40000, weight: 20, sort: 2, isPopular: true, slots: 10 },
+        { name: "Premium", days: 10, priceUzs: 50000, weight: 30, sort: 3, slots: 5 },
       ]);
     }
     await db.insert(settings).values({ key: "payment_cards", value: DEFAULT_CARDS }).onConflictDoNothing();

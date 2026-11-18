@@ -104,6 +104,20 @@ export type EditorFilters = {
   page?: number;
 };
 
+/**
+ * Asosiy tartib: avval TOP reja vazni (Premium → Pro → Start), keyin TOPsizlar reyting bo'yicha.
+ * Bir xil rejadagilar har soatda navbat bilan almashadi (karusel): har soat hamma bir pog'ona
+ * pastga suriladi, eng pastdagi esa tepaga chiqadi — n kishi bo'lsa, har biri n soatda bir marta 1-o'rinda.
+ * Oyna funksiyalari WHERE'dan keyin hisoblanadi, ya'ni filtrlangan ro'yxat ichida ham adolatli.
+ */
+function topOrder() {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  const turn = sql`case when ${editorProfiles.boostWeight} > 0 then
+    (row_number() over (partition by ${editorProfiles.boostWeight} order by ${editorProfiles.id}) + ${hour}::bigint)
+    % count(*) over (partition by ${editorProfiles.boostWeight}) end`;
+  return [desc(editorProfiles.boostWeight), asc(turn), desc(editorProfiles.score), desc(editorProfiles.createdAt)];
+}
+
 const visible = and(eq(editorProfiles.isPublished, true), eq(editorProfiles.isHidden, false))!;
 
 export async function listEditors(f: EditorFilters) {
@@ -131,7 +145,7 @@ export async function listEditors(f: EditorFilters) {
             ? [asc(editorProfiles.priceFrom), desc(editorProfiles.score)]
             : f.sort === "price_desc"
               ? [desc(editorProfiles.priceFrom), desc(editorProfiles.score)]
-              : [desc(editorProfiles.boostWeight), desc(editorProfiles.score), desc(editorProfiles.createdAt)];
+              : topOrder();
 
     const page = Math.max(1, f.page ?? 1);
     const where = and(...conds);
@@ -158,7 +172,7 @@ export async function getTopEditors(limit = 8) {
       .from(editorProfiles)
       .innerJoin(users, eq(users.id, editorProfiles.userId))
       .where(visible)
-      .orderBy(desc(editorProfiles.boostWeight), desc(editorProfiles.score), desc(editorProfiles.createdAt))
+      .orderBy(...topOrder())
       .limit(limit);
     return items as EditorCardData[];
   });

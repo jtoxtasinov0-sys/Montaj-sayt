@@ -10,6 +10,7 @@ import type { ActionState } from "@/lib/action-types";
 import { invalidate } from "@/lib/cache";
 import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
 import { deleteUpload, saveImage } from "@/lib/uploads";
+import { keyFromUploadUrl, uploadUrl } from "@/lib/uploads-url";
 import { cleanHandle } from "@/lib/video";
 import { computeScore } from "@/lib/ranking";
 import { fail, file, guarded, isHttpsUrl, ok, str } from "./_helpers";
@@ -64,7 +65,6 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
     if (taken.length) return fail(d.errors.slugTaken);
 
     const existing = (await db.select().from(editorProfiles).where(eq(editorProfiles.userId, user.id)).limit(1))[0];
-    const avatarKey = await saveImage(file(fd, "avatar"), "avatars");
 
     const values = {
       ...v,
@@ -77,12 +77,10 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
       isAvailable: fd.get("isAvailable") === "on",
       isPublished: fd.get("isPublished") === "on",
       updatedAt: new Date(),
-      ...(avatarKey ? { avatarKey } : {}),
     };
 
     if (existing) {
       await db.update(editorProfiles).set(values).where(eq(editorProfiles.id, existing.id));
-      if (avatarKey && existing.avatarKey) await deleteUpload(existing.avatarKey);
     } else {
       await db.insert(editorProfiles).values({
         ...values,
@@ -98,6 +96,35 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
   });
   if (created) redirect("/dashboard/portfolio");
   return res;
+}
+
+/**
+ * Profil rasmini almashtirish (kabinet sarlavhasidagi rasm ustiga bosib).
+ * Rasm brauzerda kesilib (512×512) yuboriladi; server baribir qayta tekshirib, qayta kodlaydi.
+ * Bitta fayl ham foydalanuvchiga (sayt sarlavhasi, buyurtmalar), ham montajor profiliga yoziladi.
+ */
+export async function updateAvatar(fd: FormData): Promise<ActionState> {
+  return guarded({ key: "avatar", limit: 10 }, async ({ user, d }) => {
+    const key = await saveImage(file(fd, "avatar"), "avatars", true);
+    if (!key) return fail(d.errors.uploadRequired);
+    const [editor] = await db
+      .select({ id: editorProfiles.id, avatarKey: editorProfiles.avatarKey })
+      .from(editorProfiles)
+      .where(eq(editorProfiles.userId, user.id))
+      .limit(1);
+
+    await db.update(users).set({ image: uploadUrl(key) }).where(eq(users.id, user.id));
+    if (editor) await db.update(editorProfiles).set({ avatarKey: key, updatedAt: new Date() }).where(eq(editorProfiles.id, editor.id));
+
+    // Eski yuklangan rasmlarni o'chirish (Google rasmiga tegmaymiz)
+    const old = new Set([editor?.avatarKey, keyFromUploadUrl(user.image)]);
+    old.delete(key);
+    for (const k of old) await deleteUpload(k);
+
+    if (editor) invalidate("editors:");
+    revalidatePath("/", "layout");
+    return ok(d.common.saved);
+  });
 }
 
 const settingsSchema = z.object({
