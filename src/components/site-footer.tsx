@@ -6,6 +6,8 @@ import { LogoMark } from "./logo";
 export async function SiteFooter() {
   const d = await getDict();
   const year = new Date().getFullYear();
+  // Katta yozuv nom uzunligiga qarab kichrayadi — har qanday nom kenglikka sig'adi
+  const bigVw = Math.min(18.5, 190 / SITE_NAME.length);
   return (
     <footer data-anim className="relative mt-24 overflow-hidden border-t border-line">
       <span className="beam-line" aria-hidden />
@@ -39,7 +41,8 @@ export async function SiteFooter() {
       <div data-reveal="fade" className="container-x" style={{ "--d": "250ms" } as React.CSSProperties}>
         <p
           aria-hidden
-          className="h-display pointer-events-none pb-[0.16em] text-center text-[18.5vw] leading-none whitespace-nowrap text-fg/[0.16] select-none [mask-image:linear-gradient(to_bottom,#000_35%,rgba(0,0,0,0.2))] lg:text-[14rem]"
+          className="h-display pointer-events-none pb-[0.16em] text-center leading-none whitespace-nowrap text-fg/[0.16] select-none [mask-image:linear-gradient(to_bottom,#000_35%,rgba(0,0,0,0.2))]"
+          style={{ fontSize: `min(${bigVw}vw, ${(bigVw * 12.8).toFixed(1)}px)` }}
         >
           {SITE_NAME}
         </p>

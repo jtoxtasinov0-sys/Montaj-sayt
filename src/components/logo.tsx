@@ -21,15 +21,30 @@ export function LogoMark({ className }: { className?: string }) {
   );
 }
 
+/** Nomni ikki qismga bo'ladi: birinchi so'z ingichka, qolgani qalin ("Montaj" + " Club") */
+function splitName(name: string): [string, string] {
+  const i = name.indexOf(" ");
+  if (i > 0) return [name.slice(0, i), name.slice(i)];
+  if (name.startsWith("Montaj") && name.length > 6) return ["Montaj", name.slice(6)];
+  return [name, ""];
+}
+
+/** Brend yozuvi — SITE_NAME dan olinadi */
+export function Wordmark({ className }: { className?: string }) {
+  const [a, b] = splitName(SITE_NAME);
+  return (
+    <span className={cn("whitespace-nowrap", className)}>
+      <span className="font-light">{a}</span>
+      <span className="font-semibold">{b}</span>
+    </span>
+  );
+}
+
 export function Logo({ className }: { className?: string }) {
-  const [a, b] = SITE_NAME.startsWith("Montaj") ? ["Montaj", SITE_NAME.slice(6)] : [SITE_NAME, ""];
   return (
     <Link href="/" className={cn("group inline-flex items-center gap-2.5", className)} aria-label={SITE_NAME}>
       <LogoMark className="transition-transform duration-500 group-hover:rotate-[-8deg]" />
-      <span className="text-[1.2rem] tracking-[-0.04em]">
-        <span className="font-light">{a}</span>
-        <span className="font-semibold">{b}</span>
-      </span>
+      <Wordmark className="text-[1.2rem] tracking-[-0.04em]" />
     </Link>
   );
 }

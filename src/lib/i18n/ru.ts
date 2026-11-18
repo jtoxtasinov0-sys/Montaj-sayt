@@ -1,8 +1,9 @@
+import { SITE_NAME } from "@/lib/constants";
 import type { Dict } from "./uz";
 
 export const ru: Dict = {
   meta: {
-    title: "Montajchi — платформа для видеомонтажёров",
+    title: `${SITE_NAME} — платформа для видеомонтажёров`,
     description:
       "От начинающего монтажёра до профессионала: портфолио, рейтинг и заказы в одном месте. Найдите монтажёра или своих клиентов.",
   },

@@ -1,6 +1,7 @@
+import { SITE_NAME } from "@/lib/constants";
 export const uz = {
   meta: {
-    title: "Montajchi — videomontajorlar platformasi",
+    title: `${SITE_NAME} — videomontajorlar platformasi`,
     description:
       "Boshlang’ich montajordan professionalgacha: portfolio, reyting va buyurtmalar bitta joyda. Montajor toping yoki o’z mijozlaringizni toping.",
   },

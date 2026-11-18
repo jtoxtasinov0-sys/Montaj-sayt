@@ -22,11 +22,11 @@ import Link from "next/link";
 import { CountUp } from "@/components/client-effects";
 import { EditorCard } from "@/components/editor-card";
 import { Sparkle } from "@/components/icons";
-import { LogoMark } from "@/components/logo";
+import { LogoMark, Wordmark } from "@/components/logo";
 import { Aura, Neon, Particles, PixelGrid, SplitText } from "@/components/motion";
 import { Stars } from "@/components/stars";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
-import { CATEGORIES, SOFTWARE } from "@/lib/constants";
+import { CATEGORIES, SITE_NAME, SOFTWARE } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
 import { fmt, type Dict } from "@/lib/i18n";
 import { cn, formatUzs } from "@/lib/utils";
@@ -570,10 +570,7 @@ function DashboardMock({ d }: { d: Dict }) {
         <aside className="hidden flex-col gap-1 rounded-2xl bg-white/[0.03] p-3 sm:flex">
           <div className="flex items-center gap-2 px-1 pb-3">
             <LogoMark className="h-6 w-6" />
-            <span className="text-sm tracking-tight">
-              <span className="font-light">Montaj</span>
-              <span className="font-semibold">chi</span>
-            </span>
+            <Wordmark className="text-sm tracking-tight" />
           </div>
           <span className="btn btn-primary btn-sm mb-3 h-8 w-full gap-1.5 text-[0.7rem]">
             <Plus className="h-3.5 w-3.5" /> {d.nav.postJob}
@@ -679,7 +676,7 @@ export function FinalCta({ d }: { d: Dict }) {
 
         <div className="relative px-5 pt-20 text-center sm:px-10 lg:pt-28">
           <span data-reveal className="eyebrow pl-1.5 before:hidden">
-            <LogoMark className="h-4 w-4" /> Montajchi
+            <LogoMark className="h-4 w-4" /> {SITE_NAME}
           </span>
           <h2 className="h-section mx-auto mt-6 max-w-4xl text-[clamp(2.4rem,5.4vw,4.6rem)] text-balance">
             <SplitText text={d.cta.title} wordClassName="text-silver" stagger={80} />
