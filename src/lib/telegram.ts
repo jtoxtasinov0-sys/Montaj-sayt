@@ -1,5 +1,5 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { editorProfiles, payments, users } from "@/db/schema";
 import { env } from "@/lib/env";
@@ -46,7 +46,14 @@ async function loadPayment(paymentId: string) {
     .innerJoin(editorProfiles, eq(editorProfiles.id, payments.editorId))
     .where(eq(payments.id, paymentId))
     .limit(1);
-  return rows[0] ?? null;
+  const row = rows[0];
+  if (!row) return null;
+  // Kamdan-kam holat: boshqa kutilayotgan to'lovda ham aynan shu summa bo'lsa — ogohlantiramiz
+  const [{ n: sameAmount }] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(payments)
+    .where(and(eq(payments.status, "PENDING"), eq(payments.amountUzs, row.p.amountUzs), ne(payments.id, row.p.id)));
+  return { ...row, sameAmount };
 }
 
 function caption(row: NonNullable<Awaited<ReturnType<typeof loadPayment>>>) {
@@ -56,9 +63,13 @@ function caption(row: NonNullable<Awaited<ReturnType<typeof loadPayment>>>) {
     ``,
     `👤 <b>${escapeHtml(row.editorName)}</b> (${escapeHtml(row.email)})`,
     `🔗 ${escapeHtml(env.appUrl)}/editors/${escapeHtml(row.slug)}`,
-    `💰 <b>${formatUzs(p.amountUzs)} so'm</b> · ${p.days} kun · vazn ${p.weight}`,
+    `💰 <b>${formatUzs(p.amountUzs)} so'm</b>${p.payCode ? ` (${formatUzs(p.amountUzs - p.payCode)} + kod <b>${p.payCode}</b>)` : ""}`,
+    `📅 ${p.days} kun · vazn ${p.weight}`,
     `🏦 Karta: ${escapeHtml(p.method)}`,
     p.payerNote ? `📝 ${escapeHtml(p.payerNote)}` : null,
+    p.status === "PENDING" && row.sameAmount > 0
+      ? `⚠️ Shu summa bilan yana ${row.sameAmount} ta to'lov kutilmoqda — chekdagi vaqt va kartani solishtiring`
+      : null,
     `🆔 <code>${p.id}</code>`,
     ``,
     `Holat: <b>${STATUS_LABEL[p.status]}</b>${p.reviewedBy ? ` — ${escapeHtml(p.reviewedBy)}` : ""}`,

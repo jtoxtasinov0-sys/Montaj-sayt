@@ -149,8 +149,9 @@ export const uz = {
     levelOverPlans: "{plans} olganlardan yuqorida turasiz.",
     levelBelow: "Sizdan yuqorida faqat {plans} olganlar.",
     and: "va",
+    slots: "Faqat {n} ta joy",
     howNote:
-      "Bir xil darajadagilar orasida reytingi (baho va o’z vaqtida topshirish) yuqori montajor oldinda turadi. Bosh sahifada ro’yxatning birinchi {n} montajori chiqadi.",
+      "Bir xil rejadagilar har soatda navbat bilan almashadi — har biri teng vaqt eng tepada turadi. Joylar soni cheklangan, shuning uchun TOP haqiqatan ko’zga tashlanadi. Bosh sahifada ro’yxatning birinchi {n} montajori chiqadi.",
   },
   faq: {
     title: "Ko’p beriladigan savollar",
@@ -424,6 +425,18 @@ export const uz = {
     sent: "To’lov yuborildi! Admin tez orada tasdiqlaydi.",
     status: { PENDING: "Tekshirilmoqda", APPROVED: "Tasdiqlandi", REJECTED: "Rad etildi" } as Record<string, string>,
     testNotice: "Test rejimi: to’lov qo’lda tasdiqlanadi. Avtomatik to’lov keyingi bosqichda.",
+    toPay: "O’tkaziladigan summa",
+    codeLine: "{price} + {code} so’m to’lov kodi",
+    codeTitle: "Nega summa {code} so’mga ko’p?",
+    codeText:
+      "{code} — sizning shaxsiy to’lov kodingiz. Ko’p odam bir xil summa o’tkazsa, bankda qaysi pul kimniki ekanini ajratib bo’lmaydi. Summa oxiridagi shu raqamlar orqali to’lovingizni darhol tanib olamiz va tezroq tasdiqlaymiz. Bu xizmat haqi emas, faqat belgi — u har doim 1 000 so’mdan kam. Iltimos, summani aynan ko’rsatilgandek o’tkazing.",
+    historyNote: "Summalar oxiridagi qo’shimcha 100–999 so’m — to’lov kodi: to’lovingizni bankda tanib olish uchun. Reja narxi o’zgarmaydi.",
+    historyCode: "{price} + {code} kod",
+    slotsFree: "Bo’sh joy: {free} / {slots}",
+    slotsFull: "Joy qolmagan",
+    slotsNext: "Eng yaqin joy {date} da bo’shaydi",
+    full: "Bu rejada bo’sh joy qolmadi. Boshqa rejani tanlang yoki joy bo’shashini kuting.",
+    rotation: "Bir rejadagilar har soatda navbat bilan eng tepaga chiqadi — hammaga teng vaqt.",
   },
   settingsForm: {
     title: "Shaxsiy ma’lumotlar",

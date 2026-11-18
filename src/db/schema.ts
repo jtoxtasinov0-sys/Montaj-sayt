@@ -247,6 +247,8 @@ export const promotionPlans = pgTable("promotion_plans", {
   isActive: boolean("is_active").notNull().default(true),
   isPopular: boolean("is_popular").notNull().default(false),
   sort: integer("sort").notNull().default(0),
+  // Bir vaqtda nechta montajor shu rejada tura oladi (0 = cheklanmagan)
+  slots: integer("slots").notNull().default(0),
 });
 
 export const payments = pgTable(
@@ -264,7 +266,9 @@ export const payments = pgTable(
     planName: text("plan_name").notNull(),
     days: integer("days").notNull(),
     weight: integer("weight").notNull(),
-    amountUzs: integer("amount_uzs").notNull(),
+    amountUzs: integer("amount_uzs").notNull(), // reja narxi + payCode
+    // To'lov kodi (100–999 so'm): bankda to'lovni summasidan tanib olish uchun. 0 = eski to'lovlar
+    payCode: integer("pay_code").notNull().default(0),
     method: text("method").notNull(), // VISA | UZCARD | HUMO
     payerNote: text("payer_note").notNull().default(""),
     receiptKey: text("receipt_key").notNull(),

@@ -151,8 +151,9 @@ export const en: Dict = {
     levelOverPlans: "You rank above {plans} editors.",
     levelBelow: "Only {plans} editors rank higher.",
     and: "and",
+    slots: "Only {n} spots",
     howNote:
-      "Within the same level, editors with a higher rating (reviews and on-time delivery) come first. The homepage shows the first {n} editors of the list.",
+      "Editors on the same plan swap places every hour, so each spends equal time at the very top. Spots are limited, so TOP stays genuinely visible. The homepage shows the first {n} editors of the list.",
   },
   faq: {
     title: "Frequently asked questions",
@@ -426,6 +427,18 @@ export const en: Dict = {
     sent: "Payment submitted! An admin will approve it shortly.",
     status: { PENDING: "Under review", APPROVED: "Approved", REJECTED: "Rejected" },
     testNotice: "Test mode: payments are approved manually. Automatic payments are coming next.",
+    toPay: "Amount to transfer",
+    codeLine: "{price} + {code} UZS payment code",
+    codeTitle: "Why is it {code} UZS more?",
+    codeText:
+      "{code} is your personal payment code. When many people send the same amount, the bank statement can't tell whose transfer is whose. The last digits let us recognise your payment instantly and approve it faster. It isn't a service fee, just a marker — always under 1,000 UZS. Please transfer exactly the amount shown.",
+    historyNote: "The extra 100–999 UZS at the end of each amount is the payment code that identifies your transfer at the bank. The plan price doesn't change.",
+    historyCode: "{price} + {code} code",
+    slotsFree: "Free spots: {free} of {slots}",
+    slotsFull: "No spots left",
+    slotsNext: "Next spot frees up on {date}",
+    full: "No spots left on this plan. Choose another plan or wait for a spot to free up.",
+    rotation: "Editors on the same plan take turns at the very top every hour — equal time for everyone.",
   },
   settingsForm: {
     title: "Personal details",

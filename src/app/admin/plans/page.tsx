@@ -5,10 +5,13 @@ import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { db } from "@/db";
 import { promotionPlans, type PromotionPlan } from "@/db/schema";
+import { slotUsage } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
-function PlanForm({ plan }: { plan?: PromotionPlan }) {
+const NO_EDITOR = "00000000-0000-0000-0000-000000000000";
+
+function PlanForm({ plan, used }: { plan?: PromotionPlan; used?: number }) {
   return (
     <ActionForm action={adminSavePlan.bind(null, plan?.id ?? null)} className="card space-y-4 p-5">
       <p className="font-medium">{plan ? `Reja #${plan.id}` : "Yangi reja"}</p>
@@ -28,6 +31,9 @@ function PlanForm({ plan }: { plan?: PromotionPlan }) {
         <Field label="Tartib">
           <input name="sort" type="number" min={0} max={100} defaultValue={plan?.sort ?? 0} className="input" />
         </Field>
+        <Field label="Joylar soni (0 = cheksiz)" hint={used !== undefined ? `Hozir band: ${used}${plan?.slots ? ` / ${plan.slots}` : ""}` : undefined}>
+          <input name="slots" type="number" min={0} max={1000} defaultValue={plan?.slots ?? 0} className="input" />
+        </Field>
       </div>
       <div className="flex flex-wrap gap-2">
         <label className="check">
@@ -45,15 +51,17 @@ function PlanForm({ plan }: { plan?: PromotionPlan }) {
 export default async function AdminPlans() {
   await requireAdmin(); // har bir sahifada alohida tekshiruv (faqat layout'ga ishonmaymiz)
   const plans = await db.select().from(promotionPlans).orderBy(asc(promotionPlans.sort));
+  const used = await Promise.all(plans.map((p) => slotUsage(p.weight, NO_EDITOR)));
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted">
         Vazn qancha katta bo&apos;lsa, montajor katalogda shuncha yuqorida turadi. Faol TOP ustiga yangi reja olinsa, muddat qo&apos;shiladi va
-        kattaroq vazn saqlanadi.
+        kattaroq vazn saqlanadi. Bir rejadagilar har soatda navbat bilan eng tepaga chiqadi. &quot;Joylar soni&quot; to&apos;lsa, montajor shu
+        rejani tanlay olmaydi (tekshirilayotgan to&apos;lovlar ham joy band qiladi; rad etilsa joy bo&apos;shaydi).
       </p>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {plans.map((p) => (
-          <PlanForm key={p.id} plan={p} />
+        {plans.map((p, i) => (
+          <PlanForm key={p.id} plan={p} used={used[i].used} />
         ))}
         <PlanForm />
       </div>

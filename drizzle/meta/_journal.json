@@ -15,6 +15,13 @@
       "when": 1794908584803,
       "tag": "0001_remove_music_category",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794978771553,
+      "tag": "0002_top_slots_pay_code",
+      "breakpoints": true
     }
   ]
 }
