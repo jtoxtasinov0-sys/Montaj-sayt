@@ -38,17 +38,30 @@ const PATH: Pt[] = [
   [0.6, 1.02],
 ];
 
-/** Catmull-Rom → kubik Bezier: nuqtalar orqali silliq egri chiziq */
+/**
+ * Centripetal Catmull-Rom → kubik Bezier: nuqtalar orqali silliq egri chiziq.
+ * Oddiy Catmull-Rom nuqtalar notekis joylashganda o'tkir uch (qirra) hosil qiladi; centripetal (α = 0.5)
+ * variant esa uchsiz, yumshoq burilish beradi va segment ichida o'zini kesib o'tmaydi.
+ */
 function smoothPath(pts: Pt[]) {
-  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  const f = (n: number) => n.toFixed(1);
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
   for (let i = 0; i < pts.length - 1; i++) {
     const p0 = pts[i - 1] ?? pts[i];
     const p1 = pts[i];
     const p2 = pts[i + 1];
     const p3 = pts[i + 2] ?? p2;
-    const c1: Pt = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-    const c2: Pt = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    // d = |Δ|^α, α = 0.5  →  d² = |Δ|
+    const d1 = Math.sqrt(Math.hypot(p1[0] - p0[0], p1[1] - p0[1]));
+    const d2 = Math.sqrt(Math.hypot(p2[0] - p1[0], p2[1] - p1[1]));
+    const d3 = Math.sqrt(Math.hypot(p3[0] - p2[0], p3[1] - p2[1]));
+    const c1: Pt = d1 < 1e-6
+      ? p1
+      : [0, 1].map((k) => (d1 * d1 * p2[k] - d2 * d2 * p0[k] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[k]) / (3 * d1 * (d1 + d2))) as Pt;
+    const c2: Pt = d3 < 1e-6
+      ? p2
+      : [0, 1].map((k) => (d3 * d3 * p1[k] - d2 * d2 * p3[k] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[k]) / (3 * d3 * (d3 + d2))) as Pt;
+    d += ` C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
   }
   return d;
 }
