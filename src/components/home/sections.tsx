@@ -134,7 +134,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
   );
 }
 
-// ---------- Narx bo'limlari: katta, tushunarli qatorlar ----------
+// ---------- Narx bo'limlari: yonma-yon kartalar (oldingi joylashuv), oq-qora ----------
 export function TiersSection({
   d,
   tiers,
@@ -148,29 +148,38 @@ export function TiersSection({
     <section className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead title={d.tiers.title} subtitle={d.tiers.subtitle} />
-      <div>
+      {/* Telefonda ikki ustun (uzun ro'yxat bo'lmasin), toq oxirgi karta to'liq kenglikda */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {tiers.map((t, i) => (
-          <div key={t.id} data-reveal style={delay(i * 70)} className="border-t border-line">
-            <div className="grid items-center gap-x-6 gap-y-4 py-7 sm:py-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_auto]">
-              <div className="flex items-baseline gap-3">
-                <span className="text-[clamp(2.6rem,6vw,4.4rem)] leading-none font-light tracking-tight">
-                  ${t.minUsd}
-                  {t.maxUsd ? `–${t.maxUsd}` : "+"}
-                </span>
-                {!t.maxUsd && <span className="text-sm text-muted">{d.tiers.plus}</span>}
+          <div
+            key={t.id}
+            data-reveal
+            style={delay(i * 80)}
+            className="card flex flex-col p-4 transition duration-300 hover:-translate-y-1 hover:border-fg max-sm:last:odd:col-span-2 sm:p-6"
+          >
+            <div className="text-[2rem] leading-none font-light tracking-tight sm:text-[2.6rem]">
+              ${t.minUsd}
+              <span className="text-muted">{t.maxUsd ? `–${t.maxUsd}` : "+"}</span>
+            </div>
+            {/* Barcha kartalarda bir xil balandlik — qatorlar bir chiziqda turadi */}
+            <div className="mt-1.5 h-4 text-xs text-muted">{!t.maxUsd && d.tiers.plus}</div>
+            <div className="my-5 space-y-1.5 text-sm text-muted sm:my-6">
+              <div className="flex justify-between">
+                <span>{d.tiers.editorsLink}</span>
+                <span className="text-fg">{counts[t.id]?.editors ?? 0}</span>
               </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-1 text-base text-muted sm:text-lg">
-                <span>{fmt(d.tiers.editorsCount, { n: counts[t.id]?.editors ?? 0 })}</span>
-                <span>{fmt(d.tiers.jobsCount, { n: counts[t.id]?.jobs ?? 0 })}</span>
+              <div className="flex justify-between">
+                <span>{d.tiers.jobsLink}</span>
+                <span className="text-fg">{counts[t.id]?.jobs ?? 0}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:flex">
-                <Link href={`/editors?tier=${t.id}`} className="btn btn-ghost">
-                  {d.tiers.editorsLink} <ArrowUpRight className="h-4 w-4" />
-                </Link>
-                <Link href={`/jobs?tier=${t.id}`} className="btn btn-primary">
-                  {d.tiers.jobsLink} <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
+            </div>
+            <div className="mt-auto grid gap-2 sm:grid-cols-2">
+              <Link href={`/editors?tier=${t.id}`} className="btn btn-ghost btn-sm px-2 text-xs">
+                {d.tiers.editorsLink}
+              </Link>
+              <Link href={`/jobs?tier=${t.id}`} className="btn btn-primary btn-sm px-2 text-xs">
+                {d.tiers.jobsLink}
+              </Link>
             </div>
           </div>
         ))}

@@ -62,6 +62,7 @@ const cardColumns = {
   categories: editorProfiles.categories,
   avatarKey: editorProfiles.avatarKey,
   userImage: users.image,
+  lastSeenAt: users.lastSeenAt,
   isAvailable: editorProfiles.isAvailable,
   isVerified: editorProfiles.isVerified,
   ratingAvg: editorProfiles.ratingAvg,
@@ -84,6 +85,7 @@ export type EditorCardData = {
   categories: string[];
   avatarKey: string | null;
   userImage: string | null;
+  lastSeenAt: Date | null;
   isAvailable: boolean;
   isVerified: boolean;
   ratingAvg: number;
@@ -182,7 +184,7 @@ export async function getEditorBySlug(slug: string) {
   if (!/^[a-z0-9-]{3,40}$/.test(slug)) return null;
   return cached(`editors:slug:${slug}`, 15_000, async () => {
     const rows = await db
-      .select({ profile: editorProfiles, userImage: users.image, userCreatedAt: users.createdAt })
+      .select({ profile: editorProfiles, userImage: users.image, userCreatedAt: users.createdAt, lastSeenAt: users.lastSeenAt })
       .from(editorProfiles)
       .innerJoin(users, eq(users.id, editorProfiles.userId))
       .where(eq(editorProfiles.slug, slug))

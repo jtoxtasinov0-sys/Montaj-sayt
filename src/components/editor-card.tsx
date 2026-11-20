@@ -1,5 +1,6 @@
 import { BadgeCheck, Clock, Flame, MapPin } from "lucide-react";
 import Link from "next/link";
+import { isOnline } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
 import { fmt, type Dict } from "@/lib/i18n";
 import { isTopRated } from "@/lib/ranking-shared";
@@ -11,6 +12,8 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
   const boosted = e.boostWeight > 0 && e.boostUntil && new Date(e.boostUntil) > new Date();
   const onTimePct = e.completedOrders ? Math.round((e.onTimeOrders / e.completedOrders) * 100) : null;
   const top = isTopRated(e);
+  // Yashil — so'nggi daqiqalarda saytda bo'lgan, kulrang — hozir saytda emas
+  const online = isOnline(e.lastSeenAt);
   return (
     <Link
       href={`/editors/${e.slug}`}
@@ -27,9 +30,9 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
           <span
             className={cn(
               "absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 border-bg",
-              e.isAvailable ? "bg-fg" : "bg-line-strong",
+              online ? "bg-online" : "bg-offline",
             )}
-            title={e.isAvailable ? d.editors.available : d.editors.busy}
+            title={online ? d.editors.online : d.editors.offline}
           />
         </div>
         <div className="min-w-0 flex-1">

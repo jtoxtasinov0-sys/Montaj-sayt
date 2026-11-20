@@ -107,8 +107,6 @@ export const en: Dict = {
     editorsLink: "Editors",
     jobsLink: "Jobs",
     plus: "and above",
-    editorsCount: "{n} editors",
-    jobsCount: "{n} open jobs",
   },
   categories: {
     reels: "Reels / Shorts",
@@ -245,6 +243,8 @@ export const en: Dict = {
     reviews: "{n} reviews",
     topRated: "Top rated",
     newcomer: "New",
+    online: "Online — on the site now",
+    offline: "Not on the site right now",
   },
   profile: {
     about: "About me",

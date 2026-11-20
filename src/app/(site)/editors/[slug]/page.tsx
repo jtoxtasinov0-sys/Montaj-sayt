@@ -8,6 +8,7 @@ import { Empty } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
 import { VideoTile } from "@/components/video-tile";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isOnline } from "@/lib/constants";
 import { getEditorBySlug } from "@/lib/data";
 import { env } from "@/lib/env";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
@@ -71,9 +72,10 @@ export default async function EditorProfilePage({ params }: Params) {
           <div className="fade-up flex flex-col gap-6 sm:flex-row sm:items-end">
             <div className="relative">
               <Avatar name={p.displayName} avatarKey={p.avatarKey} image={data.userImage} size={120} className="ring-1 ring-line" />
-              {p.isAvailable && (
-                <span className="absolute right-1 bottom-1 h-5 w-5 rounded-full border-4 border-bg bg-fg" title={d.editors.available} />
-              )}
+              <span
+                className={`absolute right-1 bottom-1 h-5 w-5 rounded-full border-4 border-bg ${isOnline(data.lastSeenAt) ? "bg-online" : "bg-offline"}`}
+                title={isOnline(data.lastSeenAt) ? d.editors.online : d.editors.offline}
+              />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">

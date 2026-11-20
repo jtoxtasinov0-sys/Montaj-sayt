@@ -107,8 +107,6 @@ export const ru: Dict = {
     editorsLink: "Монтажёры",
     jobsLink: "Заказы",
     plus: "и выше",
-    editorsCount: "{n} монтажёров",
-    jobsCount: "{n} открытых заказов",
   },
   categories: {
     reels: "Reels / Shorts",
@@ -245,6 +243,8 @@ export const ru: Dict = {
     reviews: "{n} оценок",
     topRated: "Высокий рейтинг",
     newcomer: "Новичок",
+    online: "В сети — сейчас на сайте",
+    offline: "Сейчас не на сайте",
   },
   profile: {
     about: "Обо мне",

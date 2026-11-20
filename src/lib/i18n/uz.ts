@@ -105,8 +105,6 @@ export const uz = {
     editorsLink: "Montajorlar",
     jobsLink: "Buyurtmalar",
     plus: "va undan yuqori",
-    editorsCount: "{n} ta montajor",
-    jobsCount: "{n} ta ochiq buyurtma",
   },
   categories: {
     reels: "Reels / Shorts",
@@ -243,6 +241,8 @@ export const uz = {
     reviews: "{n} ta baho",
     topRated: "Yuqori reyting",
     newcomer: "Yangi",
+    online: "Onlayn — hozir saytda",
+    offline: "Hozir saytda emas",
   },
   profile: {
     about: "Men haqimda",

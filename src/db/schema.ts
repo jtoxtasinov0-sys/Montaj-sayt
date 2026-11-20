@@ -47,6 +47,8 @@ export const users = pgTable(
     locale: text("locale").notNull().default("uz"),
     createdAt: ts("created_at").notNull().defaultNow(),
     lastLoginAt: ts("last_login_at"),
+    // Saytdagi oxirgi faollik (sahifa ochish yoki ochiq tabdan har daqiqadagi signal) — "onlayn" belgisi uchun
+    lastSeenAt: ts("last_seen_at"),
   },
   (t) => [index("users_created_idx").on(t.createdAt)],
 );
