@@ -30,6 +30,8 @@
   --offline: #a3a3a3;
   /* Ozgina rang (lusion.co / cuberto.com referenslari): lenta ko'k → binafsha → yashil-moviy */
   --ribbon-a: #3a3af4;
+  /* Skroll lentasi — kulrang (oq mavzuda och, qora mavzuda to'q) */
+  --ribbon: #cacaca;
   --ribbon-b: #7b5cff;
   --ribbon-c: #22d3a6;
   /* Mijozlar fikri kartalari — pastel */
@@ -67,6 +69,7 @@
   --online: #22c55e;
   --offline: #6b6b6b;
   --ribbon-a: #5c5cff;
+  --ribbon: #3a3a3a;
   --ribbon-b: #9a80ff;
   --ribbon-c: #39e8bd;
   --pastel-1: #2b2030;

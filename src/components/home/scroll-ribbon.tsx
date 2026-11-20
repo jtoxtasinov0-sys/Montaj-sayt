@@ -5,24 +5,23 @@ import { useEffect, useRef } from "react";
 type Pt = [number, number];
 
 /**
- * Lenta shakli (lusion.co videosidagidek), 1440 × 900 dizayn maydonida: chap chetdan kirib, katta yoy bilan pastga
- * tushadi, chap tomonda bitta yumshoq halqa yasaydi (o'z chizig'ini kesib o'tadi) va uzun S-to'lqin bilan o'ng chetdan chiqadi.
- * Nuqtalar bir-biridan teng uzoqlikda — burilishlar burchaksiz, silliq chiqadi.
+ * Lenta shakli (lusion.co videosidagidek), 1440 × 900 dizayn maydonida, y — bo'lim tepasidan:
+ * chap chetdan kirib, sarlavha ustidagi bo'sh joydan yumshoq yoy bilan o'tadi, o'ng tomondagi bo'sh joyda bitta
+ * dumaloq halqa yasaydi (o'z chizig'ini kesib o'tadi) va o'ng chetdan chiqadi. Kartalar orqasiga tushmaydi.
  */
 const SHAPE: Pt[] = [
-  [-90, 30],
-  [250, 130],
-  [450, 330],
-  [440, 560],
-  [320, 720],
-  [160, 700],
-  [120, 560],
-  [240, 470],
-  [440, 510],
-  [680, 640],
-  [930, 800],
-  [1200, 860],
-  [1540, 800],
+  [-90, 10],
+  [240, 40],
+  [560, 50],
+  [820, 80],
+  [1020, 150],
+  [1120, 260],
+  [1040, 350],
+  [930, 300],
+  [950, 180],
+  [1080, 130],
+  [1260, 170],
+  [1540, 260],
 ];
 
 /**
@@ -143,7 +142,7 @@ export function ScrollRibbon() {
         el.setAttribute("d", smoothPath(pts));
         el.setAttribute("pathLength", "1");
         el.setAttribute("fill", "none");
-        el.setAttribute("stroke", "var(--ribbon-a)");
+        el.setAttribute("stroke", "var(--ribbon)");
         el.setAttribute("stroke-linecap", "round");
         el.setAttribute("stroke-linejoin", "round");
         el.setAttribute("stroke-width", String(w < 640 ? 16 : w < 1024 ? 24 : 34));

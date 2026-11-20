@@ -230,7 +230,7 @@ const WORK_PHOTOS = [
 
 export function ShowcaseSection({ d }: { d: Dict }) {
   return (
-    <section data-rb-shape="b" className="container-x pt-28">
+    <section className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead
         title={d.showcase.title}
