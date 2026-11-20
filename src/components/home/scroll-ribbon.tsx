@@ -5,24 +5,44 @@ import { useEffect, useRef } from "react";
 type Pt = [number, number];
 
 /**
- * Lenta shakli (lusion.co videosidagidek), 1440 × 900 dizayn maydonida, y — bo'lim tepasidan:
- * chap chetdan kirib, sarlavha ustidagi bo'sh joydan yumshoq yoy bilan o'tadi, o'ng tomondagi bo'sh joyda bitta
- * dumaloq halqa yasaydi (o'z chizig'ini kesib o'tadi) va o'ng chetdan chiqadi. Kartalar orqasiga tushmaydi.
+ * Lenta shakli (lusion.co videosidagidek), 1440 × 900 dizayn maydonida, y — bo'lim tepasidan.
+ * Qo'lda qo'yilgan nuqtalar o'rniga formula bilan quriladi — shuning uchun burchaksiz, mukammal silliq:
+ *  1) chap chetdan sarlavha ustidagi bo'sh joy bo'ylab tekis keladi va yumshoq S bilan pastga tushadi (smoothstep);
+ *  2) bitta dumaloq halqa — cho'zilgan sikloida: x = C + k·t − R·sin t, y = Yb − R·(1 + cos t), t ∈ [−π, π];
+ *  3) halqadan chiqib, yana yumshoq S bilan o'ng chetga ko'tariladi.
+ * Ulanish joylarida yo'nalish gorizontal — chiziq hech qayerda sinmaydi.
  */
-const SHAPE: Pt[] = [
-  [-90, 10],
-  [240, 40],
-  [560, 50],
-  [820, 80],
-  [1020, 150],
-  [1120, 260],
-  [1040, 350],
-  [930, 300],
-  [950, 180],
-  [1080, 130],
-  [1260, 170],
-  [1540, 260],
-];
+const smooth = (v: number) => {
+  const c = Math.min(1, Math.max(0, v));
+  return c * c * (3 - 2 * c);
+};
+
+function designShape(): Pt[] {
+  const C = 1030; // halqa markazi (x)
+  const Yb = 320; // halqaning pastki nuqtasi (y)
+  const R = 125; // halqa radiusi
+  const k = 55; // siljish (k < R — halqa hosil bo'ladi)
+  const xa = C - k * Math.PI; // halqa boshlanishi
+  const xb = C + k * Math.PI; // halqa tugashi
+  const pts: Pt[] = [];
+  // 1) Kirish: chapdan baland, so'ng yumshoq pastga
+  for (let i = 0; i <= 40; i++) {
+    const x = -100 + ((xa + 100) * i) / 40;
+    pts.push([x, 40 + (Yb - 40) * smooth((x - 520) / (xa - 520))]);
+  }
+  // 2) Halqa (sikloida): t = −π da pastda, o'ngga qarab; tepada orqaga aylanadi; t = π da yana pastda
+  for (let i = 1; i < 72; i++) {
+    const t = -Math.PI + (2 * Math.PI * i) / 72;
+    pts.push([C + k * t - R * Math.sin(t), Yb - R * (1 + Math.cos(t))]);
+  }
+  // 3) Chiqish: o'ngga va yumshoq yuqoriga
+  for (let i = 0; i <= 30; i++) {
+    const x = xb + ((1560 - xb) * i) / 30;
+    pts.push([x, Yb - 130 * smooth((x - xb) / (1560 - xb))]);
+  }
+  return pts;
+}
+const SHAPE: Pt[] = designShape();
 
 /**
  * Lenta faqat `data-rb-shape` belgisi bor bo'limlarda chiziladi ("a" — oddiy, "b" — ko'zgudagidek).

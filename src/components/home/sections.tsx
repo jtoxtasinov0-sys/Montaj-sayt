@@ -104,7 +104,7 @@ export function StatsStrip({ d, s }: { d: Dict; s: { editors: number; completed:
 // ---------- Hozir eng ko'p tanlanayotganlar (TOP + reyting) ----------
 export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCardData[] }) {
   return (
-    <section className="container-x pt-28">
+    <section data-rb-shape="b" className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead
         title={d.topEditors.title}
@@ -230,7 +230,7 @@ const WORK_PHOTOS = [
 
 export function ShowcaseSection({ d }: { d: Dict }) {
   return (
-    <section className="container-x pt-28">
+    <section data-rb-shape="b" className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead
         title={d.showcase.title}
@@ -360,7 +360,7 @@ function HowCard({
 
 export function HowItWorks({ d }: { d: Dict }) {
   return (
-    <section id="how" className="container-x scroll-mt-24 pt-28">
+    <section data-rb-shape="a" id="how" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
       <SectionHead title={d.how.title} />
       <div className="grid gap-4 lg:grid-cols-2">
