@@ -45,6 +45,7 @@ export const en: Dict = {
     errorText: "Please try again in a moment.",
     tryAgain: "Try again",
     or: "or",
+    no: "No",
   },
   nav: {
     editors: "Editors",
@@ -294,6 +295,8 @@ export const en: Dict = {
     requestRevision: "Send for revision",
     complete: "Accept and complete",
     cancel: "Cancel order",
+    cancelAsk: "Cancel this order? This can’t be undone.",
+    cancelYes: "Yes, cancel",
     proposeTitle: "Send a proposal",
     proposalPrice: "Your price (USD)",
     proposalDays: "Days to deliver",

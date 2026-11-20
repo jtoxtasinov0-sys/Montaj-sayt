@@ -43,6 +43,7 @@ export const uz = {
     errorText: "Iltimos, birozdan so’ng qayta urinib ko’ring.",
     tryAgain: "Qayta urinish",
     or: "yoki",
+    no: "Yo’q",
   },
   nav: {
     editors: "Montajorlar",
@@ -292,6 +293,8 @@ export const uz = {
     requestRevision: "Qayta ishlashga yuborish",
     complete: "Qabul qilish va yakunlash",
     cancel: "Buyurtmani bekor qilish",
+    cancelAsk: "Buyurtmani bekor qilasizmi? Buni qaytarib bo’lmaydi.",
+    cancelYes: "Ha, bekor qilish",
     proposeTitle: "Taklif yuborish",
     proposalPrice: "Narxingiz (USD)",
     proposalDays: "Necha kunda",

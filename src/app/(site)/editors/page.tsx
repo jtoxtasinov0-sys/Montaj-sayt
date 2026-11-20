@@ -68,7 +68,7 @@ export default async function EditorsPage({ searchParams }: { searchParams: Prom
               aria-label={d.common.search}
             />
           </div>
-          <select name="category" defaultValue={filters.category ?? ""} className="input" aria-label={d.editors.category}>
+          <select name="category" defaultValue={filters.category ?? ""} className="input select-pick" aria-label={d.editors.category}>
             <option value="">{d.editors.category}: {d.common.all}</option>
             {CATEGORY_KEYS.map((c) => (
               <option key={c} value={c}>
@@ -76,7 +76,7 @@ export default async function EditorsPage({ searchParams }: { searchParams: Prom
               </option>
             ))}
           </select>
-          <select name="level" defaultValue={filters.level ?? ""} className="input" aria-label={d.editors.level}>
+          <select name="level" defaultValue={filters.level ?? ""} className="input select-pick" aria-label={d.editors.level}>
             <option value="">{d.editors.level}: {d.common.all}</option>
             {LEVELS.map((l) => (
               <option key={l} value={l}>
@@ -84,7 +84,7 @@ export default async function EditorsPage({ searchParams }: { searchParams: Prom
               </option>
             ))}
           </select>
-          <select name="sort" defaultValue={filters.sort ?? "top"} className="input" aria-label={d.editors.sort}>
+          <select name="sort" defaultValue={filters.sort ?? "top"} className="input select-pick" aria-label={d.editors.sort}>
             <option value="top">{d.editors.sortTop}</option>
             <option value="rating">{d.editors.sortRating}</option>
             <option value="new">{d.editors.sortNew}</option>

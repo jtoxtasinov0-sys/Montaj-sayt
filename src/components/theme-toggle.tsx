@@ -34,7 +34,7 @@ export function ThemeToggle({ label }: { label: string }) {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="relative grid h-10 w-10 place-items-center rounded-full border border-line text-fg transition hover:border-fg"
+      className="relative grid h-10 w-10 place-items-center rounded-full border border-line text-fg transition hover:border-fg hover:bg-fg hover:text-bg"
     >
       {/* Yorug'da oy (qora mavzuga o'tish), qorong'ida quyosh (oq mavzuga qaytish) */}
       <Moon className="h-[18px] w-[18px] scale-100 rotate-0 transition duration-500 dark:scale-0 dark:-rotate-90" />

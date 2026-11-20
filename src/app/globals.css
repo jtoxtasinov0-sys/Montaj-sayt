@@ -333,6 +333,10 @@
     border: 1px solid var(--line);
     color: var(--muted);
     white-space: nowrap;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
   }
   .chip-primary,
   .chip-accent {
@@ -368,8 +372,10 @@
     color: var(--fg);
     font-size: 0.95rem;
     transition:
+      background-color 0.2s,
       border-color 0.2s,
-      box-shadow 0.2s;
+      box-shadow 0.2s,
+      color 0.2s;
   }
   textarea.input {
     height: auto;
@@ -384,8 +390,9 @@
     background-position: right 1rem center;
     padding-right: 2.5rem;
   }
-  .dark select.input option {
-    background: #000;
+  select.input option {
+    background-color: var(--bg);
+    color: var(--fg);
   }
   .input::placeholder {
     color: color-mix(in oklab, var(--muted) 75%, transparent);
@@ -437,6 +444,7 @@
   .panel-invert {
     background: var(--invert-bg);
     color: var(--invert-fg);
+    --bg: var(--invert-bg);
     --fg: var(--invert-fg);
     --muted: color-mix(in oklab, var(--invert-fg) 58%, transparent);
     --line: color-mix(in oklab, var(--invert-fg) 14%, transparent);
@@ -500,16 +508,17 @@
     right: 0;
     height: 1.2rem;
   }
+  /* Kliplar va pleyhed — sarlavhadagi kulrang qator ("bitta nuqtada", text-muted) bilan bir xil rang */
   .tl-clip {
     position: absolute;
     top: 0;
     bottom: 0;
-    border: 1px solid var(--fg);
+    border: 1px solid var(--muted);
     border-radius: 0.35rem;
     animation: tl-draw 1.1s var(--ease-out) both;
   }
   .tl-clip.is-fill {
-    background: var(--fg);
+    background: var(--muted);
   }
   /* To'liq kenglikdagi qatlam −100% → 0 siljiydi, pleyhed uning o'ng chetida.
      Qatlam chapga chiqadi (u tomonga skroll yo'q) — o'ngga chiqib, telefonda sahifani yonga surmaydi */
@@ -524,7 +533,7 @@
     content: "";
     position: absolute;
     right: -1px;
-    background: var(--fg);
+    background: var(--muted);
   }
   .tl-head::before {
     top: 0;
@@ -956,6 +965,27 @@ html[data-io] [data-reveal="line"]:not([data-in]) {
 [data-anim][data-paused] *,
 [data-anim][data-paused] {
   animation-play-state: paused !important;
+}
+
+/* ============ Oq tugmalar: sichqoncha borganda qora bo'ladi ============
+   Kontur (oq) tugma, narx/yo'nalish chiplari va filtr ro'yxatlari hoverda to'liq rangga to'ladi:
+   oq fonda — qora, qora fonda (qorong'i mavzu, qora kartalar) — oq.
+   Faqat sichqonchali qurilmalarda: telefonda bosilgandan keyin qora bo'lib qotib qolmasin.
+   Qatlamsiz (unlayered) — `bg-bg` kabi utility klasslardan ustun turadi. */
+@media (hover: hover) {
+  .btn-ghost:not(:disabled):hover,
+  a.chip:not(.chip-primary):hover,
+  select.select-pick:hover {
+    background-color: var(--fg);
+    border-color: var(--fg);
+    color: var(--bg);
+  }
+  /* Qizil yozuvli tugma (masalan "Buyurtmani bekor qilish") — qizilga to'ladi */
+  .btn-ghost.text-danger:not(:disabled):hover {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
