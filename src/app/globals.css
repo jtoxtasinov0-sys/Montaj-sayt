@@ -215,7 +215,7 @@
     border: 1px solid var(--line);
     border-radius: 1.25rem;
   }
-  /* Qop-qora karta, oq yozuv (bosh sahifadagi "Hozir eng ko'p tanlanayotganlar") — oq fonda ajralib turadi.
+  /* Qop-qora karta, oq yozuv (montajor kartalari: bosh sahifa va "Montajorlar") — oq fonda ajralib turadi.
      Ichidagi hamma ranglar (chiplar, yulduzlar, chiziqlar) qorong'i mavzudagidek bo'ladi */
   .card-solid {
     --bg: #0a0a0a;
