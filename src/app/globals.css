@@ -490,17 +490,8 @@
   /* ============ Hero: montaj taymlayni (chiziqlar chiziladi, pleyhed sekin yuradi) ============ */
   .tl {
     position: relative;
-    height: 5.5rem;
+    height: 4.6rem;
     user-select: none;
-  }
-  .tl-ruler {
-    position: absolute;
-    inset: 0 0 auto;
-    height: 0.6rem;
-    background: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 12px) bottom / 100% 0.35rem no-repeat,
-      repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 96px) bottom / 100% 0.6rem no-repeat;
-    border-bottom: 1px solid var(--line-strong);
-    animation: tl-draw 1.6s var(--ease-out) 0.35s both;
   }
   .tl-track {
     position: absolute;
@@ -546,11 +537,6 @@
     width: 9px;
     height: 9px;
     border-radius: 2px;
-  }
-  .tl-tc {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--muted);
   }
 }
 
