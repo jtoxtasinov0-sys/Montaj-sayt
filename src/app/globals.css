@@ -39,9 +39,11 @@
   --pastel-2: #dcf1e4;
   --pastel-3: #e3e1f6;
   /* Taxlanadigan kartalar: faol — to'q ko'k-qora, navbatdagi — och kulrang */
-  --stack-on: #0e0f1d;
-  --stack-off: #e6e6ea;
-  --stack-off-fg: #6e6e78;
+  --stack-on: #12142a;
+  --stack-on-2: #1f2147;
+  --stack-on-fg: #f4f4f8;
+  --stack-off: #e8e8eb;
+  --stack-off-fg: #2b2b33;
   --shadow: none;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -76,8 +78,10 @@
   --pastel-2: #19291f;
   --pastel-3: #222136;
   --stack-on: #13142b;
+  --stack-on-2: #1d1f44;
+  --stack-on-fg: #f4f4f8;
   --stack-off: #16161b;
-  --stack-off-fg: #6b6b75;
+  --stack-off-fg: #8a8a95;
   color-scheme: dark;
 }
 
@@ -470,31 +474,6 @@
     animation-play-state: paused;
   }
 
-  /* FAQ */
-  details.faq summary {
-    list-style: none;
-    cursor: pointer;
-  }
-  details.faq summary::-webkit-details-marker {
-    display: none;
-  }
-  details.faq .faq-icon {
-    transition: transform 0.35s var(--ease-out);
-  }
-  details.faq[open] .faq-icon {
-    transform: rotate(45deg);
-  }
-  details.faq::details-content {
-    block-size: 0;
-    overflow: hidden;
-    transition:
-      block-size 0.4s var(--ease-out),
-      content-visibility 0.4s allow-discrete;
-  }
-  details.faq[open]::details-content {
-    block-size: auto;
-  }
-
   /* ============ Hero: montaj taymlayni (chiziqlar chiziladi, pleyhed sekin yuradi) ============ */
   .tl {
     position: relative;
@@ -605,39 +584,68 @@
     transform: none;
   }
 
-  /* ---- Taxlanadigan kartalar (cuberto.com xizmatlar): sticky, oldingisi kichrayib qorayadi ---- */
+  /* ---- Taxlanadigan kartalar (cuberto.com "What we do", egasi yuborgan video bo'yicha) ----
+     .is-on — karta ochiq (JS skroll bo'yicha qo'yadi, ko'rinish o'zgarishi esa vaqt bo'yicha silliq o'tadi);
+     --c — ustiga keyingi karta chiqqani (skroll bilan) */
   .stack-item {
+    --stack-ease: cubic-bezier(0.65, 0, 0.35, 1);
     position: sticky;
-    top: calc(var(--stack-top, 6rem) + var(--i, 0) * 0.85rem);
-    padding-bottom: 1.25rem;
+    top: calc(var(--stack-top, 6rem) + var(--i, 0) * 0.6rem);
+    padding-bottom: 0.625rem;
+    /* Ustiga keyingisi chiqqanda biroz kichrayadi — tepada ingichka chetlari taxlanib qoladi */
+    transform: scale(calc(1 - var(--c, 0) * 0.04));
+    transform-origin: 50% 0;
   }
   .stack-card {
-    --a: 1;
-    --c: 0;
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border-radius: 1.5rem;
-    padding: 1.75rem;
+    border-radius: 1.125rem;
+    padding: 1.4rem 1.4rem 1.5rem;
     background: var(--stack-off);
     color: var(--stack-off-fg);
-    /* Kichik holatda torroq (0.94), ochilganda to'liq; ustiga keyingisi chiqqanda yana biroz kichrayadi */
-    transform: scale(calc((0.94 + var(--a) * 0.06) * (1 - var(--c) * 0.05)));
+    /* Yopiq holatda biroz torroq */
+    transform: scale(0.96);
     transform-origin: 50% 0;
-    transition: color 0.5s;
-    box-shadow: 0 -18px 40px -28px rgb(0 0 0 / 0.45);
+    box-shadow: 0 -14px 34px -26px rgb(0 0 0 / 0.5);
+    transition:
+      transform 0.7s var(--stack-ease),
+      color 0.6s var(--stack-ease);
   }
-  /* Faollashish: to'q fon va rangli nur (opacity — --a) */
+  .stack-card.is-on {
+    transform: none;
+    color: var(--stack-on-fg);
+  }
+  /* To'q fon: och kulrang ustida so'nib-chiqadi (o'rtada kulrang bo'ladi); yuqori chetida ingichka yorug' qirra */
   .stack-card::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
-    opacity: var(--a);
-    background:
-      radial-gradient(55% 110% at 100% 100%, color-mix(in oklab, var(--ribbon-b) 55%, transparent), transparent 70%),
-      radial-gradient(35% 70% at 88% 0%, color-mix(in oklab, var(--ribbon-c) 22%, transparent), transparent 70%),
-      var(--stack-on);
+    border-radius: inherit;
+    opacity: 0;
+    background: linear-gradient(160deg, var(--stack-on) 45%, var(--stack-on-2));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+    transition: opacity 0.6s var(--stack-ease);
+  }
+  .stack-card.is-on::before {
+    opacity: 1;
+  }
+  /* O'ng tomondagi naqsh: chapga qarab so'nadi (matn o'qilsin) */
+  .stack-art {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: -1;
+    width: min(64%, 34rem);
+    height: 100%;
+    opacity: 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+    mask-image: linear-gradient(90deg, transparent, #000 45%);
+    pointer-events: none;
+    transition: opacity 0.8s var(--stack-ease);
+  }
+  .stack-card.is-on .stack-art {
+    opacity: 0.85;
   }
   /* Ustiga keyingi karta chiqqanda qorayadi */
   .stack-card::after {
@@ -645,24 +653,43 @@
     position: absolute;
     inset: 0;
     background: #000;
-    opacity: calc(var(--c) * 0.5);
+    opacity: calc(var(--c, 0) * 0.45);
     pointer-events: none;
   }
-  .stack-card.is-on {
-    color: #f4f4f8;
+  .stack-num {
+    opacity: 0.45;
+    transition: opacity 0.6s;
+  }
+  .stack-card.is-on .stack-num {
+    opacity: 0.6;
   }
   /* Ochiladigan qism: balandlik 0 → to'liq (--bh — JS o'lchaydi), matn biroz pastdan chiqadi */
   .stack-body {
-    max-height: calc(var(--a) * var(--bh, 24rem));
+    max-height: 0;
     overflow: hidden;
-    opacity: var(--a);
+    transition: max-height 0.7s var(--stack-ease);
   }
-  .stack-body > * {
-    transform: translateY(calc((1 - var(--a)) * 18px));
+  .stack-card.is-on .stack-body {
+    max-height: var(--bh, 24rem);
+  }
+  .stack-text {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.45s,
+      transform 0.7s var(--ease-out);
+  }
+  .stack-card.is-on .stack-text {
+    opacity: 0.82;
+    transform: none;
+    transition-delay: 0.12s;
   }
   @media (min-width: 768px) {
     .stack-card {
-      padding: 2.5rem 3rem;
+      padding: 2.25rem 2.75rem 2.5rem;
+    }
+    .stack-card.is-on .stack-art {
+      opacity: 1;
     }
   }
 
@@ -673,26 +700,6 @@
     color: var(--fg);
   }
 
-  /* ---- Ko'tariladigan qorong'i panel (cuberto.com "Insights") ---- */
-  .rise-panel {
-    position: relative;
-    margin-inline: 0.5rem;
-    margin-top: 7rem;
-    padding-bottom: 5rem;
-    overflow: hidden;
-    border-radius: 2rem;
-    color: var(--fg);
-    background:
-      radial-gradient(70% 50% at 90% 0%, color-mix(in oklab, var(--ribbon-b) 22%, transparent), transparent 70%),
-      radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--ribbon-c) 12%, transparent), transparent 70%),
-      linear-gradient(180deg, #15162a, #0a0a12);
-    transform-origin: 50% 0;
-  }
-  @media (min-width: 640px) {
-    .rise-panel {
-      margin-inline: 0.75rem;
-    }
-  }
 }
 
 /* Skroll bilan boshqariladigan qismlar — faqat qo'llab-quvvatlaydigan brauzerlarda (aks holda oddiy holatda turadi) */
@@ -717,11 +724,6 @@
     animation: review-in linear both;
     animation-timeline: view();
     animation-range: entry 0% cover 42%;
-  }
-  .rise-panel {
-    animation: rise-in linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 75%;
   }
 }
 /* Karta kichik holatdan kattalashib ochiladi: scale + chetlardan ochilish (faqat yonga emas) */
@@ -759,17 +761,6 @@
     transform: none;
   }
 }
-@keyframes rise-in {
-  from {
-    transform: translateY(5rem) scale(0.93);
-    border-radius: 4rem;
-  }
-  to {
-    transform: none;
-    border-radius: 2rem;
-  }
-}
-
 /* ============ Animatsiyalar ============ */
 @keyframes marquee {
   to {
@@ -968,8 +959,7 @@ html[data-io] [data-reveal="line"]:not([data-in]) {
 @media (prefers-reduced-motion: reduce) {
   .work-media,
   .work-zoom,
-  .review-card,
-  .rise-panel {
+  .review-card {
     animation: none !important;
   }
   *,

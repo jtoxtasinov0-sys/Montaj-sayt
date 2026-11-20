@@ -1,11 +1,11 @@
-import { ArrowRight, ArrowUpRight, Check, Plus, Repeat, Users, Zap } from "lucide-react";
+import { ArrowRight, Check, Repeat, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { CountUp } from "@/components/client-effects";
 import { EditorCard } from "@/components/editor-card";
-import { CategoriesStack, type StackItem } from "@/components/home/categories-stack";
+import { StackCards, type StackCardItem } from "@/components/home/stack-cards";
 import { GlyphIcon, SplitText } from "@/components/motion";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
-import { CATEGORIES, HOME_TOP_COUNT, SOFTWARE, TOP_ROTATE_MINUTES } from "@/lib/constants";
+import { HOME_TOP_COUNT, SOFTWARE, TOP_ROTATE_MINUTES } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
 import { fmt, type Dict } from "@/lib/i18n";
 import { cn, formatUzs } from "@/lib/utils";
@@ -187,32 +187,6 @@ export function TiersSection({
           </div>
         ))}
       </div>
-    </section>
-  );
-}
-
-// ---------- Yo'nalishlar: taxlanadigan kartalar (cuberto.com xizmatlar uslubi) ----------
-export function CategoriesSection({ d }: { d: Dict }) {
-  const items: StackItem[] = CATEGORIES.filter((c) => c.key !== "other").map((c) => ({
-    key: c.key,
-    icon: c.icon,
-    title: d.categories[c.key],
-    text: d.categoriesSection.items[c.key] ?? "",
-    href: `/editors?category=${c.key}`,
-    cta: d.categoriesSection.cta,
-  }));
-  return (
-    <section className="container-x pt-28">
-      <Rule className="mb-12" />
-      <SectionHead
-        title={d.categoriesSection.title}
-        action={
-          <Link href="/editors" className="btn btn-ghost">
-            {d.common.viewAll} <ArrowRight className="h-4 w-4" />
-          </Link>
-        }
-      />
-      <CategoriesStack items={items} />
     </section>
   );
 }
@@ -453,78 +427,14 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
   );
 }
 
-// ---------- FAQ ----------
-export function FaqSection({ d, first }: { d: Dict; first?: boolean }) {
+// ---------- FAQ: taxlanadigan kartalar (cuberto.com "What we do" uslubi, egasi yuborgan video bo'yicha) ----------
+export function FaqSection({ d }: { d: Dict }) {
+  const items: StackCardItem[] = d.faq.items.map((f, i) => ({ key: String(i), title: f.q, text: f.a }));
   return (
-    <section className="container-x pt-28">
-      {/* Qorong'i panel ichida birinchi bo'lim — yuqori chiziq kerak emas */}
-      {!first && <Rule className="mb-12" />}
-      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <span data-reveal className="eyebrow mb-5">
-            FAQ
-          </span>
-          <h2 className="h-section text-[clamp(2.2rem,4.5vw,3.8rem)] text-balance">
-            <SplitText text={d.faq.title} />
-          </h2>
-        </div>
-        <div className="border-t border-line">
-          {d.faq.items.map((f, i) => (
-            <details key={f.q} className="faq group border-b border-line" data-reveal style={delay(i * 70)}>
-              <summary className="flex items-center justify-between gap-6 py-6 text-lg tracking-tight sm:text-xl">
-                {f.q}
-                <span className="faq-icon grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line-strong transition-colors group-open:border-fg group-open:bg-fg group-open:text-bg">
-                  <Plus className="h-4 w-4" />
-                </span>
-              </summary>
-              <p className="max-w-2xl pb-6 text-muted">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ---------- Yakuniy CTA: katta matn va uchta havola-qator ----------
-export function FinalCta({ d }: { d: Dict }) {
-  const links = [
-    { href: "/editors", ...d.cta.cards[0] },
-    { href: "/orders/new", ...d.cta.cards[1] },
-    { href: "/dashboard/profile", ...d.cta.cards[2] },
-  ];
-  return (
-    <section className="container-x pt-28">
+    <section id="faq" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
-      <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-end">
-        <div>
-          <h2 className="h-section text-[clamp(2.6rem,6vw,5.2rem)] text-balance">
-            <SplitText text={d.cta.title} stagger={60} />
-          </h2>
-          <p data-reveal className="mt-5 max-w-md text-muted" style={delay(200)}>
-            {d.cta.subtitle}
-          </p>
-        </div>
-        <div className="border-t border-line">
-          {links.map((l, i) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              data-reveal
-              style={delay(i * 90)}
-              className="group flex items-center justify-between gap-6 border-b border-line py-5"
-            >
-              <span>
-                <span className="block text-xl tracking-tight sm:text-2xl">{l.t}</span>
-                <span className="mt-1 block text-sm text-muted">{l.d}</span>
-              </span>
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line-strong transition duration-300 group-hover:border-fg group-hover:bg-fg group-hover:text-bg">
-                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <SectionHead eyebrow="FAQ" title={d.faq.title} />
+      <StackCards items={items} />
     </section>
   );
 }
