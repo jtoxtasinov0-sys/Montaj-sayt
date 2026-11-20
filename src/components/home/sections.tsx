@@ -16,7 +16,8 @@ const delay = (ms: number) => ({ "--d": `${ms}ms` }) as Css;
 
 /** Bo'limlar orasidagi ingichka chiziq — ko'rinishga kirganda chapdan o'ngga chiziladi */
 function Rule({ className }: { className?: string }) {
-  return <span data-reveal="line" aria-hidden className={cn("block h-px bg-line-strong", className)} />;
+  // relative -z-20: skroll lentasi (-z-10) shu ingichka chiziq ustidan o'tadi, ostidan emas
+  return <span data-reveal="line" aria-hidden className={cn("relative -z-20 block h-px bg-line-strong", className)} />;
 }
 
 export function SectionHead({
@@ -104,12 +105,12 @@ export function StatsStrip({ d, s }: { d: Dict; s: { editors: number; completed:
 // ---------- Hozir eng ko'p tanlanayotganlar (TOP + reyting) ----------
 export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCardData[] }) {
   return (
-    <section data-rb-shape="b" className="container-x pt-28 sm:pt-40 lg:pt-52">
+    <section data-rb-shape="a" className="container-x pt-28 sm:pt-40 lg:pt-52">
       <Rule className="mb-12" />
       <SectionHead
         title={d.topEditors.title}
         action={
-          <Link href="/editors" className="btn btn-ghost">
+          <Link href="/editors" className="btn btn-ghost bg-bg">
             {d.common.viewAll} <ArrowRight className="h-4 w-4" />
           </Link>
         }
@@ -210,7 +211,7 @@ export function ShowcaseSection({ d }: { d: Dict }) {
         title={d.showcase.title}
         subtitle={d.showcase.subtitle}
         action={
-          <Link href="/editors" className="btn btn-ghost">
+          <Link href="/editors" className="btn btn-ghost bg-bg">
             {d.common.viewAll} <ArrowRight className="h-4 w-4" />
           </Link>
         }
