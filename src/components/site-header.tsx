@@ -8,7 +8,7 @@ import { LangSwitcher } from "./lang-switcher";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 
-export async function SiteHeader({ overDark = true }: { overDark?: boolean } = {}) {
+export async function SiteHeader() {
   const [d, locale, user] = await Promise.all([getDict(), getLocale(), getCurrentUser()]);
   const items = [
     { href: "/editors", label: d.nav.editors },
@@ -40,7 +40,7 @@ export async function SiteHeader({ overDark = true }: { overDark?: boolean } = {
   );
 
   return (
-    <HeaderShell overDark={overDark}>
+    <HeaderShell>
       <div className="container-x flex items-center justify-between gap-3">
         <Logo />
         <NavPills items={items} />

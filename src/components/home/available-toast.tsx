@@ -43,18 +43,18 @@ export function AvailableToast({
   };
   return (
     <div
-      className="fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-[#141428]/90 p-3 pr-10 text-white shadow-2xl shadow-black/40 backdrop-blur-xl"
+      className="fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md items-center gap-3 rounded-2xl border border-line bg-bg p-3 pr-10 text-fg shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)]"
       style={{ animation: "toast-in .6s cubic-bezier(.2,.8,.2,1) both", transform: "translateX(-50%)" }}
       role="status"
     >
       {avatar}
       <p className="min-w-0 flex-1 text-sm leading-snug">
-        <span className="font-semibold">{name}</span> <span className="text-white/70">{text}</span>
+        <span className="font-semibold">{name}</span> <span className="text-muted">{text}</span>
       </p>
-      <Link href={`/editors/${slug}`} onClick={close} className="btn btn-light btn-sm shrink-0">
+      <Link href={`/editors/${slug}`} onClick={close} className="btn btn-primary btn-sm shrink-0">
         {cta}
       </Link>
-      <button type="button" onClick={close} aria-label={closeLabel} className="absolute top-0.5 right-0.5 grid h-9 w-9 place-items-center rounded-full text-white/60 hover:text-white">
+      <button type="button" onClick={close} aria-label={closeLabel} className="absolute top-0.5 right-0.5 grid h-9 w-9 place-items-center rounded-full text-muted hover:text-fg">
         <X className="h-4 w-4" />
       </button>
     </div>

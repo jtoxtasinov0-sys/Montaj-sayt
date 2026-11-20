@@ -2,27 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** Butun sahifa uchun bitta pointermove tinglovchisi: [data-spotlight] kartalarda yorug'lik */
-export function SpotlightTracker() {
-  useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    let raf = 0;
-    const on = (e: PointerEvent) => {
-      const el = (e.target as HTMLElement | null)?.closest?.("[data-spotlight]") as HTMLElement | null;
-      if (!el) return;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect();
-        el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        el.style.setProperty("--my", `${e.clientY - r.top}px`);
-      });
-    };
-    document.addEventListener("pointermove", on, { passive: true });
-    return () => document.removeEventListener("pointermove", on);
-  }, []);
-  return null;
-}
-
 const REVEAL = "[data-reveal],[data-split]";
 const SCOPE = "[data-anim]";
 /**

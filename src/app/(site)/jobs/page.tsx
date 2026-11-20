@@ -72,24 +72,24 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         ) : (
           <div className="grid gap-3 md:grid-cols-2">
             {res.items.map((j) => (
-              <Link key={j.id} href={`/orders/${j.id}`} data-spotlight className="card group flex flex-col gap-3 p-5 transition hover:-translate-y-0.5 hover:border-line-strong">
+              <Link key={j.id} href={`/orders/${j.id}`} className="card group flex flex-col gap-4 p-6 transition hover:-translate-y-0.5 hover:border-fg sm:p-7">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <span className="chip mb-2">{d.categories[j.category] ?? j.category}</span>
-                    <h3 className="text-lg font-medium tracking-tight group-hover:text-primary-2">{j.title}</h3>
+                    <h3 className="text-xl font-medium tracking-tight group-hover:underline group-hover:underline-offset-4 sm:text-2xl">{j.title}</h3>
                   </div>
                   <div className="shrink-0 text-right">
-                    <div className="text-3xl font-light tracking-tight">${j.budgetUsd}</div>
+                    <div className="text-4xl font-light tracking-tight">${j.budgetUsd}</div>
                     <div className="text-xs text-muted">{d.jobs.budget}</div>
                   </div>
                 </div>
-                <p className="line-clamp-2 text-sm text-muted">{j.description}</p>
-                <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-3 text-xs text-muted">
+                <p className="line-clamp-3 text-[0.95rem] leading-relaxed text-muted">{j.description}</p>
+                <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-4 text-sm text-muted">
                   <span className="inline-flex items-center gap-1.5">
-                    <CalendarClock className="h-3.5 w-3.5" /> {d.jobs.deadline}: {formatDate(j.deadline, locale)}
+                    <CalendarClock className="h-4 w-4" /> {d.jobs.deadline}: {formatDate(j.deadline, locale)}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <MessageSquare className="h-3.5 w-3.5" /> {fmt(d.jobs.proposals, { n: j.proposalCount })}
+                    <MessageSquare className="h-4 w-4" /> {fmt(d.jobs.proposals, { n: j.proposalCount })}
                   </span>
                   <span className="ml-auto">
                     {j.clientName} · {formatDate(j.createdAt, locale)}

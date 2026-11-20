@@ -36,7 +36,7 @@ export function escapeHtml(s: string) {
   return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 }
 
-const STATUS_LABEL = { PENDING: "⏳ Tekshirilmoqda", APPROVED: "✅ Tasdiqlandi", REJECTED: "❌ Rad etildi" } as const;
+const STATUS_LABEL = { PENDING: "⏳ Kutilmoqda", APPROVED: "✅ Tasdiqlandi", REJECTED: "❌ Bekor qilindi" } as const;
 
 async function loadPayment(paymentId: string) {
   const rows = await db
@@ -59,7 +59,8 @@ async function loadPayment(paymentId: string) {
 function caption(row: NonNullable<Awaited<ReturnType<typeof loadPayment>>>) {
   const { p } = row;
   const lines = [
-    `<b>💳 Yangi to'lov — TOP ${escapeHtml(p.planName)}</b>`,
+    `<b>💳 Chek yuborildi — ${escapeHtml(p.planName)}</b>`,
+    `Avtomatik tasdiqlanmadi: bankda summani tekshiring.`,
     ``,
     `👤 <b>${escapeHtml(row.editorName)}</b> (${escapeHtml(row.email)})`,
     `🔗 ${escapeHtml(env.appUrl)}/editors/${escapeHtml(row.slug)}`,
@@ -94,7 +95,7 @@ export async function notifyNewPayment(paymentId: string) {
   if (!telegramEnabled()) return;
   const row = await loadPayment(paymentId);
   if (!row) return;
-  const img = await readUpload(row.p.receiptKey);
+  const img = row.p.receiptKey ? await readUpload(row.p.receiptKey) : null;
   let messageId: number | undefined;
   try {
     if (img) {

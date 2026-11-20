@@ -62,7 +62,7 @@ export function AvatarEditor({
         <span className="absolute inset-0 grid place-items-center rounded-full bg-black/50 text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
           <Camera className="h-5 w-5" />
         </span>
-        <span className="absolute -right-0.5 -bottom-0.5 grid h-6 w-6 place-items-center rounded-full bg-primary text-white ring-2 ring-bg">
+        <span className="absolute -right-0.5 -bottom-0.5 grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-fg ring-2 ring-bg">
           <Camera className="h-3.5 w-3.5" />
         </span>
       </button>
@@ -232,7 +232,7 @@ function CropDialog({
           role="application"
           aria-label={labels.hint}
           className={cn(
-            "relative mx-auto touch-none overflow-hidden rounded-2xl bg-black outline-none select-none focus-visible:ring-2 focus-visible:ring-primary-2",
+            "relative mx-auto touch-none overflow-hidden rounded-2xl bg-black outline-none select-none focus-visible:ring-2 focus-visible:ring-fg",
             nat ? "cursor-grab active:cursor-grabbing" : "",
           )}
           style={{ width: VIEW, height: VIEW }}

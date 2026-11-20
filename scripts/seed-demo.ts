@@ -5,6 +5,7 @@
  * Barcha demo foydalanuvchilar "@montajchi.demo" domenida.
  */
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { eq, like, sql } from "drizzle-orm";
@@ -22,7 +23,13 @@ const DAY = 86_400_000;
 async function cover(file: string) {
   const key = `covers/${randomUUID()}.webp`;
   await mkdir(path.join(UPLOAD, "covers"), { recursive: true });
-  await sharp(path.join(process.cwd(), "public/images/stills", file)).resize(960).webp({ quality: 78 }).toFile(path.join(UPLOAD, key));
+  const src = path.join(process.cwd(), "public/images/stills", file);
+  // Kadr rasmlari repoda bo'lmasa — oq-qora oddiy muqova
+  const img = existsSync(src)
+    ? sharp(src).resize(960)
+    : sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540"><rect width="100%" height="100%" fill="#111"/>
+  <text x="50%" y="54%" font-size="40" text-anchor="middle" font-family="sans-serif" fill="#fff">${file.replace(/\.webp$/, "")}</text></svg>`));
+  await img.webp({ quality: 78 }).toFile(path.join(UPLOAD, key));
   return key;
 }
 
@@ -31,7 +38,7 @@ async function receipt() {
   await mkdir(path.join(UPLOAD, "receipts"), { recursive: true });
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900"><rect width="100%" height="100%" fill="#f4f4f8"/>
   <text x="50%" y="200" font-size="44" text-anchor="middle" font-family="sans-serif" fill="#0b0b1a">TEST CHEK</text>
-  <text x="50%" y="300" font-size="64" text-anchor="middle" font-family="sans-serif" fill="#16a36a">40 000 so'm</text>
+  <text x="50%" y="300" font-size="64" text-anchor="middle" font-family="sans-serif" fill="#0b0b1a">50 000 so'm</text>
   <text x="50%" y="400" font-size="30" text-anchor="middle" font-family="sans-serif" fill="#5d5f7a">8600 **** **** 9012</text></svg>`;
   await sharp(Buffer.from(svg)).webp().toFile(path.join(UPLOAD, key));
   return key;
@@ -40,19 +47,19 @@ async function receipt() {
 const EDITORS = [
   { name: "Aziz Karimov", level: "PRO", price: 45, city: "Toshkent", cats: ["youtube", "ads"], exp: 6, head: "YouTube va reklama montaji, 6 yillik tajriba" },
   { name: "Malika Yusupova", level: "PRO", price: 35, city: "Toshkent", cats: ["reels", "motion"], exp: 4, head: "Trenddagi Reels va dinamik qisqa kliplar" },
-  { name: "Jasur Toshmatov", level: "MIDDLE", price: 25, city: "Samarqand", cats: ["wedding", "color"], exp: 3, head: "To‘y kliplari va kinematografik rang" },
+  { name: "Jasur Toshmatov", level: "MIDDLE", price: 25, city: "Samarqand", cats: ["youtube", "color"], exp: 3, head: "Klip montaji va kinematografik rang" },
   { name: "Dilnoza Rahimova", level: "PRO", price: 60, city: "Toshkent", cats: ["motion", "ads"], exp: 7, head: "Motion dizayn va 3D animatsiya" },
   { name: "Sardor Aliyev", level: "MIDDLE", price: 22, city: "Buxoro", cats: ["podcast", "youtube"], exp: 2, head: "Podkast va intervyu montaji" },
   { name: "Nodira Xasanova", level: "BEGINNER", price: 12, city: "Farg‘ona", cats: ["reels"], exp: 1, head: "Instagram Reels, tez va arzon" },
   { name: "Bekzod Ergashev", level: "MIDDLE", price: 28, city: "Namangan", cats: ["youtube", "color"], exp: 3, head: "YouTube montaji va DaVinci rang" },
   { name: "Shahzoda Nazarova", level: "BEGINNER", price: 15, city: "Andijon", cats: ["reels", "youtube"], exp: 1, head: "YouTube Shorts va vlog montaji" },
   { name: "Otabek Murodov", level: "PRO", price: 80, city: "Toshkent", cats: ["ads", "motion", "color"], exp: 9, head: "Brendlar uchun premium reklama roliklari" },
-  { name: "Kamola Saidova", level: "MIDDLE", price: 38, city: "Toshkent", cats: ["wedding", "color"], exp: 4, head: "Hissiyotli to‘y filmlari" },
+  { name: "Kamola Saidova", level: "MIDDLE", price: 38, city: "Toshkent", cats: ["ads", "color"], exp: 4, head: "Hissiyotli imidj roliklar" },
   { name: "Rustam Qodirov", level: "BEGINNER", price: 18, city: "Qarshi", cats: ["podcast", "reels"], exp: 1, head: "Podkastdan qisqa kliplar kesish" },
   { name: "Madina Olimova", level: "MIDDLE", price: 48, city: "Samarqand", cats: ["youtube", "motion"], exp: 5, head: "YouTube kanallar uchun to‘liq montaj" },
 ] as const;
 
-const STILLS = ["wedding-hijab.webp", "car.webp", "reels.webp", "podcast-hosts.webp", "travel.webp", "food.webp"];
+const STILLS = ["clip.webp", "car.webp", "reels.webp", "podcast-hosts.webp", "travel.webp", "food.webp"];
 const SKILLS = ["Premiere Pro", "After Effects", "DaVinci Resolve", "CapCut", "Final Cut Pro", "Photoshop", "Cinema 4D", "Blender"];
 const COMMENTS = [
   "Juda tez va sifatli ishladi, rahmat!",
@@ -129,10 +136,10 @@ async function main() {
       const still = STILLS[(i + k) % STILLS.length];
       items.push({
         editorId: p.id,
-        title: ["To‘y klipi — Registon", "Avto reklama", "Shahar Reels’i", "Podkast epizodi", "Tog‘ sayohati vlog", "Osh — food reklama"][STILLS.indexOf(still)],
+        title: ["Klip — Registon", "Avto reklama", "Shahar Reels’i", "Podkast epizodi", "Tog‘ sayohati vlog", "Osh — food reklama"][STILLS.indexOf(still)],
         url: `https://t.me/montajchi_demo/${i * 10 + k}`,
         provider: "telegram",
-        category: ["wedding", "ads", "reels", "podcast", "youtube", "ads"][STILLS.indexOf(still)],
+        category: ["other", "ads", "reels", "podcast", "youtube", "ads"][STILLS.indexOf(still)],
         coverKey: await cover(still),
         sort: k,
       });
@@ -204,14 +211,13 @@ async function main() {
       .where(eq(s.editorProfiles.id, editorId));
   }
 
-  // TOP: 2 ta montajor
+  // TOP: 3 ta montajor (yagona reja — bir xil vazn, har 30 daqiqada navbat bilan almashadi)
   const now = Date.now();
-  for (const [idx, w] of [
-    [3, 30],
-    [1, 20],
-  ] as const) {
-    await db.insert(s.promotions).values({ editorId: editorIds[idx], weight: w, startsAt: new Date(now - DAY), endsAt: new Date(now + 9 * DAY) });
-    await db.update(s.editorProfiles).set({ boostWeight: w, boostUntil: new Date(now + 9 * DAY) }).where(eq(s.editorProfiles.id, editorIds[idx]));
+  const [topPlan] = await db.select().from(s.promotionPlans).where(eq(s.promotionPlans.isActive, true)).orderBy(s.promotionPlans.sort).limit(1);
+  const w = topPlan?.weight ?? 10;
+  for (const idx of [3, 1, 8]) {
+    await db.insert(s.promotions).values({ editorId: editorIds[idx], weight: w, startsAt: new Date(now - DAY), endsAt: new Date(now + 6 * DAY) });
+    await db.update(s.editorProfiles).set({ boostWeight: w, boostUntil: new Date(now + 6 * DAY) }).where(eq(s.editorProfiles.id, editorIds[idx]));
   }
 
   // Ochiq buyurtmalar (turli narx bo'limlarida)
@@ -219,7 +225,7 @@ async function main() {
     { t: "Instagram do‘kon uchun 10 ta Reels", b: 15, c: "reels" },
     { t: "Restoran reklamasi — 30 soniya", b: 28, c: "ads" },
     { t: "YouTube kanal uchun haftalik montaj", b: 35, c: "youtube" },
-    { t: "To‘y klipi (Samarqand), 4 daqiqa", b: 45, c: "wedding" },
+    { t: "Musiqiy klip (Samarqand), 4 daqiqa", b: 45, c: "other" },
     { t: "Logo animatsiyasi va intro", b: 22, c: "motion" },
     { t: "Brend uchun imidj rolik + rang", b: 75, c: "ads" },
     { t: "Podkastdan 8 ta qisqa klip", b: 12, c: "podcast" },
@@ -254,7 +260,7 @@ async function main() {
   }
 
   // Tekshirilayotgan to'lov (admin panel demo uchun)
-  const [plan] = await db.select().from(s.promotionPlans).where(eq(s.promotionPlans.name, "Pro")).limit(1);
+  const plan = topPlan;
   const [ed] = await db.select().from(s.editorProfiles).where(eq(s.editorProfiles.id, editorIds[6])).limit(1);
   if (plan && ed) {
     await db.insert(s.payments).values({
@@ -264,7 +270,8 @@ async function main() {
       planName: plan.name,
       days: plan.days,
       weight: plan.weight,
-      amountUzs: plan.priceUzs,
+      amountUzs: plan.priceUzs + 437,
+      payCode: 437,
       method: "UZCARD",
       payerNote: "Kartam oxiri 4417",
       receiptKey: await receipt(),

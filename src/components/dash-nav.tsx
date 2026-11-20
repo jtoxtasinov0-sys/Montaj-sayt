@@ -29,11 +29,11 @@ export function DashNav({ items }: { items: { href: string; label: string; badge
             aria-current={active ? "page" : undefined}
             className={cn(
               "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm transition",
-              active ? "bg-fg text-bg" : "text-muted hover:bg-card-2 hover:text-fg",
+              active ? "bg-fg text-bg" : "text-muted hover:text-fg",
             )}
           >
             {it.label}
-            {!!it.badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[0.7rem] font-semibold text-black">{it.badge}</span>}
+            {!!it.badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-fg px-1 text-[0.7rem] font-semibold text-bg">{it.badge}</span>}
           </Link>
         );
       })}

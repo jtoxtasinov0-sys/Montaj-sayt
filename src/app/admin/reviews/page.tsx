@@ -31,7 +31,7 @@ export default async function AdminReviews() {
           </td>
           <td className="max-w-sm px-4 py-3 text-xs text-muted">{r.comment || "—"}</td>
           <td className="px-4 py-3">
-            <Link href={`/editors/${slug}`} className="hover:text-primary-2">
+            <Link href={`/editors/${slug}`} className="hover:underline hover:underline-offset-4">
               {editor}
             </Link>
           </td>

@@ -1,38 +1,34 @@
-import { CreditCard, Flame, Info, Repeat } from "lucide-react";
+import { Check, CreditCard, Flame, Info, Repeat, Users, Zap } from "lucide-react";
 import { redirect } from "next/navigation";
-import { submitPayment } from "@/actions/payments";
+import { attachReceipt, cancelPayment, startPayment } from "@/actions/payments";
+import { AutoRefresh } from "@/components/auto-refresh";
 import { ActionForm, CopyButton, SubmitButton } from "@/components/form";
-import { Neon } from "@/components/motion";
 import { Field, StatusBadge } from "@/components/page-bits";
-import { PayAmount } from "@/components/pay-amount";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
+import { TOP_ROTATE_MINUTES } from "@/lib/constants";
 import { myPayments } from "@/lib/dashboard-data";
 import { getPaymentCards, getPlans } from "@/lib/data";
-import { payCodeFor, slotUsage } from "@/lib/payments";
+import { expireStalePayments, PENDING_TTL_MS, slotUsage } from "@/lib/payments";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
 import { cn, daysLeft, formatDate, formatUzs } from "@/lib/utils";
 
-export default async function PromotePage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+export default async function PromotePage() {
   const user = await requireUser("/dashboard/promote");
   const editor = await getEditorProfileByUser(user.id);
   if (!editor) redirect("/dashboard/profile");
-  const sp = await searchParams;
+  await expireStalePayments();
   const [d, locale, plans, cards, history] = await Promise.all([getDict(), getLocale(), getPlans(), getPaymentCards(), myPayments(user.id)]);
-  const [payCode, usage] = await Promise.all([
-    payCodeFor(user.id, plans.map((p) => p.priceUzs)),
-    Promise.all(plans.map((p) => slotUsage(p.weight, editor.id))),
-  ]);
+  const usage = await Promise.all(plans.map((p) => slotUsage(p.weight, editor.id)));
   const slots = new Map(plans.map((p, i) => [p.id, { ...usage[i], full: p.slots > 0 && usage[i].used >= p.slots }]));
-  const open = plans.filter((p) => !slots.get(p.id)!.full);
-  const pre = (open.find((p) => p.id === Number(sp.plan)) ?? open.find((p) => p.isPopular) ?? open[0])?.id;
   const boosted = editor.boostWeight > 0 && editor.boostUntil && editor.boostUntil > new Date();
-  const hasPending = history.some((h) => h.status === "PENDING");
+  const pending = history.find((h) => h.status === "PENDING");
+  const m = TOP_ROTATE_MINUTES;
 
   return (
     <div className="space-y-8">
-      <div className="card relative flex flex-wrap items-center gap-4 p-5">
-        {boosted && <Neon tone="accent" />}
-        <span className={cn("grid h-11 w-11 place-items-center rounded-2xl", boosted ? "bg-accent/15 text-accent" : "bg-card-2 text-muted")}>
+      {/* Hozirgi holat */}
+      <div className={cn("card flex flex-wrap items-center gap-4 p-5", boosted && "border-fg")}>
+        <span className={cn("grid h-11 w-11 place-items-center rounded-full border", boosted ? "border-fg bg-fg text-bg" : "border-line text-muted")}>
           <Flame className="h-5 w-5" />
         </span>
         <div className="flex-1">
@@ -45,131 +41,145 @@ export default async function PromotePage({ searchParams }: { searchParams: Prom
         </div>
       </div>
 
-      <ActionForm action={submitPayment} resetOnSuccess className="space-y-6">
-        {/* 1. Reja */}
-        <section>
-          <h2 className="mb-3 flex items-center gap-3 text-lg font-medium">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs text-white">1</span>
-            {d.promote.choose}
-          </h2>
-          <input type="hidden" name="payCode" value={payCode} />
-          <div className="grid gap-3 sm:grid-cols-3">
-            {plans.map((p) => {
-              const slot = slots.get(p.id)!;
-              return (
-                <label
-                  key={p.id}
-                  className={cn(
-                    "card relative p-5 transition",
-                    slot.full
-                      ? "cursor-not-allowed opacity-60"
-                      : "cursor-pointer has-[:checked]:border-primary-2 has-[:checked]:bg-primary/10 has-[:checked]:shadow-[0_0_0_1px_var(--primary-2)]",
-                  )}
-                >
-                  <input type="radio" name="planId" value={p.id} defaultChecked={p.id === pre} disabled={slot.full} required className="sr-only" />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted">{p.name}</span>
-                    {p.isPopular && <span className="chip chip-accent">{d.promo.popular}</span>}
-                  </div>
-                  <div className="mt-3 text-3xl font-light tracking-tight">
-                    {formatUzs(p.priceUzs + payCode)} <span className="text-sm text-muted">{d.common.uzs}</span>
-                  </div>
-                  <div className="text-xs text-muted">{fmt(d.promote.codeLine, { price: formatUzs(p.priceUzs), code: payCode })}</div>
-                  <div className="mt-1 text-sm text-muted">{fmt(d.promo.perDays, { days: p.days })}</div>
-                  {p.slots > 0 && (
-                    <div className={cn("mt-3 text-xs font-medium", slot.full ? "text-warn" : "text-success")}>
-                      {slot.full ? d.promote.slotsFull : fmt(d.promote.slotsFree, { free: p.slots - slot.used, slots: p.slots })}
-                      {slot.full && slot.nextFree && (
-                        <span className="block font-normal text-muted">{fmt(d.promote.slotsNext, { date: formatDate(slot.nextFree, locale) })}</span>
-                      )}
-                    </div>
-                  )}
-                </label>
-              );
-            })}
-          </div>
-          <p className="mt-3 flex items-center gap-2 text-xs text-muted">
-            <Repeat className="h-3.5 w-3.5 shrink-0" /> {d.promote.rotation}
-          </p>
-          <div className="mt-4 flex gap-3 rounded-2xl border border-line bg-card-2 p-4 text-sm">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary-2" />
-            <div>
-              <p className="font-medium">{fmt(d.promote.codeTitle, { code: payCode })}</p>
-              <p className="mt-1 leading-relaxed text-muted">{fmt(d.promote.codeText, { code: payCode })}</p>
+      {pending ? (
+        /* 2-qadam: aniq summani o'tkazish — bank xabari kelishi bilan avtomatik tasdiqlanadi */
+        <section className="space-y-4">
+          <AutoRefresh seconds={15} />
+          <div className="panel-invert rounded-[1.5rem] p-6 sm:p-8">
+            <p className="flex items-center gap-2 text-sm text-muted">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
+              </span>
+              {d.promote.waitingTitle}
+            </p>
+            <p className="mt-3 text-xs text-muted">{d.promote.toPay}</p>
+            <div className="mt-1 flex flex-wrap items-end justify-between gap-4">
+              <p className="text-[clamp(2.4rem,7vw,3.6rem)] leading-none font-light tracking-tight tabular-nums">
+                {formatUzs(pending.amountUzs)} <span className="text-lg text-muted">{d.common.uzs}</span>
+              </p>
+              <CopyButton text={String(pending.amountUzs)} label={d.common.copy} done={d.common.copied} />
             </div>
+            {pending.payCode > 0 && (
+              <p className="mt-2 text-sm text-muted">{fmt(d.promote.codeLine, { price: formatUzs(pending.amountUzs - pending.payCode), code: pending.payCode })}</p>
+            )}
+            <p className="mt-6 max-w-2xl leading-relaxed">{d.promote.waitingText}</p>
+            {pending.payCode > 0 && <p className="mt-2 max-w-2xl text-sm text-muted">{fmt(d.promote.exact, { code: pending.payCode })}</p>}
           </div>
-        </section>
 
-        {/* 2. Karta */}
-        <section>
-          <h2 className="mb-3 flex items-center gap-3 text-lg font-medium">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs text-white">2</span>
-            {d.promote.step1}
-          </h2>
-          <PayAmount
-            amounts={Object.fromEntries(plans.map((p) => [String(p.id), p.priceUzs + payCode]))}
-            initial={String(pre ?? "")}
-            labels={{ title: d.promote.toPay, uzs: d.common.uzs, copy: d.common.copy, copied: d.common.copied }}
-          />
           <div className="grid gap-3 md:grid-cols-2">
-            {cards.map((c, i) => (
-              <label
-                key={c.type + c.number}
-                className="relative block cursor-pointer overflow-hidden rounded-3xl border border-line p-5 transition has-[:checked]:border-primary-2 has-[:checked]:shadow-[0_0_0_1px_var(--primary-2)]"
-                style={{
-                  background:
-                    c.type === "VISA"
-                      ? "linear-gradient(135deg,#1b1f5e 0%,#3d4ce4 60%,#7d86ff 100%)"
-                      : "linear-gradient(135deg,#0d3b2e 0%,#138a5e 60%,#45c08a 100%)",
-                }}
-              >
-                <input type="radio" name="method" value={c.type} defaultChecked={i === 0} required className="sr-only" />
-                <div className="flex items-center justify-between text-white">
+            {cards.map((c) => (
+              <div key={c.type + c.number} className="card p-5">
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold tracking-widest">{c.type}</span>
-                  <CreditCard className="h-6 w-6 opacity-80" />
+                  <CreditCard className="h-5 w-5 text-muted" />
                 </div>
-                <p className="mt-8 font-mono text-xl tracking-[0.12em] text-white sm:text-2xl">{c.number}</p>
-                <div className="mt-4 flex items-end justify-between gap-3 text-white/80">
+                <p className="mt-6 font-mono text-xl tracking-[0.1em] sm:text-2xl">{c.number}</p>
+                <div className="mt-4 flex items-end justify-between gap-3">
                   <div className="text-xs">
-                    <p className="opacity-70">{d.promote.holder}</p>
-                    <p className="font-medium text-white">{c.holder}</p>
-                    {c.bank && <p className="opacity-70">{c.bank}</p>}
+                    <p className="text-muted">{d.promote.holder}</p>
+                    <p className="font-medium">{c.holder}</p>
+                    {c.bank && <p className="text-muted">{c.bank}</p>}
                   </div>
-                  <div className="dark">
-                    <CopyButton text={c.number} label={d.common.copy} done={d.common.copied} />
-                  </div>
+                  <CopyButton text={c.number} label={d.common.copy} done={d.common.copied} />
                 </div>
-              </label>
+              </div>
             ))}
           </div>
-          <p className="mt-3 flex items-center gap-2 text-xs text-muted">
-            <Info className="h-3.5 w-3.5" /> {d.promote.testNotice}
+
+          <p className="flex items-center gap-2 text-xs text-muted">
+            <Info className="h-3.5 w-3.5 shrink-0" />
+            {fmt(d.promote.expires, { date: formatDate(new Date(pending.createdAt.getTime() + PENDING_TTL_MS), locale) })}
+          </p>
+
+          {/* Zaxira: avtomatik tasdiqlanmasa — chek */}
+          <details className="card group p-5">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium [&::-webkit-details-marker]:hidden">
+              {pending.receiptKey ? d.promote.receiptSent : d.promote.receiptOptional}
+              <span className="text-muted transition group-open:rotate-45">+</span>
+            </summary>
+            <p className="mt-2 text-sm text-muted">{d.promote.receiptHint}</p>
+            <ActionForm action={attachReceipt} resetOnSuccess className="mt-4 grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+              <Field label={d.promote.receipt}>
+                <input name="receipt" type="file" required accept="image/jpeg,image/png,image/webp" className="input" />
+              </Field>
+              <Field label={`${d.promote.payerNote} (${d.common.optional})`}>
+                <input name="payerNote" maxLength={200} placeholder={d.promote.payerNotePh} className="input" />
+              </Field>
+              <SubmitButton variant="ghost">{d.promote.sendReceipt}</SubmitButton>
+            </ActionForm>
+          </details>
+
+          <ActionForm action={cancelPayment} confirmText={`${d.promote.cancel}?`}>
+            <SubmitButton variant="ghost" size="sm">
+              {d.promote.cancel}
+            </SubmitButton>
+          </ActionForm>
+        </section>
+      ) : (
+        /* 1-qadam: tarif — bitta tugma */
+        <section className={cn("grid gap-3", plans.length > 1 && "md:grid-cols-2")}>
+          {plans.map((p) => {
+            const slot = slots.get(p.id)!;
+            return (
+              <div key={p.id} className="card p-6 sm:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-sm text-muted">
+                    {d.promote.choose}: {p.name}
+                  </span>
+                  {p.slots > 0 && (
+                    <span className="chip">
+                      <Users className="h-3 w-3" />
+                      {slot.full ? d.promote.slotsFull : fmt(d.promote.slotsFree, { free: p.slots - slot.used, slots: p.slots })}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-6 text-[clamp(2.6rem,7vw,4rem)] leading-none font-light tracking-tight">
+                  {formatUzs(p.priceUzs)} <span className="text-lg text-muted">{d.common.uzs}</span>
+                </div>
+                <p className="mt-2 text-muted">/ {fmt(d.promo.perDays, { days: p.days })}</p>
+                <ul className="my-6 grid gap-2.5 text-sm sm:grid-cols-2">
+                  {d.promo.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0" /> {f}
+                    </li>
+                  ))}
+                  <li className="flex items-center gap-2">
+                    <Repeat className="h-4 w-4 shrink-0" /> {fmt(d.promo.rotation, { m })}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 shrink-0" /> {d.promo.auto}
+                  </li>
+                </ul>
+                {slot.full ? (
+                  <p className="rounded-xl border border-line px-4 py-3 text-sm">
+                    {d.promote.full}
+                    {slot.nextFree && (
+                      <span className="block text-muted">{fmt(d.promote.slotsNext, { date: formatDate(slot.nextFree, locale) })}</span>
+                    )}
+                  </p>
+                ) : (
+                  <ActionForm action={startPayment} className="space-y-3">
+                    <input type="hidden" name="planId" value={p.id} />
+                    <SubmitButton size="lg" className="w-full sm:w-auto">
+                      {fmt(d.promote.start, { price: formatUzs(p.priceUzs) })}
+                    </SubmitButton>
+                    <p className="text-xs text-muted">{d.promote.startHint}</p>
+                  </ActionForm>
+                )}
+              </div>
+            );
+          })}
+          <p className="flex items-center gap-2 text-xs text-muted">
+            <Repeat className="h-3.5 w-3.5 shrink-0" /> {fmt(d.promote.rotation, { m })}
           </p>
         </section>
+      )}
 
-        {/* 3. Chek */}
-        <section className="card space-y-4 p-6">
-          <h2 className="flex items-center gap-3 text-lg font-medium">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs text-white">3</span>
-            {d.promote.step2}
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label={d.promote.receipt} hint={d.promote.receiptHint}>
-              <input name="receipt" type="file" required accept="image/jpeg,image/png,image/webp" className="input" />
-            </Field>
-            <Field label={`${d.promote.payerNote} (${d.common.optional})`}>
-              <input name="payerNote" maxLength={200} placeholder={d.promote.payerNotePh} className="input" />
-            </Field>
-          </div>
-          {hasPending ? (
-            <p className="rounded-xl bg-warn/10 px-3 py-2 text-sm text-warn">{d.errors.pendingPayment}</p>
-          ) : !open.length ? (
-            <p className="rounded-xl bg-warn/10 px-3 py-2 text-sm text-warn">{d.promote.full}</p>
-          ) : (
-            <SubmitButton size="lg">{d.promote.submit}</SubmitButton>
-          )}
-        </section>
-      </ActionForm>
+      <details className="card p-5 text-sm">
+        <summary className="cursor-pointer font-medium">{fmt(d.promote.codeTitle, { code: pending?.payCode || "100–999" })}</summary>
+        <p className="mt-2 leading-relaxed text-muted">{fmt(d.promote.codeText, { code: pending?.payCode || "100–999" })}</p>
+      </details>
 
       <section>
         <h2 className="mb-3 text-lg font-medium">{d.promote.history}</h2>
@@ -179,19 +189,21 @@ export default async function PromotePage({ searchParams }: { searchParams: Prom
         ) : (
           <div className="space-y-2">
             {history.map((h) => (
-              <div key={h.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-card px-4 py-3.5">
+              <div key={h.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-line px-4 py-3.5">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">
-                    TOP {h.planName} · {fmt(d.promo.perDays, { days: h.days })}
+                    {h.planName} · {fmt(d.promo.perDays, { days: h.days })}
                   </p>
                   <p className="text-xs text-muted">
-                    {formatDate(h.createdAt, locale)} · {h.method}
+                    {formatDate(h.createdAt, locale)}
                     {h.adminNote ? ` · ${h.adminNote}` : ""}
                   </p>
                 </div>
-                <a href={`/api/files/${h.receiptKey}`} target="_blank" rel="noopener" className="text-xs text-primary-2 underline">
-                  {d.promote.receipt.split(" ")[0]}
-                </a>
+                {h.receiptKey && (
+                  <a href={`/api/files/${h.receiptKey}`} target="_blank" rel="noopener" className="text-xs underline">
+                    {d.promote.receipt}
+                  </a>
+                )}
                 <span className="text-right text-sm">
                   {formatUzs(h.amountUzs)} {d.common.uzs}
                   {h.payCode > 0 && (

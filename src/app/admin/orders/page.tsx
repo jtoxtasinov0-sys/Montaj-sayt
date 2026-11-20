@@ -39,7 +39,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         {rows.map(({ o, client, editor }) => (
           <tr key={o.id} className="align-top">
             <td className="max-w-xs px-4 py-3">
-              <Link href={`/orders/${o.id}`} className="font-medium hover:text-primary-2">
+              <Link href={`/orders/${o.id}`} className="font-medium hover:underline hover:underline-offset-4">
                 {o.title}
               </Link>
               <p className="text-xs text-muted">

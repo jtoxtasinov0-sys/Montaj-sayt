@@ -8,7 +8,6 @@ import { DEFAULT_CARDS } from "../lib/constants";
 
 const LOCK_ID = 774411; // pg_advisory_lock — bir nechta konteyner bir vaqtda migratsiya qilmasligi uchun
 
-
 export async function runMigrations() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
@@ -31,11 +30,8 @@ export async function runMigrations() {
     }
     const [{ count: planCount }] = await db.select({ count: sql<number>`count(*)::int` }).from(promotionPlans);
     if (planCount === 0) {
-      await db.insert(promotionPlans).values([
-        { name: "Start", days: 10, priceUzs: 30000, weight: 10, sort: 1, slots: 15 },
-        { name: "Pro", days: 10, priceUzs: 40000, weight: 20, sort: 2, isPopular: true, slots: 10 },
-        { name: "Premium", days: 10, priceUzs: 50000, weight: 30, sort: 3, slots: 5 },
-      ]);
+      // Yagona tarif: 7 kun, 50 000 so'm, 20 ta joy (bosh sahifada hammasi ko'rinadi) — admin paneldan o'zgaradi
+      await db.insert(promotionPlans).values([{ name: "TOP", days: 7, priceUzs: 50000, weight: 10, sort: 1, slots: 20 }]);
     }
     await db.insert(settings).values({ key: "payment_cards", value: DEFAULT_CARDS }).onConflictDoNothing();
   } finally {

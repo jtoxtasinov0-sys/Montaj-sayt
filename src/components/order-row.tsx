@@ -21,7 +21,7 @@ export function OrderRow({
       className="group flex items-center gap-3 rounded-2xl border border-line bg-card px-4 py-3.5 transition hover:border-line-strong sm:gap-4"
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium group-hover:text-primary-2">{o.title}</p>
+        <p className="truncate text-sm font-medium group-hover:underline group-hover:underline-offset-4">{o.title}</p>
         <p className="mt-0.5 truncate text-xs text-muted">
           {who ? `${who} · ` : ""}
           {d.order.deadline}: {formatDate(o.deadline, locale)}

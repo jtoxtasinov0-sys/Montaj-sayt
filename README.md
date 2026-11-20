@@ -1,7 +1,7 @@
 # Montaj Club — videomontajorlar platformasi
 
 Boshlang‘ich montajordan professionalgacha: portfolio, narx, halol reyting va buyurtmalar bitta joyda.
-Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qorong‘i/yorug‘ mavzu bitta tugma bilan almashadi.
+Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Dizayn — minimal oq-qora: asosiy mavzu **oq**, bitta tugma bilan **qora**ga almashadi.
 
 ## Imkoniyatlar
 
@@ -12,9 +12,9 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qo
 - Portfolio (YouTube/Vimeo sahifaning o‘zida ochiladi; Instagram, Telegram, Drive — havola) + muqova rasmi
 - Xizmatlar va narxlar (narxni montajor o‘zi belgilaydi)
 - Narx bo‘limlaridagi ($10–20, $20–30, $30–40, $40–50, $50+) ochiq buyurtmalarga taklif yuborish
-- **TOP ga chiqish**: 10 kunlik reja (Start 30 000 / Pro 40 000 / Premium 50 000 so‘m — admin paneldan o‘zgaradi). Ko‘proq to‘lagan yuqoriroqda turadi
-  - **To‘lov kodi:** har bir to‘lovchiga summaga 100–999 so‘m qo‘shiladi (masalan 50 000 → 50 437). Bankda “+50 437” ko‘rsangiz — kimning puli ekanini chek ochmasdan bilasiz. Sahifada nega shuncha ko‘p ekani ochiq tushuntirilgan
-  - **Joylar soni cheklangan** (boshlang‘ich: Premium 5, Pro 10, Start 15 — admin paneldan o‘zgaradi). Tekshirilayotgan to‘lov ham joy band qiladi; joy qolmasa reja tanlanmaydi
+- **TOP ga chiqish**: bitta tarif — **50 000 so‘m / 7 kun**, **20 ta joy** (admin paneldan o‘zgaradi). TOP montajorlarning hammasi bosh sahifada ko‘rinadi, tartib **har 30 daqiqada** navbat bilan almashadi
+  - **To‘lov kodi:** “TOP ga chiqish” bosilganda shaxsiy summa chiqadi — narxga 100–999 so‘m qo‘shiladi (masalan 50 000 → 50 437). Joy 24 soat band turadi; to‘lanmasa o‘zi bekor bo‘ladi
+  - **Avtomatik tasdiqlash:** kartaga aynan shu summa tushgani haqidagi bank xabari kelsa — TOP o‘zi yoqiladi, chek shart emas (pastda “Avtomatik to‘lov”). Chek — faqat zaxira yo‘l (admin qo‘lda tekshiradi)
 - Profil rasmi: kabinetda rasm ustiga bosib almashtiriladi, doira ichida surib/kattalashtirib kesiladi
 
 **Mijozlar uchun**
@@ -27,7 +27,8 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qo
 - 60% — Bayes o‘rtacha bahosi (kam baholi yangi montajorlar ham adolatli ko‘rinadi)
 - 25% — o‘z vaqtida topshirilgan ishlar ulushi
 - 15% — yakunlangan ishlar soni
-- Katalog tartibi: avval TOP (reja vazni bo‘yicha), keyin reyting balli. Bir xil rejadagilar **har soatda navbat bilan** almashadi: n kishi bo‘lsa, har biri n soatda bir marta 1-o‘rinda turadi
+- Katalog tartibi: avval TOP, keyin reyting balli. TOPdagilar **har 30 daqiqada navbat bilan** almashadi: n kishi bo‘lsa, har biri n×30 daqiqada bir marta 1-o‘rinda turadi
+- Bosh sahifada reyting foizlari ko‘rsatilmaydi (oddiy foydalanuvchiga ortiqcha) — hisob-kitob ichkarida qoladi
 
 **Admin panel** (`/admin`, faqat adminlarga ko‘rinadi — boshqalarga 404)
 - Dashboard: tushum, foydalanuvchilar, buyurtmalar statistikasi
@@ -47,7 +48,7 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Qo
 | Qism | Tanlov | Nega |
 |---|---|---|
 | Frontend + backend | Next.js 16 (App Router, Server Actions), React 19 | SEO, tez, bitta loyiha |
-| Dizayn | Tailwind CSS 4, DM Sans + Onest (kirill uchun) | Referenslardagi uslub, o‘z serverimizdan yuklanadigan shriftlar |
+| Dizayn | Tailwind CSS 4, Delight (lotin) + Onest (kirill uchun) | Minimal oq-qora uslub, o‘z serverimizdan yuklanadigan shriftlar |
 | Ma’lumotlar bazasi | PostgreSQL 16 + Drizzle ORM | Ishonchli, tez, SQL-injection’dan himoyalangan |
 | Login | O‘zimizning Google OAuth (PKCE) + DB sessiyalar | Uchinchi tomon kutubxonasiga bog‘liq emas, sessiyani darhol bekor qilish mumkin |
 | Rasmlar | sharp (WEBP ga qayta kodlash) | Kichik hajm, EXIF/zararli kod tozalanadi |
@@ -111,6 +112,14 @@ Sayt `https://` domenda ishlayotgan bo‘lishi kerak (Telegram oddiy `http` yoki
 
 Shundan keyin har bir yangi to‘lov chek rasmi bilan botga keladi: bankda summani (kodni) ko‘rib **✅ Tasdiqlash** ni bossangiz, TOP darhol yoqiladi.
 
+### Avtomatik to‘lov
+Har bir to‘lov summasi noyob (narx + 100–999 so‘m kod), shuning uchun bankdagi summa to‘lovchini aniq ko‘rsatadi. Pul tushgani haqidagi xabar ikki yo‘l bilan keladi:
+
+1. **To‘liq avtomatik:** `.env` ga `PAYMENT_WEBHOOK_SECRET` (uzun tasodifiy satr) yozing. Kartaga SMS keladigan Android telefonga “SMS forwarder” (webhook) ilovasini o‘rnatib, bankdan keladigan SMS’larni `POST https://SIZNING-DOMEN/api/payments/incoming?key=<PAYMENT_WEBHOOK_SECRET>` ga yuboring (yoki kalitni `X-Payment-Secret` sarlavhasida). Tana — JSON, forma yoki oddiy matn.
+2. **Bir bosishda:** bank bildirishnomasini (CardXabar, HUMO bot va h.k.) admin Telegram botga forward qiling — bot summani topib, to‘lovni tasdiqlaydi.
+
+Balans qatorlari (“Dostupno”, “Остаток”, “💰”) va chiqim xabarlari (“Списание”, “Oplata”) hisobga olinmaydi. Tushgan summalar `incoming_transfers` jadvalida saqlanadi: pul to‘lov yaratilishidan oldin tushsa ham keyin moslanadi.
+
 ### To‘lov kartalari
 Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 9012`). **Admin → Sozlamalar → To‘lov kartalari** dan o‘zingizning haqiqiy kartangizni kiriting.
 
@@ -167,4 +176,4 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 | `npm run db:migrate` | Migratsiyani qo‘lda qo‘llash |
 | `npm run db:seed-demo` | Demo ma’lumotlar |
 
-Rasmlar (hero, ikonkalar, kadrlar) Gemini yordamida generatsiya qilingan va `public/images` da.
+Ikonkalar Gemini (`gemini-2.5-flash-image`) yordamida ingichka chiziqli qilib chizilgan, potrace bilan vektorlashtirilgan va bitta SVG spraytda: `public/images/icons/glyphs-v2.svg`. Ikonka almashtirilsa — yangi fayl nomi bering (`glyphs-v3.svg`), aks holda brauzerlar eskisini ko‘rsatadi.

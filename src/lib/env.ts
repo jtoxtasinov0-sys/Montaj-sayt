@@ -12,6 +12,8 @@ export const env = {
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
   adminEmails: list(process.env.ADMIN_EMAILS).map((e) => e.toLowerCase()),
   uploadDir: process.env.UPLOAD_DIR ?? `${process.cwd()}/uploads`,
+  /** Bank xabarlarini qabul qiluvchi /api/payments/incoming uchun maxfiy kalit (avtomatik to'lov tasdiqlash) */
+  paymentWebhookSecret: process.env.PAYMENT_WEBHOOK_SECRET ?? "",
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN ?? "",
     adminChatId: process.env.TELEGRAM_ADMIN_CHAT_ID ?? "",

@@ -14,7 +14,7 @@ import {
   type PriceTier,
 } from "@/db/schema";
 import { cached } from "@/lib/cache";
-import { DEFAULT_CARDS, LIMITS } from "@/lib/constants";
+import { DEFAULT_CARDS, LIMITS, TOP_ROTATE_MINUTES } from "@/lib/constants";
 import { expireBoosts } from "@/lib/ranking";
 import { escapeLike } from "@/lib/utils";
 
@@ -105,15 +105,15 @@ export type EditorFilters = {
 };
 
 /**
- * Asosiy tartib: avval TOP reja vazni (Premium → Pro → Start), keyin TOPsizlar reyting bo'yicha.
- * Bir xil rejadagilar har soatda navbat bilan almashadi (karusel): har soat hamma bir pog'ona
- * pastga suriladi, eng pastdagi esa tepaga chiqadi — n kishi bo'lsa, har biri n soatda bir marta 1-o'rinda.
+ * Asosiy tartib: avval TOP (reja vazni), keyin TOPsizlar reyting bo'yicha.
+ * Bir xil rejadagilar har TOP_ROTATE_MINUTES (30) daqiqada navbat bilan almashadi (karusel): har safar hamma
+ * bir pog'ona pastga suriladi, eng pastdagi esa tepaga chiqadi — n kishi bo'lsa, har biri n×30 daqiqada bir marta 1-o'rinda.
  * Oyna funksiyalari WHERE'dan keyin hisoblanadi, ya'ni filtrlangan ro'yxat ichida ham adolatli.
  */
 function topOrder() {
-  const hour = Math.floor(Date.now() / 3_600_000);
+  const slot = Math.floor(Date.now() / (TOP_ROTATE_MINUTES * 60_000));
   const turn = sql`case when ${editorProfiles.boostWeight} > 0 then
-    (row_number() over (partition by ${editorProfiles.boostWeight} order by ${editorProfiles.id}) + ${hour}::bigint)
+    (row_number() over (partition by ${editorProfiles.boostWeight} order by ${editorProfiles.id}) + ${slot}::bigint)
     % count(*) over (partition by ${editorProfiles.boostWeight}) end`;
   return [desc(editorProfiles.boostWeight), asc(turn), desc(editorProfiles.score), desc(editorProfiles.createdAt)];
 }

@@ -74,6 +74,29 @@ export default async function AdminSettings() {
           <TierForm />
         </div>
 
+        <div className="card space-y-3 p-6">
+          <h2 className="text-lg font-medium">Avtomatik to&apos;lov tasdiqlash</h2>
+          <p className="text-sm text-muted">
+            Har bir montajorga shaxsiy summa beriladi (narx + 100–999 so&apos;m kod). Kartaga aynan shu summa tushgani haqidagi bank xabari kelsa —
+            TOP o&apos;zi yoqiladi, chek tekshirish shart emas.
+          </p>
+          <ol className="list-decimal space-y-2 pl-5 text-sm">
+            <li>
+              <b>To&apos;liq avtomatik:</b> kartaga SMS keladigan Android telefonga &quot;SMS forwarder&quot; (webhook) ilovasini o&apos;rnating va bankdan
+              keladigan SMS&apos;larni shu manzilga POST qiling:
+              <code className="mt-1 block rounded-lg bg-card-2 px-2 py-1.5 text-xs break-all">{env.appUrl}/api/payments/incoming?key=PAYMENT_WEBHOOK_SECRET</code>
+            </li>
+            <li>
+              <b>Bir bosishda:</b> bank bildirishnomasini (CardXabar, HUMO bot va h.k.) admin Telegram botga forward qiling — bot summani
+              topib, to&apos;lovni tasdiqlaydi.
+            </li>
+          </ol>
+          <ul className="space-y-1 text-sm">
+            <li>{check(!!env.paymentWebhookSecret)} PAYMENT_WEBHOOK_SECRET</li>
+          </ul>
+          <p className="text-xs text-muted">24 soat ichida to&apos;lanmagan (chek ham yuborilmagan) to&apos;lovlar o&apos;zi bekor bo&apos;ladi va joy bo&apos;shaydi.</p>
+        </div>
+
         <div className="card space-y-4 p-6">
           <h2 className="text-lg font-medium">Telegram bot</h2>
           <ul className="space-y-1 text-sm">
