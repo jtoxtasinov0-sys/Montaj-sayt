@@ -6,7 +6,7 @@ import { HeroArt } from "./hero-art";
 
 type Css = React.CSSProperties & Record<`--${string}`, string | number>;
 
-/** Montaj taymlayni: o'lchov chizig'i va kliplar chapdan o'ngga chiziladi, pleyhed sekin yuradi */
+/** Montaj taymlayni: kliplar chapdan o'ngga chiziladi, pleyhed sekin yuradi (vaqt yozuvlari va o'lchov chizig'i yo'q) */
 const CLIPS = [
   { row: 0, l: 0, w: 21, fill: true, d: 550 },
   { row: 0, l: 22, w: 30, d: 700 },
@@ -20,15 +20,9 @@ const CLIPS = [
 function HeroTimeline() {
   return (
     <div data-anim aria-hidden className="mt-10 sm:mt-12">
-      <div className="tl-tc mb-2 flex justify-between">
-        <span>00:00:00</span>
-        <span className="max-sm:hidden">00:00:15</span>
-        <span>00:00:30</span>
-      </div>
       <div className="tl">
-        <div className="tl-ruler" />
         {[0, 1].map((row) => (
-          <div key={row} className="tl-track" style={{ top: row === 0 ? "1.3rem" : "2.9rem" }}>
+          <div key={row} className="tl-track" style={{ top: row === 0 ? "0.7rem" : "2.3rem" }}>
             {CLIPS.filter((c) => c.row === row).map((c) => (
               <span
                 key={c.l}
