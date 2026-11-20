@@ -50,8 +50,7 @@ function HeroTimeline() {
  */
 export function Hero({ d }: { d: Dict }) {
   return (
-    // data-rb: skroll lentasi shu yerdan (chap chetdan, hero pastidan) boshlanadi
-    <section data-rb="via" data-rb-x={-0.06} data-rb-y={0.93} className="container-x pt-32 pb-10 sm:pt-36">
+    <section className="container-x pt-32 pb-10 sm:pt-36">
       <div className="relative">
         {/* O'ng tomonda almashib turuvchi illyustratsiya (Gemini'da chizilgan). Telefonda joy tor — u yerda yashirin. */}
         <HeroArt className="absolute top-0 right-0 hidden lg:block" />

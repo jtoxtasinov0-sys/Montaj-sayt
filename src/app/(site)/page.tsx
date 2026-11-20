@@ -47,7 +47,7 @@ export default async function HomePage() {
       <PromoSection d={d} plans={plans} />
       <ReviewsSection d={d} items={reviews} />
       {/* Ko'tariladigan qorong'i panel (cuberto.com uslubi); ichida doim qorong'i ranglar */}
-      <div data-rb="via" data-rb-x={0.35} data-rb-y={0.06} className="rise-panel dark">
+      <div className="rise-panel dark">
         <FaqSection d={d} first />
         <FinalCta d={d} />
       </div>
