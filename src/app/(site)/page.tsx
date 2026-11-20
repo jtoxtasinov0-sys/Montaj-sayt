@@ -1,6 +1,7 @@
 import { Avatar } from "@/components/avatar";
 import { AvailableToast } from "@/components/home/available-toast";
 import { Hero } from "@/components/home/hero";
+import { ScrollRibbon } from "@/components/home/scroll-ribbon";
 import {
   CategoriesSection,
   FaqSection,
@@ -28,7 +29,9 @@ export default async function HomePage() {
   const available = top.find((e) => e.isAvailable);
 
   return (
-    <>
+    // isolate + relative: skroll lentasi (-z-10) shu blok ichida, kontent ortida chiziladi
+    <div className="relative isolate">
+      <ScrollRibbon />
       <Hero d={d} />
       <SoftwareMarquee />
       <StatsStrip d={d} s={stats} />
@@ -50,6 +53,6 @@ export default async function HomePage() {
           closeLabel={d.common.close}
         />
       )}
-    </>
+    </div>
   );
 }
