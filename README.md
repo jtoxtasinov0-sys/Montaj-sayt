@@ -176,4 +176,4 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 | `npm run db:migrate` | Migratsiyani qo‘lda qo‘llash |
 | `npm run db:seed-demo` | Demo ma’lumotlar |
 
-Ikonkalar Gemini (`gemini-2.5-flash-image`) yordamida ingichka chiziqli qilib chizilgan, potrace bilan vektorlashtirilgan va bitta SVG spraytda: `public/images/icons/glyphs-v1.svg`. Ikonka almashtirilsa — yangi fayl nomi bering (`glyphs-v2.svg`), aks holda brauzerlar eskisini ko‘rsatadi.
+Ikonkalar Gemini (`gemini-2.5-flash-image`) yordamida ingichka chiziqli qilib chizilgan, potrace bilan vektorlashtirilgan va bitta SVG spraytda: `public/images/icons/glyphs-v2.svg`. Ikonka almashtirilsa — yangi fayl nomi bering (`glyphs-v3.svg`), aks holda brauzerlar eskisini ko‘rsatadi.

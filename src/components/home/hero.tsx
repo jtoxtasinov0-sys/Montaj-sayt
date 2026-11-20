@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SplitText } from "@/components/motion";
 import type { Dict } from "@/lib/i18n";
+import { HeroArt } from "./hero-art";
 
 type Css = React.CSSProperties & Record<`--${string}`, string | number>;
 
@@ -45,24 +46,29 @@ function HeroTimeline() {
 
 /**
  * Minimal hero (minimal.gallery uslubi): asosan matn, ortiqcha bezaksiz.
- * Bitta kichik "e'tibor tortuvchi" detal — montaj taymlayni chiziladi.
+ * E'tibor tortuvchi detallar: o'ngda o'zini chizadigan ingichka illyustratsiya va pastda montaj taymlayni.
  */
 export function Hero({ d }: { d: Dict }) {
   return (
     <section className="container-x pt-32 pb-10 sm:pt-36">
-      <p className="eyebrow fade-up">{d.hero.badge}</p>
+      <div className="relative">
+        {/* O'ng tomonda almashib turuvchi illyustratsiya (Gemini'da chizilgan). Telefonda joy tor — u yerda yashirin. */}
+        <HeroArt className="absolute top-0 right-0 hidden lg:block" />
 
-      <h1 className="h-hero mt-7 text-[clamp(3rem,9.5vw,8rem)]">
-        <span className="block pb-[0.06em]">
-          <SplitText text={d.hero.titleA} load delay={80} stagger={70} />
-        </span>
-        <span className="block pb-[0.06em]">
-          <SplitText text={d.hero.titleB} load delay={200} stagger={70} />
-        </span>
-        <span className="block pb-[0.06em] text-muted">
-          <SplitText text={d.hero.titleC} load delay={320} stagger={70} />
-        </span>
-      </h1>
+        <p className="eyebrow fade-up">{d.hero.badge}</p>
+
+        <h1 className="h-hero mt-7 text-[clamp(3rem,9.5vw,8rem)]">
+          <span className="block pb-[0.06em]">
+            <SplitText text={d.hero.titleA} load delay={80} stagger={70} />
+          </span>
+          <span className="block pb-[0.06em]">
+            <SplitText text={d.hero.titleB} load delay={200} stagger={70} />
+          </span>
+          <span className="block pb-[0.06em] text-muted">
+            <SplitText text={d.hero.titleC} load delay={320} stagger={70} />
+          </span>
+        </h1>
+      </div>
 
       <HeroTimeline />
 

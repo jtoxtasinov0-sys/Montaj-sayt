@@ -404,6 +404,14 @@
   [data-reveal][data-in=""] .glyph {
     animation: glyph-draw 1.8s cubic-bezier(0.45, 0, 0.25, 1) calc(var(--d, 0ms) + 150ms) backwards;
   }
+  /* Sahifa ochilganda darhol ko'rinadigan katta ikonka (hero) — yuklanishda bir marta sekin chiziladi */
+  .glyph-load .glyph {
+    animation: glyph-draw 2.6s cubic-bezier(0.45, 0, 0.25, 1) 0.4s backwards;
+  }
+  /* Almashish oldidan: ichi so'nadi, kontur chiziq bo'ylab o'chadi (HeroArt) */
+  .glyph-out .glyph {
+    animation: glyph-erase 0.75s cubic-bezier(0.55, 0, 0.75, 0.4) forwards;
+  }
   /* Kursor olib borilganda: biroz ko'tariladi va qaytadan chiziladi (yuqoridagi qoidadan keyin — ustun turadi) */
   .glyph-host:hover .glyph,
   .glyph-host:focus-visible .glyph,
@@ -613,6 +621,23 @@
     fill-opacity: 1;
     stroke-opacity: 0;
     stroke-dashoffset: 0;
+  }
+}
+@keyframes glyph-erase {
+  0% {
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    stroke-dashoffset: 0;
+  }
+  30% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: -1;
   }
 }
 @keyframes fade-up {

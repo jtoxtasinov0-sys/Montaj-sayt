@@ -48,14 +48,14 @@ export function SplitText({
 }
 
 /**
- * Gemini'da chizilgan ingichka chiziqli ikonka (public/images/icons/glyphs-v1.svg, potrace bilan vektorlashtirilgan).
+ * Gemini'da chizilgan ingichka chiziqli ikonka (public/images/icons/glyphs-v2.svg, potrace bilan vektorlashtirilgan).
  * Rangi matn rangidan — mavzu bilan almashadi. `.glyph-host` ichida bo'lsa, kursor olib borilganda ikonka
  * o'zini qaytadan chizadi (avval chiziq bo'ylab, keyin to'ladi); ko'rinishga kirganda ham bir marta chiziladi.
  */
 export function GlyphIcon({ name, className }: { name: string; className?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 1024 1024" className={cn("glyph", className)}>
-      <use href={`/images/icons/glyphs-v1.svg#${name}`} />
+      <use href={`/images/icons/glyphs-v2.svg#${name}`} />
     </svg>
   );
 }
