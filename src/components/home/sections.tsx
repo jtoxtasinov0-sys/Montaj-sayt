@@ -104,7 +104,7 @@ export function StatsStrip({ d, s }: { d: Dict; s: { editors: number; completed:
 // ---------- Hozir eng ko'p tanlanayotganlar (TOP + reyting) ----------
 export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCardData[] }) {
   return (
-    <section data-rb-shape="b" className="container-x pt-28">
+    <section data-rb-shape="b" className="container-x pt-28 sm:pt-40 lg:pt-52">
       <Rule className="mb-12" />
       <SectionHead
         title={d.topEditors.title}
@@ -148,7 +148,7 @@ export function TiersSection({
   counts: Record<number, { editors: number; jobs: number }>;
 }) {
   return (
-    <section data-rb-shape="a" className="container-x pt-28">
+    <section className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead title={d.tiers.title} subtitle={d.tiers.subtitle} />
       {/* Telefonda ikki ustun (uzun ro'yxat bo'lmasin), toq oxirgi karta to'liq kenglikda */}
@@ -230,7 +230,7 @@ const WORK_PHOTOS = [
 
 export function ShowcaseSection({ d }: { d: Dict }) {
   return (
-    <section data-rb-shape="b" className="container-x pt-28">
+    <section data-rb-shape="b" className="container-x pt-28 sm:pt-40 lg:pt-52">
       <Rule className="mb-12" />
       <SectionHead
         title={d.showcase.title}
@@ -284,7 +284,7 @@ export function ReviewsSection({ d, items }: { d: Dict; items: ReviewItem[] }) {
   if (items.length < 3) return null;
   const list = items.slice(0, items.length >= 6 ? 6 : 3);
   return (
-    <section data-rb-shape="a" className="container-x pt-28">
+    <section className="container-x pt-28">
       <Rule className="mb-12" />
       <h2 className="h-section mx-auto max-w-3xl text-center text-[clamp(2.2rem,5vw,4rem)] text-balance">
         <SplitText text={d.reviewsSection.title} />
@@ -360,7 +360,7 @@ function HowCard({
 
 export function HowItWorks({ d }: { d: Dict }) {
   return (
-    <section data-rb-shape="a" id="how" className="container-x scroll-mt-24 pt-28">
+    <section id="how" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
       <SectionHead title={d.how.title} />
       <div className="grid gap-4 lg:grid-cols-2">
