@@ -8,23 +8,26 @@ import {
   FinalCta,
   HowItWorks,
   PromoSection,
+  ReviewsSection,
+  ShowcaseSection,
   SoftwareMarquee,
   StatsStrip,
   TiersSection,
   TopEditorsSection,
 } from "@/components/home/sections";
 import { HOME_TOP_COUNT } from "@/lib/constants";
-import { getHomeStats, getPlans, getTierCounts, getTiers, getTopEditors } from "@/lib/data";
+import { getHomeStats, getPlans, getRecentReviews, getTierCounts, getTiers, getTopEditors } from "@/lib/data";
 import { getDict } from "@/lib/i18n";
 
 export default async function HomePage() {
-  const [d, stats, top, tiers, counts, plans] = await Promise.all([
+  const [d, stats, top, tiers, counts, plans, reviews] = await Promise.all([
     getDict(),
     getHomeStats(),
     getTopEditors(HOME_TOP_COUNT),
     getTiers(),
     getTierCounts(),
     getPlans(),
+    getRecentReviews(6),
   ]);
   const available = top.find((e) => e.isAvailable);
 
@@ -37,12 +40,17 @@ export default async function HomePage() {
       <StatsStrip d={d} s={stats} />
       <TopEditorsSection d={d} editors={top} />
       <TiersSection d={d} tiers={tiers} counts={counts} />
+      <ShowcaseSection d={d} />
       <CategoriesSection d={d} />
       {/* "Qanday ishlaydi" — sherik taklifi bilan pastroqqa tushirildi */}
       <HowItWorks d={d} />
       <PromoSection d={d} plans={plans} />
-      <FaqSection d={d} />
-      <FinalCta d={d} />
+      <ReviewsSection d={d} items={reviews} />
+      {/* Ko'tariladigan qorong'i panel (cuberto.com uslubi); ichida doim qorong'i ranglar */}
+      <div className="rise-panel dark">
+        <FaqSection d={d} first />
+        <FinalCta d={d} />
+      </div>
       {available && (
         <AvailableToast
           name={available.displayName}

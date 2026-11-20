@@ -71,7 +71,7 @@ const SAMPLES = 900;
 const TIP = 0.72;
 
 /**
- * Skroll bilan chiziladigan yo'g'on lenta (referens: lusion.co). Bosh sahifa kontenti ortida turadi:
+ * Skroll bilan chiziladigan yo'g'on rangli lenta (referens: lusion.co). Bosh sahifa kontenti ortida turadi:
  * kartalar ustidan yopadi, bo'sh joylarda ko'rinadi. Uchi doim ko'rinish oynasining ~72% balandligida —
  * pastga tushganda chiziladi, yuqoriga qaytganda o'chadi. Harakat silliq (lerp), faqat kerak bo'lganda rAF ishlaydi.
  */
@@ -79,6 +79,7 @@ export function ScrollRibbon() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const gradRef = useRef<SVGLinearGradientElement>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -129,6 +130,7 @@ export function ScrollRibbon() {
       if (!w || !h) return;
       top = wrap.getBoundingClientRect().top + window.scrollY;
       svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      gradRef.current?.setAttribute("y2", String(h));
       path.setAttribute("d", smoothPath(PATH.map(([x, y]) => [x * w, y * h])));
       path.setAttribute("stroke-width", String(w < 640 ? 16 : w < 1024 ? 24 : 34));
       const total = path.getTotalLength();
@@ -168,10 +170,18 @@ export function ScrollRibbon() {
   return (
     <div ref={wrapRef} aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <svg ref={svgRef} className="block h-full w-full" fill="none">
+        {/* Rang yuqoridan pastga: ko'k → binafsha → yashil-moviy (lusion.co oxiridagidek) */}
+        <defs>
+          <linearGradient ref={gradRef} id="ribbon-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1000">
+            <stop offset="0" stopColor="var(--ribbon-a)" />
+            <stop offset="0.55" stopColor="var(--ribbon-b)" />
+            <stop offset="1" stopColor="var(--ribbon-c)" />
+          </linearGradient>
+        </defs>
         <path
           ref={pathRef}
           pathLength={1}
-          stroke="var(--ribbon)"
+          stroke="url(#ribbon-grad)"
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
