@@ -313,7 +313,10 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {isClient && (o.status === "OPEN" || o.status === "PENDING") && (
-            <ActionForm action={cancelOrder.bind(null, o.id)} confirmText={`${d.order.cancel}?`}>
+            <ActionForm
+              action={cancelOrder.bind(null, o.id)}
+              confirm={{ text: d.order.cancelAsk, yes: d.order.cancelYes, no: d.common.no }}
+            >
               <SubmitButton variant="ghost" className="w-full text-danger">
                 {d.order.cancel}
               </SubmitButton>

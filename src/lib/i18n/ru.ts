@@ -45,6 +45,7 @@ export const ru: Dict = {
     errorText: "Пожалуйста, попробуйте чуть позже.",
     tryAgain: "Попробовать снова",
     or: "или",
+    no: "Нет",
   },
   nav: {
     editors: "Монтажёры",
@@ -294,6 +295,8 @@ export const ru: Dict = {
     requestRevision: "Отправить на доработку",
     complete: "Принять и завершить",
     cancel: "Отменить заказ",
+    cancelAsk: "Отменить заказ? Это действие нельзя отменить.",
+    cancelYes: "Да, отменить",
     proposeTitle: "Отправить предложение",
     proposalPrice: "Ваша цена (USD)",
     proposalDays: "За сколько дней",
