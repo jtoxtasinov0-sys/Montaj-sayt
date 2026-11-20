@@ -5,38 +5,44 @@ import { useEffect, useRef } from "react";
 type Pt = [number, number];
 
 /**
- * Lenta yo'li: x — kenglik ulushi, y — balandlik ulushi (0…1). Chetdan tashqariga (x < 0 yoki > 1) chiqishi mumkin.
- * Yuqoriga qaytadigan nuqtalar halqa hosil qiladi (lusion.co uslubi).
+ * Halqa nuqtalari (rx, ry birliklarida). "ccw" — o'ngdan kirib, pastdan chapga, chap tomondan yuqoriga,
+ * tepadan o'ngga aylanadi va o'ng tomondan pastga tushib, kirish chizig'ini kesib o'tadi (lusion.co dagidek halqa).
+ * "cw" — xuddi shu, ko'zgudagidek (chapdan kiradi).
  */
-const PATH: Pt[] = [
-  [-0.08, 0.1],
-  [0.22, 0.118],
-  [0.56, 0.108],
-  [0.9, 0.145],
-  [1.06, 0.2],
-  [0.78, 0.262],
-  [0.36, 0.3],
-  [0.07, 0.36],
-  [0.05, 0.43],
-  [0.3, 0.47],
-  [0.62, 0.468],
-  [0.86, 0.5],
-  [0.9, 0.545],
-  [0.78, 0.56],
-  [0.7, 0.535],
-  [0.8, 0.51],
-  [0.95, 0.53],
-  [1.04, 0.6],
-  [0.72, 0.66],
-  [0.3, 0.7],
-  [-0.04, 0.76],
-  [0.12, 0.82],
-  [0.55, 0.85],
-  [0.92, 0.9],
-  [0.66, 0.95],
-  [0.38, 0.985],
-  [0.6, 1.02],
+const LOOP: Pt[] = [
+  [1.9, 0.95],
+  [0.2, 1.0],
+  [-0.95, 0.2],
+  [-0.45, -0.9],
+  [0.5, -0.85],
+  [0.98, 0.05],
+  [0.45, 1.55],
 ];
+
+/**
+ * Lenta yo'li sahifadagi belgilangan elementlarga bog'lanadi (ekran o'lchami o'zgarsa ham halqa o'z sarlavhasi atrofida qoladi):
+ *  - `data-rb="via"` — bitta nuqta: x = data-rb-x × kenglik, y = element tepasi + data-rb-y × element balandligi;
+ *  - `data-rb="loop"` — shu nuqta atrofida halqa (data-rb-dir: ccw | cw, data-rb-r: radius ko'paytiruvchisi).
+ */
+function anchorPoints(wrap: HTMLElement, w: number): Pt[] {
+  const base = wrap.getBoundingClientRect();
+  const r0 = w < 640 ? w * 0.24 : Math.min(190, Math.max(110, w * 0.11));
+  const pts: Pt[] = [];
+  wrap.querySelectorAll<HTMLElement>("[data-rb]").forEach((el) => {
+    const r = el.getBoundingClientRect();
+    const x = parseFloat(el.dataset.rbX ?? "0.5") * w;
+    const y = r.top - base.top + parseFloat(el.dataset.rbY ?? "0.5") * r.height;
+    if (el.dataset.rb === "loop") {
+      const rx = r0 * parseFloat(el.dataset.rbR ?? "1");
+      const ry = rx * 1.05;
+      const s = el.dataset.rbDir === "cw" ? -1 : 1;
+      for (const [ox, oy] of LOOP) pts.push([x + s * ox * rx, y + oy * ry]);
+    } else {
+      pts.push([x, y]);
+    }
+  });
+  return pts;
+}
 
 /**
  * Centripetal Catmull-Rom → kubik Bezier: nuqtalar orqali silliq egri chiziq.
@@ -55,41 +61,46 @@ function smoothPath(pts: Pt[]) {
     const d1 = Math.sqrt(Math.hypot(p1[0] - p0[0], p1[1] - p0[1]));
     const d2 = Math.sqrt(Math.hypot(p2[0] - p1[0], p2[1] - p1[1]));
     const d3 = Math.sqrt(Math.hypot(p3[0] - p2[0], p3[1] - p2[1]));
-    const c1: Pt = d1 < 1e-6
-      ? p1
-      : [0, 1].map((k) => (d1 * d1 * p2[k] - d2 * d2 * p0[k] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[k]) / (3 * d1 * (d1 + d2))) as Pt;
-    const c2: Pt = d3 < 1e-6
-      ? p2
-      : [0, 1].map((k) => (d3 * d3 * p1[k] - d2 * d2 * p3[k] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[k]) / (3 * d3 * (d3 + d2))) as Pt;
+    const c1: Pt =
+      d1 < 1e-6
+        ? p1
+        : ([0, 1].map((k) => (d1 * d1 * p2[k] - d2 * d2 * p0[k] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[k]) / (3 * d1 * (d1 + d2))) as Pt);
+    const c2: Pt =
+      d3 < 1e-6
+        ? p2
+        : ([0, 1].map((k) => (d3 * d3 * p1[k] - d2 * d2 * p3[k] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[k]) / (3 * d3 * (d3 + d2))) as Pt);
     d += ` C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
   }
   return d;
 }
 
-const SAMPLES = 900;
+const SAMPLES = 1600;
 /** Lenta uchi ekranning shu qismigacha chizilgan bo'ladi */
 const TIP = 0.72;
+/** Chizish tezligi chegarasi (lenta uzunligi, px/kadr) — halqalar qalam bilan chizilgandek bir tekis chiziladi */
+const SPEED = 38;
 
 /**
- * Skroll bilan chiziladigan yo'g'on rangli lenta (referens: lusion.co). Bosh sahifa kontenti ortida turadi:
- * kartalar ustidan yopadi, bo'sh joylarda ko'rinadi. Uchi doim ko'rinish oynasining ~72% balandligida —
- * pastga tushganda chiziladi, yuqoriga qaytganda o'chadi. Harakat silliq (lerp), faqat kerak bo'lganda rAF ishlaydi.
+ * Skroll bilan chiziladigan yo'g'on lenta (referens: lusion.co). Bosh sahifa kontenti ortida turadi:
+ * kartalar ustidan yopadi, bo'sh joylarda ko'rinadi, bo'lim sarlavhalari atrofida halqa yasaydi.
+ * Uchi doim ko'rinish oynasining ~72% balandligida — pastga tushganda chiziladi, yuqoriga qaytganda o'chadi.
  */
 export function ScrollRibbon() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const gradRef = useRef<SVGLinearGradientElement>(null);
 
   useEffect(() => {
-    const wrap = wrapRef.current;
+    const layer = wrapRef.current;
     const svg = svgRef.current;
     const path = pathRef.current;
-    if (!wrap || !svg || !path) return;
+    const wrap = layer?.parentElement;
+    if (!layer || !svg || !path || !wrap) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // reachY[i] — lenta boshidan i/SAMPLES qismigacha chizilganda erishilgan eng pastki nuqta (px)
     let reachY = new Float32Array(SAMPLES + 1);
+    let total = 1;
     let top = 0;
     let cur = 0;
     let target = 0;
@@ -101,7 +112,6 @@ export function ScrollRibbon() {
 
     const targetFor = () => {
       const y = window.scrollY + window.innerHeight * TIP - top;
-      // birinchi i: reachY[i] >= y (reachY o'smaydigan emas — ikkilik qidiruv)
       let lo = 0;
       let hi = SAMPLES;
       while (lo < hi) {
@@ -113,8 +123,10 @@ export function ScrollRibbon() {
     };
 
     const tick = () => {
-      cur += (target - cur) * 0.12;
-      if (Math.abs(target - cur) < 0.0004) cur = target;
+      const diff = target - cur;
+      const max = SPEED / total;
+      const step = Math.max(-max, Math.min(max, diff * 0.16));
+      cur = Math.abs(diff) < 0.0003 ? target : cur + step;
       draw(cur);
       raf = cur === target ? 0 : requestAnimationFrame(tick);
     };
@@ -125,15 +137,16 @@ export function ScrollRibbon() {
     };
 
     const build = () => {
-      const w = wrap.clientWidth;
-      const h = wrap.clientHeight;
+      const w = layer.clientWidth;
+      const h = layer.clientHeight;
       if (!w || !h) return;
-      top = wrap.getBoundingClientRect().top + window.scrollY;
+      const pts = anchorPoints(wrap, w);
+      if (pts.length < 2) return;
+      top = layer.getBoundingClientRect().top + window.scrollY;
       svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      gradRef.current?.setAttribute("y2", String(h));
-      path.setAttribute("d", smoothPath(PATH.map(([x, y]) => [x * w, y * h])));
+      path.setAttribute("d", smoothPath(pts));
       path.setAttribute("stroke-width", String(w < 640 ? 16 : w < 1024 ? 24 : 34));
-      const total = path.getTotalLength();
+      total = path.getTotalLength();
       const next = new Float32Array(SAMPLES + 1);
       let max = -Infinity;
       for (let i = 0; i <= SAMPLES; i++) {
@@ -153,13 +166,19 @@ export function ScrollRibbon() {
     };
 
     build();
-    const ro = new ResizeObserver(() => build());
-    ro.observe(wrap);
+    // Balandlik o'zgarsa (rasm yuklandi, taxlanadigan kartalar ochildi) — biroz kutib qayta quriladi, har kadrda emas
+    let rebuild: ReturnType<typeof setTimeout> | undefined;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(rebuild);
+      rebuild = setTimeout(build, 140);
+    });
+    ro.observe(layer);
     if (!reduced) {
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll);
     }
     return () => {
+      clearTimeout(rebuild);
       ro.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
@@ -170,18 +189,10 @@ export function ScrollRibbon() {
   return (
     <div ref={wrapRef} aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <svg ref={svgRef} className="block h-full w-full" fill="none">
-        {/* Rang yuqoridan pastga: ko'k → binafsha → yashil-moviy (lusion.co oxiridagidek) */}
-        <defs>
-          <linearGradient ref={gradRef} id="ribbon-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1000">
-            <stop offset="0" stopColor="var(--ribbon-a)" />
-            <stop offset="0.55" stopColor="var(--ribbon-b)" />
-            <stop offset="1" stopColor="var(--ribbon-c)" />
-          </linearGradient>
-        </defs>
         <path
           ref={pathRef}
           pathLength={1}
-          stroke="url(#ribbon-grad)"
+          stroke="var(--ribbon-a)"
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{ strokeDasharray: 1, strokeDashoffset: 1 }}

@@ -11,7 +11,8 @@ const clamp = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 /**
  * Taxlanadigan kartalar (referens: cuberto.com xizmatlar bo'limi). Har bir karta sticky:
- *  - pastdan kelayotganda och kulrang, faqat sarlavha — o'z joyiga yetganda to'q fon, rangli nur va matn ochiladi (--a);
+ *  - pastdan kelayotganda kichik: och kulrang, torroq, faqat sarlavha;
+ *  - o'z joyiga yaqinlashgan sari kattalashib ochiladi — to'q fon, rangli nur, matn va tugma chiqadi (--a);
  *  - ustiga keyingi karta chiqqanda biroz kichrayadi va qorayadi (--c).
  * Qiymatlar skroll bilan rAF'da hisoblanadi; harakat kamaytirilgan rejimda hammasi ochiq, animatsiyasiz.
  */
@@ -23,13 +24,22 @@ export function CategoriesStack({ items }: { items: StackItem[] }) {
     if (!el) return;
     const cards = [...el.querySelectorAll<HTMLElement>("[data-stack]")];
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      cards.forEach((c) => c.classList.add("is-on"));
+      cards.forEach((c) => {
+        c.classList.add("is-on");
+        c.style.setProperty("--bh", "none");
+      });
       return;
     }
     let tops: number[] = [];
     let raf = 0;
     const measure = () => {
       tops = cards.map((c) => parseFloat(getComputedStyle(c.parentElement!).top) || 0);
+      // Ochiladigan qism balandligi (max-height animatsiyasi uchun)
+      cards.forEach((c) => {
+        const body = c.querySelector<HTMLElement>("[data-stack-body]");
+        const inner = body?.firstElementChild as HTMLElement | null;
+        if (body && inner) c.style.setProperty("--bh", `${inner.offsetHeight}px`);
+      });
     };
     const update = () => {
       raf = 0;
@@ -54,6 +64,8 @@ export function CategoriesStack({ items }: { items: StackItem[] }) {
     };
     measure();
     update();
+    // Shrift yuklangach matn balandligi o'zgarishi mumkin
+    document.fonts?.ready.then(onResize).catch(() => {});
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => {
@@ -64,17 +76,19 @@ export function CategoriesStack({ items }: { items: StackItem[] }) {
   }, []);
 
   return (
-    <div ref={root} className="[--stack-top:5rem] sm:[--stack-top:6.5rem]">
+    // overflow-anchor: none — kartalar ochilganda brauzer skrollni "tuzatib" sakratmasin
+    <div ref={root} className="[overflow-anchor:none] [--stack-top:5rem] sm:[--stack-top:6.5rem]">
       {items.map((it, i) => (
         <div key={it.key} className="stack-item" style={{ "--i": i } as React.CSSProperties}>
           <article data-stack className="stack-card glyph-host">
-            <div className="grid items-center gap-6 md:grid-cols-[1fr_auto] md:gap-12">
-              <div>
-                <div className="flex items-start justify-between gap-6">
-                  <h3 className="text-2xl leading-tight font-normal tracking-tight sm:text-[2rem]">{it.title}</h3>
-                  <span className="font-mono text-sm opacity-60">{String(i + 1).padStart(2, "0")}</span>
-                </div>
-                <div className="stack-body">
+            <div className="flex items-start justify-between gap-6">
+              <h3 className="text-2xl leading-tight font-normal tracking-tight sm:text-[2rem]">{it.title}</h3>
+              <span className="font-mono text-sm opacity-60">{String(i + 1).padStart(2, "0")}</span>
+            </div>
+            {/* Ochiladigan qism: kichik holatda yashirin, karta tepaga chiqqanda balandligi bilan birga ochiladi */}
+            <div data-stack-body className="stack-body">
+              <div className="grid items-end gap-6 md:grid-cols-[1fr_auto] md:gap-12">
+                <div>
                   <p className="mt-4 max-w-xl text-[0.95rem] leading-relaxed opacity-80">{it.text}</p>
                   <Link href={it.href} className="group mt-6 inline-flex items-center gap-3 text-sm">
                     {it.cta}
@@ -83,8 +97,8 @@ export function CategoriesStack({ items }: { items: StackItem[] }) {
                     </span>
                   </Link>
                 </div>
+                <GlyphIcon name={it.icon} className="hidden h-32 w-32 opacity-90 md:block lg:h-40 lg:w-40" />
               </div>
-              <GlyphIcon name={it.icon} className="stack-body hidden h-36 w-36 opacity-90 md:block lg:h-44 lg:w-44" />
             </div>
           </article>
         </div>
