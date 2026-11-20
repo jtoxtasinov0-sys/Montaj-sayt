@@ -199,7 +199,7 @@ const WORK_PHOTOS = [
   { key: "color", src: "/images/work/color-v3.webp" },
   { key: "motion", src: "/images/work/motion-v3.webp" },
   { key: "podcast", src: "/images/work/podcast-v3.webp" },
-  { key: "ads", src: "/images/work/ads-v3.webp" },
+  { key: "ads", src: "/images/work/ads-v4.webp" },
 ] as const;
 
 export function ShowcaseSection({ d }: { d: Dict }) {
