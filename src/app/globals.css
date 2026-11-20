@@ -215,6 +215,28 @@
     border: 1px solid var(--line);
     border-radius: 1.25rem;
   }
+  /* Qop-qora karta, oq yozuv (bosh sahifadagi "Hozir eng ko'p tanlanayotganlar") — oq fonda ajralib turadi.
+     Ichidagi hamma ranglar (chiplar, yulduzlar, chiziqlar) qorong'i mavzudagidek bo'ladi */
+  .card-solid {
+    --bg: #0a0a0a;
+    --card: #0a0a0a;
+    --card-2: #1c1c1c;
+    --fg: #f5f5f5;
+    --muted: #a3a3a3;
+    --line: rgba(255, 255, 255, 0.12);
+    --line-strong: rgba(255, 255, 255, 0.26);
+    --primary: #f5f5f5;
+    --primary-fg: #0a0a0a;
+    --accent: #f5f5f5;
+    --offline: #6b6b6b;
+    color: var(--fg);
+  }
+  /* Qorong'i mavzuda sahifa o'zi qora — karta biroz ochroq, shunda u ham ajralib turadi */
+  .dark .card-solid {
+    --bg: #161616;
+    --card: #161616;
+    --card-2: #262626;
+  }
   .glass {
     background: color-mix(in oklab, var(--bg) 92%, transparent);
     border: 1px solid var(--line);
@@ -457,23 +479,6 @@
     animation: glyph-redraw 1.5s cubic-bezier(0.45, 0, 0.25, 1) both;
   }
 
-  /* Marquee — dasturlar nomi */
-  .marquee {
-    display: flex;
-    overflow: hidden;
-    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
-  }
-  .marquee-track {
-    display: flex;
-    flex-shrink: 0;
-    gap: 3rem;
-    padding-right: 3rem;
-    animation: marquee var(--speed, 40s) linear infinite;
-  }
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
-  }
-
   /* ============ Hero: montaj taymlayni (chiziqlar chiziladi, pleyhed sekin yuradi) ============ */
   .tl {
     position: relative;
@@ -558,6 +563,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* "Montaj jarayoni" suratlari oq-qora — saytning oq-qora uslubiga mos */
+    filter: grayscale(1);
     transition: transform 1.2s var(--ease-out);
   }
   .work:hover .work-img {
@@ -762,11 +769,6 @@
   }
 }
 /* ============ Animatsiyalar ============ */
-@keyframes marquee {
-  to {
-    transform: translateX(-100%);
-  }
-}
 /* Matn va bloklar: blur yo'q — faqat opacity va biroz yuqoriga harakat */
 @keyframes word-in {
   from {

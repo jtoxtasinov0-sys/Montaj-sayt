@@ -8,7 +8,6 @@ import {
   PromoSection,
   ReviewsSection,
   ShowcaseSection,
-  SoftwareMarquee,
   StatsStrip,
   TiersSection,
   TopEditorsSection,
@@ -34,7 +33,6 @@ export default async function HomePage() {
     <div className="relative isolate">
       <ScrollRibbon />
       <Hero d={d} />
-      <SoftwareMarquee />
       <StatsStrip d={d} s={stats} />
       <TopEditorsSection d={d} editors={top} />
       <TiersSection d={d} tiers={tiers} counts={counts} />
