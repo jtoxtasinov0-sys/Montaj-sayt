@@ -3,9 +3,7 @@ import { AvailableToast } from "@/components/home/available-toast";
 import { Hero } from "@/components/home/hero";
 import { ScrollRibbon } from "@/components/home/scroll-ribbon";
 import {
-  CategoriesSection,
   FaqSection,
-  FinalCta,
   HowItWorks,
   PromoSection,
   ReviewsSection,
@@ -41,16 +39,12 @@ export default async function HomePage() {
       <TopEditorsSection d={d} editors={top} />
       <TiersSection d={d} tiers={tiers} counts={counts} />
       <ShowcaseSection d={d} />
-      <CategoriesSection d={d} />
+      {/* Ko'p beriladigan savollar — taxlanadigan kartalar (oldin bu yerda yo'nalishlar kartalari edi) */}
+      <FaqSection d={d} />
       {/* "Qanday ishlaydi" — sherik taklifi bilan pastroqqa tushirildi */}
       <HowItWorks d={d} />
       <PromoSection d={d} plans={plans} />
       <ReviewsSection d={d} items={reviews} />
-      {/* Ko'tariladigan qorong'i panel (cuberto.com uslubi); ichida doim qorong'i ranglar */}
-      <div className="rise-panel dark">
-        <FaqSection d={d} first />
-        <FinalCta d={d} />
-      </div>
       {available && (
         <AvailableToast
           name={available.displayName}

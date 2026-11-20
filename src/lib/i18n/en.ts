@@ -117,18 +117,6 @@ export const en: Dict = {
     color: "Color grading",
     other: "Other",
   },
-  categoriesSection: {
-    title: "An editor for every kind of video",
-    cta: "Editors",
-    items: {
-      reels: "Fast, on-trend vertical videos for Reels, Shorts and TikTok: cuts, subtitles, effects.",
-      youtube: "Full editing for vlogs, interviews and tutorials: pacing, graphics, sound and colour.",
-      ads: "Commercials for brands — from idea to finished spot for social media and TV.",
-      motion: "Logo animation, infographics, titles and 2D/3D motion design.",
-      podcast: "Multi-camera podcast editing and short, shareable clips cut from it.",
-      color: "Cinematic colour correction and grading — a professional look in DaVinci Resolve.",
-    } as Record<string, string>,
-  },
   levels: {
     BEGINNER: "Beginner",
     MIDDLE: "Intermediate",
@@ -200,29 +188,6 @@ export const en: Dict = {
       {
         q: "Where do I upload videos?",
         a: "Add YouTube, Instagram, Telegram, Vimeo or Google Drive links. YouTube and Vimeo videos play right on the page.",
-      },
-    ],
-  },
-  cta: {
-    title: "Your next video starts here",
-    subtitle: "Find an editor or find your clients — signing up is free.",
-    client: "Post a job",
-    editor: "Become an editor",
-    cards: [
-      {
-        t: "Find an editor",
-        d: "Filter by price, style and rating — watch portfolio videos right here.",
-        cta: "Editors",
-      },
-      {
-        t: "Post a job",
-        d: "Publish an open brief — editors send you their offers.",
-        cta: "Post a job",
-      },
-      {
-        t: "Become an editor",
-        d: "Sign in with Gmail, upload your portfolio and land your first client.",
-        cta: "Create profile",
       },
     ],
   },

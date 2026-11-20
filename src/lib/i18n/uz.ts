@@ -115,18 +115,6 @@ export const uz = {
     color: "Rang korreksiyasi",
     other: "Boshqa",
   } as Record<string, string>,
-  categoriesSection: {
-    title: "Har qanday video uchun montajor",
-    cta: "Montajorlar",
-    items: {
-      reels: "Instagram Reels, YouTube Shorts va TikTok uchun tez, trendga mos vertikal videolar: kesish, subtitr, effektlar.",
-      youtube: "Vlog, intervyu va ta’limiy videolar uchun to’liq montaj: ritm, grafika, ovoz va rang.",
-      ads: "Brendlar uchun reklama roliklari — g’oyadan tayyor rolikkacha, ijtimoiy tarmoqlar va TV uchun.",
-      motion: "Logo animatsiyasi, infografika, titrlar va 2D/3D motion dizayn.",
-      podcast: "Ko’p kamerali podkast montaji va undan qisqa, tarqaladigan kliplar kesish.",
-      color: "Kinematografik rang korreksiyasi va grading — DaVinci Resolve’da professional ko’rinish.",
-    } as Record<string, string>,
-  },
   levels: {
     BEGINNER: "Boshlang’ich",
     MIDDLE: "O’rta",
@@ -198,29 +186,6 @@ export const uz = {
       {
         q: "Videolarni qayerga yuklayman?",
         a: "YouTube, Instagram, Telegram, Vimeo yoki Google Drive havolasini qo’shasiz. YouTube va Vimeo videolari sahifada to’g’ridan-to’g’ri ochiladi.",
-      },
-    ],
-  },
-  cta: {
-    title: "Keyingi videongiz shu yerda boshlanadi",
-    subtitle: "Montajor toping yoki o’z mijozlaringizni toping — hammasi bepul ro’yxatdan o’tish bilan.",
-    client: "Buyurtma berish",
-    editor: "Montajor bo’lish",
-    cards: [
-      {
-        t: "Montajor toping",
-        d: "Narx, yo’nalish va reyting bo’yicha saralang — portfolio videolarni shu yerda ko’ring.",
-        cta: "Montajorlar",
-      },
-      {
-        t: "Buyurtma joylang",
-        d: "Ochiq e’lon bering — montajorlar takliflarini o’zlari yuboradi.",
-        cta: "Buyurtma berish",
-      },
-      {
-        t: "Montajor bo’ling",
-        d: "Gmail orqali kiring, portfolio joylang va birinchi mijozingizni toping.",
-        cta: "Profil yaratish",
       },
     ],
   },
