@@ -107,8 +107,6 @@ export const en: Dict = {
     editorsLink: "Editors",
     jobsLink: "Jobs",
     plus: "and above",
-    editorsCount: "{n} editors",
-    jobsCount: "{n} open jobs",
   },
   categories: {
     reels: "Reels / Shorts",

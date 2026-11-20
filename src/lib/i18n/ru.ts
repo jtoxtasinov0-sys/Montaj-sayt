@@ -107,8 +107,6 @@ export const ru: Dict = {
     editorsLink: "Монтажёры",
     jobsLink: "Заказы",
     plus: "и выше",
-    editorsCount: "{n} монтажёров",
-    jobsCount: "{n} открытых заказов",
   },
   categories: {
     reels: "Reels / Shorts",

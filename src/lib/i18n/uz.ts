@@ -105,8 +105,6 @@ export const uz = {
     editorsLink: "Montajorlar",
     jobsLink: "Buyurtmalar",
     plus: "va undan yuqori",
-    editorsCount: "{n} ta montajor",
-    jobsCount: "{n} ta ochiq buyurtma",
   },
   categories: {
     reels: "Reels / Shorts",
