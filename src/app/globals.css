@@ -30,8 +30,8 @@
   --offline: #a3a3a3;
   /* Ozgina rang (lusion.co / cuberto.com referenslari): lenta ko'k → binafsha → yashil-moviy */
   --ribbon-a: #3a3af4;
-  /* Skroll lentasi — kulrang (oq mavzuda och, qora mavzuda to'q) */
-  --ribbon: #cacaca;
+  /* Skroll lentasi — yumshoq kulrang (oq mavzuda och, qora mavzuda to'q) */
+  --ribbon: #d6d6d6;
   --ribbon-b: #7b5cff;
   --ribbon-c: #22d3a6;
   /* Mijozlar fikri kartalari — pastel */
@@ -69,7 +69,7 @@
   --online: #22c55e;
   --offline: #6b6b6b;
   --ribbon-a: #5c5cff;
-  --ribbon: #3a3a3a;
+  --ribbon: #2b2b2b;
   --ribbon-b: #9a80ff;
   --ribbon-c: #39e8bd;
   --pastel-1: #2b2030;
@@ -109,7 +109,9 @@
 }
 
 @layer base {
+  /* Telefonda sahifa yonga surilmasin: html — ekran (viewport) uchun, body — o'z ichidagi kontentni kesadi */
   html {
+    overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
     interpolate-size: allow-keywords;
@@ -525,7 +527,8 @@
   .tl-clip.is-fill {
     background: var(--fg);
   }
-  /* To'liq kenglikdagi qatlam 0 → 100% siljiydi, pleyhed uning chap chetida */
+  /* To'liq kenglikdagi qatlam −100% → 0 siljiydi, pleyhed uning o'ng chetida.
+     Qatlam chapga chiqadi (u tomonga skroll yo'q) — o'ngga chiqib, telefonda sahifani yonga surmaydi */
   .tl-head {
     position: absolute;
     inset: -0.3rem 0 0;
@@ -536,7 +539,7 @@
   .tl-head::after {
     content: "";
     position: absolute;
-    left: 0;
+    right: -1px;
     background: var(--fg);
   }
   .tl-head::before {
@@ -546,7 +549,7 @@
   }
   .tl-head::after {
     top: 0;
-    left: -4px;
+    right: -5px;
     width: 9px;
     height: 9px;
     border-radius: 2px;
@@ -699,6 +702,12 @@
     animation-timeline: view();
     animation-range: entry 0% cover 45%;
   }
+  /* Telefonda faqat transform (clip-path har kadrda qayta chiziladi — skroll qotadi) */
+  @media (pointer: coarse) {
+    .work-media {
+      animation-name: work-open-lite;
+    }
+  }
   .work-zoom {
     animation: work-zoom linear both;
     animation-timeline: view();
@@ -724,6 +733,14 @@
   to {
     transform: none;
     clip-path: inset(0 0 0 0 round 1.25rem);
+  }
+}
+@keyframes work-open-lite {
+  from {
+    transform: translateY(48px) scale(0.84);
+  }
+  to {
+    transform: none;
   }
 }
 @keyframes work-zoom {
@@ -807,10 +824,10 @@
 }
 @keyframes tl-play {
   from {
-    transform: translateX(0);
+    transform: translateX(-100%);
   }
   to {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
 }
 /* Ikonka chizilishi: kontur chapdan-o'ngga chiziladi, keyin ichi to'ladi va kontur yo'qoladi */
