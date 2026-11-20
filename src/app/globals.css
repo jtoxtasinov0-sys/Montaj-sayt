@@ -29,7 +29,7 @@
   --online: #16a34a;
   --offline: #a3a3a3;
   /* Bosh sahifadagi skroll lentasi (lusion.co uslubi) — kontent ortida, matn o'qilishiga xalaqit bermaydigan kulrang */
-  --ribbon: #e4e4e4;
+  --ribbon: #cbcbcb;
   --shadow: none;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -56,7 +56,7 @@
   --warn: #f5f5f5;
   --online: #22c55e;
   --offline: #6b6b6b;
-  --ribbon: #1d1d1d;
+  --ribbon: #353535;
   color-scheme: dark;
 }
 
