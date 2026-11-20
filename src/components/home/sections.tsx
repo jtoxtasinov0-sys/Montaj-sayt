@@ -216,14 +216,14 @@ export function CategoriesSection({ d }: { d: Dict }) {
 }
 
 // ---------- Montaj jarayoni (lusion.co "Featured Work" uslubi) ----------
-/** Gemini'da generatsiya qilingan realistik suratlar: har bir yo'nalishda montaj qilayotgan montajorlar */
+/** Gemini'da generatsiya qilingan realistik suratlar ("desk setup" uslubi): har bir yo'nalishda montaj qilayotgan montajorlar */
 const WORK_PHOTOS = [
-  { key: "reels", src: "/images/work/reels-v1.webp" },
-  { key: "youtube", src: "/images/work/youtube-v1.webp" },
-  { key: "color", src: "/images/work/color-v1.webp" },
-  { key: "motion", src: "/images/work/motion-v1.webp" },
-  { key: "podcast", src: "/images/work/podcast-v1.webp" },
-  { key: "ads", src: "/images/work/ads-v1.webp" },
+  { key: "reels", src: "/images/work/reels-v2.webp" },
+  { key: "youtube", src: "/images/work/youtube-v2.webp" },
+  { key: "color", src: "/images/work/color-v2.webp" },
+  { key: "motion", src: "/images/work/motion-v2.webp" },
+  { key: "podcast", src: "/images/work/podcast-v2.webp" },
+  { key: "ads", src: "/images/work/ads-v2.webp" },
 ] as const;
 
 export function ShowcaseSection({ d }: { d: Dict }) {
