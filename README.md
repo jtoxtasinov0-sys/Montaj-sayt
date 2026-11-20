@@ -11,7 +11,7 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Di
 - Telegram, Telegram kanal, Instagram, YouTube havolalari
 - Portfolio (YouTube/Vimeo sahifaning o‘zida ochiladi; Instagram, Telegram, Drive — havola) + muqova rasmi
 - Xizmatlar va narxlar (narxni montajor o‘zi belgilaydi)
-- Narx bo‘limlaridagi ($10–20, $20–30, $30–40, $40–50, $50+) ochiq buyurtmalarga taklif yuborish
+- Narx bo‘limlaridagi ($20–30, $30–40, $40–50, $50+) ochiq buyurtmalarga taklif yuborish
 - **TOP ga chiqish**: bitta tarif — **50 000 so‘m / 7 kun**, **20 ta joy** (admin paneldan o‘zgaradi). TOP montajorlarning hammasi bosh sahifada ko‘rinadi, tartib **har 30 daqiqada** navbat bilan almashadi
   - **To‘lov kodi:** “TOP ga chiqish” bosilganda shaxsiy summa chiqadi — narxga 100–999 so‘m qo‘shiladi (masalan 50 000 → 50 437). Joy 24 soat band turadi; to‘lanmasa o‘zi bekor bo‘ladi
   - **Avtomatik tasdiqlash:** kartaga aynan shu summa tushgani haqidagi bank xabari kelsa — TOP o‘zi yoqiladi, chek shart emas (pastda “Avtomatik to‘lov”). Chek — faqat zaxira yo‘l (admin qo‘lda tekshiradi)

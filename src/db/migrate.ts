@@ -21,11 +21,10 @@ export async function runMigrations() {
     const [{ count: tierCount }] = await db.select({ count: sql<number>`count(*)::int` }).from(priceTiers);
     if (tierCount === 0) {
       await db.insert(priceTiers).values([
-        { minUsd: 10, maxUsd: 20, sort: 1 },
-        { minUsd: 20, maxUsd: 30, sort: 2 },
-        { minUsd: 30, maxUsd: 40, sort: 3 },
-        { minUsd: 40, maxUsd: 50, sort: 4 },
-        { minUsd: 50, maxUsd: null, sort: 5 },
+        { minUsd: 20, maxUsd: 30, sort: 1 },
+        { minUsd: 30, maxUsd: 40, sort: 2 },
+        { minUsd: 40, maxUsd: 50, sort: 3 },
+        { minUsd: 50, maxUsd: null, sort: 4 },
       ]);
     }
     const [{ count: planCount }] = await db.select({ count: sql<number>`count(*)::int` }).from(promotionPlans);

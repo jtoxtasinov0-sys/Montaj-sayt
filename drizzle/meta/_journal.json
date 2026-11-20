@@ -36,6 +36,13 @@
       "when": 1795163019634,
       "tag": "0004_user_last_seen",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795183008061,
+      "tag": "0005_remove_10_20_tier",
+      "breakpoints": true
     }
   ]
 }
