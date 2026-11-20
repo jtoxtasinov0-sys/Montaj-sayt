@@ -5,7 +5,7 @@ import { EditorCard } from "@/components/editor-card";
 import { StackCards, type StackCardItem } from "@/components/home/stack-cards";
 import { GlyphIcon, SplitText } from "@/components/motion";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
-import { HOME_TOP_COUNT, SOFTWARE, TOP_ROTATE_MINUTES } from "@/lib/constants";
+import { HOME_TOP_COUNT, TOP_ROTATE_MINUTES } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
 import { fmt, type Dict } from "@/lib/i18n";
 import { cn, formatUzs } from "@/lib/utils";
@@ -55,25 +55,6 @@ export function SectionHead({
           {action}
         </div>
       )}
-    </div>
-  );
-}
-
-// ---------- Dasturlar (oq-qora yugurik qator) ----------
-export function SoftwareMarquee() {
-  const items = [...SOFTWARE, ...SOFTWARE];
-  return (
-    <div data-anim className="marquee border-y border-line py-6" style={{ "--speed": "55s" } as React.CSSProperties}>
-      {[0, 1].map((k) => (
-        <div key={k} className="marquee-track" aria-hidden={k === 1}>
-          {items.map((s, i) => (
-            <span key={i} className="flex items-center gap-3 text-xl font-light tracking-tight text-muted">
-              <span className="h-1 w-1 rounded-full bg-current" />
-              {s}
-            </span>
-          ))}
-        </div>
-      ))}
     </div>
   );
 }
@@ -129,7 +110,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
         >
           {editors.map((e, i) => (
             <div key={e.id} data-reveal className="w-[84%] shrink-0 snap-start sm:w-auto" style={delay((i % 4) * 80)}>
-              <EditorCard e={e} d={d} />
+              <EditorCard e={e} d={d} className="card-solid" />
             </div>
           ))}
         </div>
