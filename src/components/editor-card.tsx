@@ -18,8 +18,9 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
     <Link
       href={`/editors/${e.slug}`}
       className={cn(
-        // TOP (pullik) montajor — nur o'rniga to'q ramka
-        "card group flex h-full flex-col gap-4 p-5 transition duration-300 hover:-translate-y-0.5 hover:border-fg",
+        // Qop-qora karta, oq yozuv (card-solid) — bosh sahifada ham, "Montajorlar" sahifasida ham ajralib turadi.
+        // TOP (pullik) montajor — nur o'rniga ochiq ramka
+        "card card-solid group flex h-full flex-col gap-4 p-5 transition duration-300 hover:-translate-y-0.5 hover:border-fg",
         boosted && "border-fg",
         className,
       )}

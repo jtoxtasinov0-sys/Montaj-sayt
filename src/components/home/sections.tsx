@@ -110,7 +110,7 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
         >
           {editors.map((e, i) => (
             <div key={e.id} data-reveal className="w-[84%] shrink-0 snap-start sm:w-auto" style={delay((i % 4) * 80)}>
-              <EditorCard e={e} d={d} className="card-solid" />
+              <EditorCard e={e} d={d} />
             </div>
           ))}
         </div>
