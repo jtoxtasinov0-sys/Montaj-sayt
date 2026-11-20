@@ -117,6 +117,15 @@ export const uz = {
   } as Record<string, string>,
   categoriesSection: {
     title: "Har qanday video uchun montajor",
+    cta: "Montajorlar",
+    items: {
+      reels: "Instagram Reels, YouTube Shorts va TikTok uchun tez, trendga mos vertikal videolar: kesish, subtitr, effektlar.",
+      youtube: "Vlog, intervyu va ta’limiy videolar uchun to’liq montaj: ritm, grafika, ovoz va rang.",
+      ads: "Brendlar uchun reklama roliklari — g’oyadan tayyor rolikkacha, ijtimoiy tarmoqlar va TV uchun.",
+      motion: "Logo animatsiyasi, infografika, titrlar va 2D/3D motion dizayn.",
+      podcast: "Ko’p kamerali podkast montaji va undan qisqa, tarqaladigan kliplar kesish.",
+      color: "Kinematografik rang korreksiyasi va grading — DaVinci Resolve’da professional ko’rinish.",
+    } as Record<string, string>,
   },
   levels: {
     BEGINNER: "Boshlang’ich",
@@ -128,7 +137,14 @@ export const uz = {
     empty: "Hali montajorlar yo’q. Birinchi bo’ling!",
   },
   showcase: {
-    title: "Kadrlar o’zi gapiradi",
+    title: "Montaj jarayoni",
+    subtitle: "Har bir yo’nalishda o’z ishini biladigan montajorlar.",
+    see: "Montajorlarni ko’rish",
+    alt: "{category} — montaj jarayoni",
+  },
+  reviewsSection: {
+    title: "Mijozlar bizga ishonadi",
+    forEditor: "{name} bilan ishladi",
   },
   rating: {
     title: "Reyting pul bilan emas, ish bilan",

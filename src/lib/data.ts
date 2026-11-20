@@ -323,3 +323,29 @@ export async function getRecentPortfolio(limit = 10) {
       .limit(limit),
   );
 }
+
+/** Bosh sahifadagi "Mijozlar fikri": yashirilmagan, 4★ va undan yuqori, mazmunli izohli so'nggi baholar */
+export async function getRecentReviews(limit = 6) {
+  return cached(`reviews:recent:${limit}`, 60_000, async () => {
+    const rows = await db
+      .select({
+        id: reviews.id,
+        comment: reviews.comment,
+        rating: reviews.rating,
+        authorName: users.name,
+        editorName: editorProfiles.displayName,
+        slug: editorProfiles.slug,
+      })
+      .from(reviews)
+      .innerJoin(users, eq(users.id, reviews.authorId))
+      .innerJoin(editorProfiles, eq(editorProfiles.id, reviews.editorId))
+      .where(and(eq(reviews.isHidden, false), gte(reviews.rating, 4), sql`length(${reviews.comment}) >= 20`))
+      .orderBy(desc(reviews.createdAt))
+      .limit(limit);
+    // Mijoz maxfiyligi: faqat ism va familiyaning bosh harfi ("Jasur T.")
+    return rows.map((r) => {
+      const [first, last] = (r.authorName || "").trim().split(/\s+/);
+      return { ...r, authorName: first ? `${first}${last ? ` ${last[0]}.` : ""}` : "—" };
+    });
+  });
+}

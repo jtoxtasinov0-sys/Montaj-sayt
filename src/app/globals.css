@@ -28,8 +28,18 @@
   /* Yagona rangli istisno: montajor onlayn — yashil, oflayn — kulrang */
   --online: #16a34a;
   --offline: #a3a3a3;
-  /* Bosh sahifadagi skroll lentasi (lusion.co uslubi) — kontent ortida, matn o'qilishiga xalaqit bermaydigan kulrang */
-  --ribbon: #cbcbcb;
+  /* Ozgina rang (lusion.co / cuberto.com referenslari): lenta ko'k → binafsha → yashil-moviy */
+  --ribbon-a: #3a3af4;
+  --ribbon-b: #7b5cff;
+  --ribbon-c: #22d3a6;
+  /* Mijozlar fikri kartalari — pastel */
+  --pastel-1: #efe1ee;
+  --pastel-2: #dcf1e4;
+  --pastel-3: #e3e1f6;
+  /* Taxlanadigan kartalar: faol — to'q ko'k-qora, navbatdagi — och kulrang */
+  --stack-on: #0e0f1d;
+  --stack-off: #e6e6ea;
+  --stack-off-fg: #6e6e78;
   --shadow: none;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -56,7 +66,15 @@
   --warn: #f5f5f5;
   --online: #22c55e;
   --offline: #6b6b6b;
-  --ribbon: #353535;
+  --ribbon-a: #5c5cff;
+  --ribbon-b: #9a80ff;
+  --ribbon-c: #39e8bd;
+  --pastel-1: #2b2030;
+  --pastel-2: #19291f;
+  --pastel-3: #222136;
+  --stack-on: #13142b;
+  --stack-off: #16161b;
+  --stack-off-fg: #6b6b75;
   color-scheme: dark;
 }
 
@@ -537,6 +555,191 @@
   }
 }
 
+/* ============ Referens animatsiyalar (lusion.co, cuberto.com) ============ */
+@layer components {
+  /* ---- Tanlangan ishlar (lusion.co "Featured Work"): karta ochilib chiqadi, rasm skrollda kichrayib joyiga tushadi ---- */
+  .work-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: var(--card-2);
+  }
+  .work-zoom {
+    position: absolute;
+    inset: 0;
+  }
+  .work-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out);
+  }
+  .work:hover .work-img {
+    transform: scale(1.06);
+  }
+  /* Kursor olib borilganda nom oldida strelka chiqadi */
+  .work-arrow {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0;
+    opacity: 0;
+    transform: translateX(-0.5em);
+    transition:
+      width 0.5s var(--ease-out),
+      margin 0.5s var(--ease-out),
+      opacity 0.35s,
+      transform 0.5s var(--ease-out);
+  }
+  .work:hover .work-arrow,
+  .work:focus-visible .work-arrow {
+    width: 1em;
+    margin-right: 0.35em;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---- Taxlanadigan kartalar (cuberto.com xizmatlar): sticky, oldingisi kichrayib qorayadi ---- */
+  .stack-item {
+    position: sticky;
+    top: calc(var(--stack-top, 6rem) + var(--i, 0) * 0.85rem);
+    padding-bottom: 1.25rem;
+  }
+  .stack-card {
+    --a: 1;
+    --c: 0;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 1.75rem;
+    background: var(--stack-off);
+    color: var(--stack-off-fg);
+    transform: scale(calc(1 - var(--c) * 0.05));
+    transform-origin: 50% 0;
+    transition: color 0.5s;
+    box-shadow: 0 -18px 40px -28px rgb(0 0 0 / 0.45);
+  }
+  /* Faollashish: to'q fon va rangli nur (opacity — --a) */
+  .stack-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: var(--a);
+    background:
+      radial-gradient(55% 110% at 100% 100%, color-mix(in oklab, var(--ribbon-b) 55%, transparent), transparent 70%),
+      radial-gradient(35% 70% at 88% 0%, color-mix(in oklab, var(--ribbon-c) 22%, transparent), transparent 70%),
+      var(--stack-on);
+  }
+  /* Ustiga keyingi karta chiqqanda qorayadi */
+  .stack-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: calc(var(--c) * 0.5);
+    pointer-events: none;
+  }
+  .stack-card.is-on {
+    color: #f4f4f8;
+  }
+  .stack-body {
+    opacity: var(--a);
+    transform: translateY(calc((1 - var(--a)) * 14px));
+  }
+  @media (min-width: 768px) {
+    .stack-card {
+      padding: 2.5rem 3rem;
+    }
+  }
+
+  /* ---- Mijozlar fikri (cuberto.com): pastel kartalar qiyshiq holatdan to'g'rilanib chiqadi ---- */
+  .review-card {
+    border-radius: 1rem;
+    background: var(--pc, var(--pastel-1));
+    color: var(--fg);
+  }
+
+  /* ---- Ko'tariladigan qorong'i panel (cuberto.com "Insights") ---- */
+  .rise-panel {
+    position: relative;
+    margin-inline: 0.5rem;
+    margin-top: 7rem;
+    padding-bottom: 5rem;
+    overflow: hidden;
+    border-radius: 2rem;
+    color: var(--fg);
+    background:
+      radial-gradient(70% 50% at 90% 0%, color-mix(in oklab, var(--ribbon-b) 22%, transparent), transparent 70%),
+      radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--ribbon-c) 12%, transparent), transparent 70%),
+      linear-gradient(180deg, #15162a, #0a0a12);
+    transform-origin: 50% 0;
+  }
+  @media (min-width: 640px) {
+    .rise-panel {
+      margin-inline: 0.75rem;
+    }
+  }
+}
+
+/* Skroll bilan boshqariladigan qismlar — faqat qo'llab-quvvatlaydigan brauzerlarda (aks holda oddiy holatda turadi) */
+@supports (animation-timeline: view()) {
+  .work-media {
+    animation: work-open linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+  .work-zoom {
+    animation: work-zoom linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 60%;
+  }
+  .review-card {
+    animation: review-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 42%;
+  }
+  .rise-panel {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 75%;
+  }
+}
+@keyframes work-open {
+  from {
+    clip-path: inset(7% 5% 7% 5% round 2.25rem);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 1.25rem);
+  }
+}
+@keyframes work-zoom {
+  from {
+    transform: scale(1.28);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes review-in {
+  from {
+    transform: translateY(var(--ty, 140px)) rotate(var(--r, 6deg));
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes rise-in {
+  from {
+    transform: translateY(5rem) scale(0.93);
+    border-radius: 4rem;
+  }
+  to {
+    transform: none;
+    border-radius: 2rem;
+  }
+}
+
 /* ============ Animatsiyalar ============ */
 @keyframes marquee {
   to {
@@ -733,6 +936,12 @@ html[data-io] [data-reveal="line"]:not([data-in]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .work-media,
+  .work-zoom,
+  .review-card,
+  .rise-panel {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {

@@ -2,6 +2,7 @@ import { ArrowRight, ArrowUpRight, Check, Plus, Repeat, Users, Zap } from "lucid
 import Link from "next/link";
 import { CountUp } from "@/components/client-effects";
 import { EditorCard } from "@/components/editor-card";
+import { CategoriesStack, type StackItem } from "@/components/home/categories-stack";
 import { GlyphIcon, SplitText } from "@/components/motion";
 import type { PriceTier, PromotionPlan } from "@/db/schema";
 import { CATEGORIES, HOME_TOP_COUNT, SOFTWARE, TOP_ROTATE_MINUTES } from "@/lib/constants";
@@ -188,9 +189,16 @@ export function TiersSection({
   );
 }
 
-// ---------- Yo'nalishlar: ixcham plitkalar, Gemini'da chizilgan ingichka ikonkalar ----------
+// ---------- Yo'nalishlar: taxlanadigan kartalar (cuberto.com xizmatlar uslubi) ----------
 export function CategoriesSection({ d }: { d: Dict }) {
-  const cats = CATEGORIES.filter((c) => c.key !== "other");
+  const items: StackItem[] = CATEGORIES.filter((c) => c.key !== "other").map((c) => ({
+    key: c.key,
+    icon: c.icon,
+    title: d.categories[c.key],
+    text: d.categoriesSection.items[c.key] ?? "",
+    href: `/editors?category=${c.key}`,
+    cta: d.categoriesSection.cta,
+  }));
   return (
     <section className="container-x pt-28">
       <Rule className="mb-12" />
@@ -202,21 +210,100 @@ export function CategoriesSection({ d }: { d: Dict }) {
           </Link>
         }
       />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {cats.map((c, i) => (
-          <Link
-            key={c.key}
-            href={`/editors?category=${c.key}`}
-            data-reveal
-            style={delay(i * 70)}
-            className="glyph-host card group flex flex-col justify-between gap-8 p-5 transition-colors duration-300 hover:border-fg"
-          >
-            <span className="flex items-start justify-between">
-              <GlyphIcon name={c.icon} className="h-14 w-14" />
-              <ArrowUpRight className="h-4 w-4 text-muted transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fg" />
-            </span>
-            <span className="text-base leading-tight sm:text-lg">{d.categories[c.key]}</span>
+      <CategoriesStack items={items} />
+    </section>
+  );
+}
+
+// ---------- Montaj jarayoni (lusion.co "Featured Work" uslubi) ----------
+/** Gemini'da generatsiya qilingan realistik suratlar: har bir yo'nalishda montaj qilayotgan montajorlar */
+const WORK_PHOTOS = [
+  { key: "reels", src: "/images/work/reels-v1.webp" },
+  { key: "youtube", src: "/images/work/youtube-v1.webp" },
+  { key: "color", src: "/images/work/color-v1.webp" },
+  { key: "motion", src: "/images/work/motion-v1.webp" },
+  { key: "podcast", src: "/images/work/podcast-v1.webp" },
+  { key: "ads", src: "/images/work/ads-v1.webp" },
+] as const;
+
+export function ShowcaseSection({ d }: { d: Dict }) {
+  return (
+    <section className="container-x pt-28">
+      <Rule className="mb-12" />
+      <SectionHead
+        title={d.showcase.title}
+        subtitle={d.showcase.subtitle}
+        action={
+          <Link href="/editors" className="btn btn-ghost">
+            {d.common.viewAll} <ArrowRight className="h-4 w-4" />
           </Link>
+        }
+      />
+      {/* Ikki ustun, o'ng ustun pastroqda (zinapoya) */}
+      <div className="grid gap-x-5 gap-y-12 md:grid-cols-2 md:gap-y-16">
+        {WORK_PHOTOS.map((it, i) => (
+          <Link key={it.key} href={`/editors?category=${it.key}`} className={cn("work group block", i % 2 === 1 && "md:mt-24")}>
+            <div className="work-media aspect-[16/9]">
+              <div className="work-zoom">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={it.src}
+                  alt={fmt(d.showcase.alt, { category: d.categories[it.key] })}
+                  width={1376}
+                  height={768}
+                  loading="lazy"
+                  decoding="async"
+                  className="work-img"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h3 className="flex min-w-0 items-center text-xl tracking-tight sm:text-2xl">
+                <ArrowRight className="work-arrow h-[0.9em]" />
+                <span className="truncate">{d.categories[it.key]}</span>
+              </h3>
+              <span className="text-xs text-muted">
+                {String(i + 1).padStart(2, "0")} · {d.showcase.see}
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------- Mijozlar fikri (cuberto.com "Trusted by our clients" uslubi) ----------
+export type ReviewItem = { id: string; comment: string; rating: number; authorName: string; editorName: string; slug: string };
+/** Har bir karta o'z burchagi bilan qiyshayib kirib keladi */
+const TILT = ["-7deg", "4deg", "9deg", "-5deg", "7deg", "-9deg"];
+
+export function ReviewsSection({ d, items }: { d: Dict; items: ReviewItem[] }) {
+  if (items.length < 3) return null;
+  const list = items.slice(0, items.length >= 6 ? 6 : 3);
+  return (
+    <section className="container-x pt-28">
+      <Rule className="mb-12" />
+      <h2 className="h-section mx-auto max-w-3xl text-center text-[clamp(2.2rem,5vw,4rem)] text-balance">
+        <SplitText text={d.reviewsSection.title} />
+      </h2>
+      <div className="mt-14 grid gap-4 md:grid-cols-3">
+        {list.map((r, i) => (
+          <figure
+            key={r.id}
+            className={cn("review-card flex flex-col p-7 sm:p-8", i % 3 !== 1 && "md:mt-10")}
+            style={{ "--pc": `var(--pastel-${(i % 3) + 1})`, "--r": TILT[i % TILT.length], "--ty": `${120 + (i % 3) * 40}px` } as Css}
+          >
+            <span aria-hidden className="text-5xl leading-none font-semibold text-fg/25">“</span>
+            <blockquote className="mt-2 text-[0.98rem] leading-relaxed">{r.comment}</blockquote>
+            <span className="mt-6 block h-px w-10 bg-fg/30" />
+            <figcaption className="mt-4 text-sm">
+              <span className="font-medium">{r.authorName}</span>
+              <Link href={`/editors/${r.slug}`} className="mt-0.5 block text-muted hover:underline">
+                {fmt(d.reviewsSection.forEditor, { name: r.editorName })}
+              </Link>
+            </figcaption>
+          </figure>
         ))}
       </div>
     </section>
@@ -365,10 +452,11 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
 }
 
 // ---------- FAQ ----------
-export function FaqSection({ d }: { d: Dict }) {
+export function FaqSection({ d, first }: { d: Dict; first?: boolean }) {
   return (
     <section className="container-x pt-28">
-      <Rule className="mb-12" />
+      {/* Qorong'i panel ichida birinchi bo'lim — yuqori chiziq kerak emas */}
+      {!first && <Rule className="mb-12" />}
       <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
           <span data-reveal className="eyebrow mb-5">

@@ -119,6 +119,15 @@ export const en: Dict = {
   },
   categoriesSection: {
     title: "An editor for every kind of video",
+    cta: "Editors",
+    items: {
+      reels: "Fast, on-trend vertical videos for Reels, Shorts and TikTok: cuts, subtitles, effects.",
+      youtube: "Full editing for vlogs, interviews and tutorials: pacing, graphics, sound and colour.",
+      ads: "Commercials for brands — from idea to finished spot for social media and TV.",
+      motion: "Logo animation, infographics, titles and 2D/3D motion design.",
+      podcast: "Multi-camera podcast editing and short, shareable clips cut from it.",
+      color: "Cinematic colour correction and grading — a professional look in DaVinci Resolve.",
+    } as Record<string, string>,
   },
   levels: {
     BEGINNER: "Beginner",
@@ -130,7 +139,14 @@ export const en: Dict = {
     empty: "No editors yet. Be the first!",
   },
   showcase: {
-    title: "The frames speak for themselves",
+    title: "Behind the edit",
+    subtitle: "Editors who know their craft, in every category.",
+    see: "See editors",
+    alt: "{category} — editing in progress",
+  },
+  reviewsSection: {
+    title: "Trusted by our clients",
+    forEditor: "worked with {name}",
   },
   rating: {
     title: "Rating is earned by work, not money",
