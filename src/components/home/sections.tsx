@@ -194,12 +194,12 @@ export function TiersSection({
 // ---------- Montaj jarayoni (lusion.co "Featured Work" uslubi) ----------
 /** Gemini'da generatsiya qilingan realistik suratlar ("desk setup" uslubi): har bir yo'nalishda montaj qilayotgan montajorlar */
 const WORK_PHOTOS = [
-  { key: "reels", src: "/images/work/reels-v2.webp" },
-  { key: "youtube", src: "/images/work/youtube-v3.webp" },
-  { key: "color", src: "/images/work/color-v2.webp" },
-  { key: "motion", src: "/images/work/motion-v2.webp" },
-  { key: "podcast", src: "/images/work/podcast-v2.webp" },
-  { key: "ads", src: "/images/work/ads-v2.webp" },
+  { key: "reels", src: "/images/work/reels-v3.webp" },
+  { key: "youtube", src: "/images/work/youtube-v4.webp" },
+  { key: "color", src: "/images/work/color-v3.webp" },
+  { key: "motion", src: "/images/work/motion-v3.webp" },
+  { key: "podcast", src: "/images/work/podcast-v3.webp" },
+  { key: "ads", src: "/images/work/ads-v3.webp" },
 ] as const;
 
 export function ShowcaseSection({ d }: { d: Dict }) {
@@ -226,7 +226,7 @@ export function ShowcaseSection({ d }: { d: Dict }) {
                   src={it.src}
                   alt={fmt(d.showcase.alt, { category: d.categories[it.key] })}
                   width={1376}
-                  height={768}
+                  height={774}
                   loading="lazy"
                   decoding="async"
                   className="work-img"
