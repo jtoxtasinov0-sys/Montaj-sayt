@@ -1,22 +1,15 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { Stars } from "@/components/stars";
 import { cn } from "@/lib/utils";
 
-/** Ichki sahifalar sarlavhasi — kichik planeta yoyi bilan */
+/** Ichki sahifalar sarlavhasi — katta matn va pastda chiziladigan ingichka chiziq */
 export function PageHero({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
   return (
-    <section className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3">
-      <Stars className="absolute inset-0 -z-10 opacity-60" />
-      <div
-        aria-hidden
-        className="absolute -top-[480px] left-1/2 -z-10 aspect-square w-[900px] -translate-x-1/2 rounded-full shadow-[0_30px_80px_-10px_rgba(255,79,216,0.45),0_60px_160px_10px_rgba(61,76,228,0.4),inset_0_-30px_60px_-20px_rgba(255,110,225,0.5)] ring-1 ring-[#ffaa82]/30"
-      />
-      <div className="container-x pt-32 pb-12 sm:pb-16">
-        <h1 className="h-hero fade-up text-[clamp(2.4rem,6vw,4.6rem)] text-balance">{title}</h1>
-        {subtitle && <p className="fade-up mt-4 max-w-2xl text-muted [animation-delay:.1s]">{subtitle}</p>}
-        {children && <div className="fade-up mt-8 [animation-delay:.2s]">{children}</div>}
-      </div>
+    <section className="container-x pt-32 sm:pt-36">
+      <h1 className="h-hero fade-up text-[clamp(2.4rem,6vw,4.6rem)] text-balance">{title}</h1>
+      {subtitle && <p className="fade-up mt-4 max-w-2xl text-muted [animation-delay:.08s]">{subtitle}</p>}
+      {children && <div className="fade-up mt-8 [animation-delay:.16s]">{children}</div>}
+      <span data-reveal="line" className="mt-10 block h-px bg-line-strong sm:mt-12" aria-hidden />
     </section>
   );
 }
@@ -52,14 +45,15 @@ export function Empty({ children, className }: { children: React.ReactNode; clas
 
 export function StatusBadge({ status, label, className }: { status: string; label: string; className?: string }) {
   const tone: Record<string, string> = {
-    OPEN: "bg-primary/15 text-primary-2 border-primary/30",
-    PENDING: "bg-warn/15 text-warn border-warn/30",
-    IN_PROGRESS: "bg-primary/15 text-primary-2 border-primary/30",
-    DELIVERED: "bg-accent/15 text-accent border-accent/30",
-    COMPLETED: "bg-success/15 text-success border-success/30",
-    CANCELLED: "bg-danger/10 text-danger border-danger/30",
-    APPROVED: "bg-success/15 text-success border-success/30",
-    REJECTED: "bg-danger/10 text-danger border-danger/30",
+    // Oq-qora: faol holatlar — ingichka ramka, yakunlangan — to'liq bo'yalgan, bekor — qizil
+    OPEN: "text-fg border-line-strong",
+    PENDING: "text-fg border-dashed border-line-strong",
+    IN_PROGRESS: "text-fg border-fg",
+    DELIVERED: "text-fg border-fg",
+    COMPLETED: "bg-fg text-bg border-transparent",
+    CANCELLED: "text-danger border-danger/40",
+    APPROVED: "bg-fg text-bg border-transparent",
+    REJECTED: "text-danger border-danger/40",
   };
   return <span className={cn("chip", tone[status], className)}>{label}</span>;
 }

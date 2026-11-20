@@ -37,7 +37,7 @@ export function VideoTile({ item, categoryLabel, className }: { item: Item; cate
 
   const inner = (
     <>
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-gradient-to-br from-primary/40 via-bg-2 to-accent/20">
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-card-2">
         {cover && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

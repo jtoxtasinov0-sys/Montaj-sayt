@@ -8,13 +8,8 @@ import { cn } from "@/lib/utils";
 
 type NavItem = { href: string; label: string };
 
-/**
- * overDark: sahifa tepasida qorong'i hero bo'lsa — skroll qilinmaguncha header qorong'i uslubda.
- * Bosh sahifa hero'si mavzuga moslashadi — u yerda header ham mavzuni kuzatadi.
- */
-export function HeaderShell({ children, overDark = true }: { children: React.ReactNode; overDark?: boolean }) {
-  const path = usePathname();
-  const forceDark = overDark && path !== "/";
+/** Yuqori panel: tepada shaffof, skroll qilinganda fon va pastki ingichka chiziq paydo bo'ladi */
+export function HeaderShell({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 12);
@@ -27,7 +22,6 @@ export function HeaderShell({ children, overDark = true }: { children: React.Rea
       className={cn(
         "hdr-in fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled ? "glass border-x-0 border-t-0 py-2" : "border-b border-transparent py-4",
-        !scrolled && forceDark && "dark text-fg",
       )}
     >
       {children}
@@ -38,7 +32,7 @@ export function HeaderShell({ children, overDark = true }: { children: React.Rea
 export function NavPills({ items }: { items: NavItem[] }) {
   const path = usePathname();
   return (
-    <nav className="hidden items-center gap-1 rounded-full border border-line bg-card/40 p-1 backdrop-blur-md lg:flex">
+    <nav className="hidden items-center gap-1 lg:flex">
       {items.map((it, i) => {
         const active = it.href !== "/" && path.startsWith(it.href.split("#")[0]) && !it.href.includes("#");
         return (
@@ -48,7 +42,7 @@ export function NavPills({ items }: { items: NavItem[] }) {
             style={{ "--n": i } as React.CSSProperties}
             className={cn(
               "rounded-full px-4 py-1.5 text-[0.84rem] transition",
-              active ? "bg-fg text-bg" : "text-muted hover:bg-card-2 hover:text-fg",
+              active ? "bg-fg text-bg" : "text-muted hover:text-fg",
             )}
           >
             {it.label}
@@ -81,7 +75,7 @@ export function MobileMenu({ items, footer, label }: { items: NavItem[]; footer:
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
       {open && (
-        <div className="fixed inset-x-0 top-[64px] bottom-0 z-40 overflow-y-auto bg-bg/95 px-4 pt-6 pb-10 backdrop-blur-xl fade-up">
+        <div className="fixed inset-x-0 top-[64px] bottom-0 z-40 overflow-y-auto bg-bg px-4 pt-6 pb-10 fade-up">
           <nav className="flex flex-col">
             {items.map((it, i) => (
               <Link

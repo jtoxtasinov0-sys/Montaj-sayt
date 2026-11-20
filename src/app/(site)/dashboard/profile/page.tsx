@@ -4,9 +4,11 @@ import { saveEditorProfile } from "@/actions/profile";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { ProfileAvatar } from "@/components/profile-avatar";
+import { SlugInput } from "@/components/slug-input";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
-import { getDict } from "@/lib/i18n";
+import { env } from "@/lib/env";
+import { fmt, getDict } from "@/lib/i18n";
 import { slugify } from "@/lib/utils";
 
 export default async function ProfileFormPage() {
@@ -14,12 +16,13 @@ export default async function ProfileFormPage() {
   const [d, p] = await Promise.all([getDict(), getEditorProfileByUser(user.id)]);
   const f = d.profileForm;
   const suggested = `${slugify(user.name || user.email.split("@")[0]) || "editor"}-${user.id.slice(0, 4)}`;
+  const host = env.appUrl.replace(/^https?:\/\//, "");
 
   return (
     <ActionForm action={saveEditorProfile} className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="card space-y-5 p-6 sm:p-8">
         {!p && (
-          <div className="rounded-2xl bg-primary/10 p-4 text-sm">
+          <div className="rounded-2xl border border-line p-4 text-sm">
             <p className="font-medium">{d.dashboard.becomeTitle}</p>
             <p className="mt-1 text-muted">{d.dashboard.becomeText}</p>
           </div>
@@ -28,16 +31,8 @@ export default async function ProfileFormPage() {
           <Field label={f.displayName}>
             <input name="displayName" required minLength={2} maxLength={60} defaultValue={p?.displayName ?? user.name} className="input" />
           </Field>
-          <Field label={f.slug} hint={f.slugHint}>
-            <input
-              name="slug"
-              required
-              minLength={3}
-              maxLength={40}
-              pattern="[a-z0-9]+(-[a-z0-9]+)*"
-              defaultValue={p?.slug ?? suggested}
-              className="input"
-            />
+          <Field label={f.slug} hint={fmt(f.slugHint, { url: `${host}/editors/…` })}>
+            <SlugInput defaultValue={p?.slug ?? suggested} base={host} />
           </Field>
         </div>
         <Field label={f.headline}>

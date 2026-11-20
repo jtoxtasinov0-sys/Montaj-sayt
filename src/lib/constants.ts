@@ -4,22 +4,25 @@
  */
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Montaj Club";
 
-/** Bosh sahifadagi TOP montajorlar soni */
-export const HOME_TOP_COUNT = 8;
+/** Bosh sahifadagi TOP montajorlar soni (TOP joylari soniga teng — to'lagan har bir montajor bosh sahifada ko'rinadi) */
+export const HOME_TOP_COUNT = 20;
+
+/** TOPdagi bir xil rejadagi montajorlar necha daqiqada navbat bilan almashadi */
+export const TOP_ROTATE_MINUTES = 30;
 
 export const LOCALES = ["uz", "ru", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "uz";
 
+/** Yo'nalishlar. `icon` — public/images/icons dagi Gemini'da chizilgan oq-qora ikonka */
 export const CATEGORIES = [
-  { key: "reels", image: "/images/cat/reels.webp" },
-  { key: "youtube", image: "/images/cat/youtube.webp" },
-  { key: "wedding", image: "/images/cat/wedding.webp" },
-  { key: "ads", image: "/images/cat/ads.webp" },
-  { key: "motion", image: "/images/cat/motion.webp" },
-  { key: "podcast", image: "/images/cat/podcast.webp" },
-  { key: "color", image: "/images/cat/color.webp" },
-  { key: "other", image: "/images/cat/youtube.webp" },
+  { key: "reels", icon: "reels" },
+  { key: "youtube", icon: "youtube" },
+  { key: "ads", icon: "ads" },
+  { key: "motion", icon: "motion" },
+  { key: "podcast", icon: "podcast" },
+  { key: "color", icon: "color" },
+  { key: "other", icon: "youtube" },
 ] as const;
 export type CategoryKey = (typeof CATEGORIES)[number]["key"];
 export const CATEGORY_KEYS = CATEGORIES.map((c) => c.key) as [CategoryKey, ...CategoryKey[]];

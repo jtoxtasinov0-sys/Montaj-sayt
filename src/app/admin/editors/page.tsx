@@ -39,7 +39,7 @@ export default async function AdminEditors({ searchParams }: { searchParams: Pro
           return (
             <tr key={e.id} className="align-top">
               <td className="px-4 py-3">
-                <Link href={`/editors/${e.slug}`} className="font-medium hover:text-primary-2">
+                <Link href={`/editors/${e.slug}`} className="font-medium hover:underline hover:underline-offset-4">
                   {e.displayName}
                 </Link>
                 <p className="text-xs text-muted">{email}</p>
@@ -56,7 +56,10 @@ export default async function AdminEditors({ searchParams }: { searchParams: Pro
               <td className="px-4 py-3">
                 {boosted ? (
                   <>
-                    <span className="chip chip-accent">TOP {planNameByWeight(plans, e.boostWeight)}</span>
+                    <span className="chip chip-accent">
+                      {/* Yagona tarif nomi "TOP" — takrorlanmasin */}
+                      {[...new Set(["TOP", planNameByWeight(plans, e.boostWeight)])].join(" ")}
+                    </span>
                     <p className="mt-1 text-xs text-muted">
                       {e.boostUntil!.toISOString().slice(0, 10)} gacha · {daysLeft(e.boostUntil!)} kun qoldi
                     </p>

@@ -7,7 +7,6 @@ import {
   FinalCta,
   HowItWorks,
   PromoSection,
-  RatingSection,
   SoftwareMarquee,
   StatsStrip,
   TiersSection,
@@ -33,12 +32,11 @@ export default async function HomePage() {
       <Hero d={d} />
       <SoftwareMarquee />
       <StatsStrip d={d} s={stats} />
-      <div className="h-20" />
-      <HowItWorks d={d} />
+      <TopEditorsSection d={d} editors={top} />
       <TiersSection d={d} tiers={tiers} counts={counts} />
       <CategoriesSection d={d} />
-      <TopEditorsSection d={d} editors={top} />
-      <RatingSection d={d} />
+      {/* "Qanday ishlaydi" — sherik taklifi bilan pastroqqa tushirildi */}
+      <HowItWorks d={d} />
       <PromoSection d={d} plans={plans} />
       <FaqSection d={d} />
       <FinalCta d={d} />

@@ -1,13 +1,17 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, isNull, lt, ne, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { editorProfiles, payments, promotions } from "@/db/schema";
+import { editorProfiles, incomingTransfers, payments, promotions } from "@/db/schema";
 import { audit } from "@/lib/audit";
 import { invalidate } from "@/lib/cache";
-import { refreshPaymentMessage } from "@/lib/telegram";
+import { getPlans } from "@/lib/data";
+import { refreshPaymentMessage, sendAdminMessage, escapeHtml } from "@/lib/telegram";
+import { formatUzs } from "@/lib/utils";
 
 const DAY = 86_400_000;
+/** Chek yuborilmagan kutilayotgan to'lov shuncha vaqt joy band qiladi, keyin o'zi bekor bo'ladi */
+export const PENDING_TTL_MS = DAY;
 
 /* ---------------- To'lov kodi ----------------
  * Har bir to'lovchiga reja narxiga 100–999 so'm qo'shiladi (masalan 50 000 → 50 437).
@@ -41,17 +45,124 @@ export async function payCodeFor(userId: string, prices: number[]) {
 type Queryable = Pick<typeof db, "execute">;
 
 export async function slotUsage(weight: number, selfEditorId: string, q: Queryable = db) {
+  // Chek yuborilmagan va 24 soatdan eski kutilayotgan to'lov joy band qilmaydi (expireStalePayments uni bekor qiladi)
   const rows = await q.execute<{ used: number; next_free: string | Date | null }>(sql`
     select
       (select count(*)::int from (
         select id from editor_profiles where boost_weight = ${weight} and boost_until > now() and id <> ${selfEditorId}
         union
         select editor_id from payments where status = 'PENDING' and weight = ${weight} and editor_id <> ${selfEditorId}
+          and (receipt_key is not null or created_at > now() - interval '24 hours')
       ) t) as used,
       (select min(boost_until) from editor_profiles where boost_weight = ${weight} and boost_until > now()) as next_free
   `);
   const r = rows[0];
   return { used: Number(r?.used ?? 0), nextFree: r?.next_free ? new Date(r.next_free) : null };
+}
+
+/** Chek yuborilmagan, 24 soat ichida to'lanmagan to'lovlarni bekor qilish — daqiqasiga ko'pi bilan 1 marta */
+let lastStale = 0;
+export async function expireStalePayments() {
+  const now = Date.now();
+  if (now - lastStale < 60_000) return;
+  lastStale = now;
+  await db
+    .update(payments)
+    .set({ status: "REJECTED", reviewedBy: "system", reviewedAt: new Date(), adminNote: "24 soat ichida to'lanmadi" })
+    .where(and(eq(payments.status, "PENDING"), isNull(payments.receiptKey), lt(payments.createdAt, new Date(now - PENDING_TTL_MS))));
+}
+
+/* ---------------- Avtomatik tasdiqlash (bank xabari) ----------------
+ * Kartaga pul tushganda bank SMS yoki bildirishnoma yuboradi. Uni ikki yo'l bilan olamiz:
+ *  1) Telefondagi "SMS forwarder" ilovasi xabarni POST /api/payments/incoming ga yuboradi (to'liq avtomatik);
+ *  2) Admin bank xabarini Telegram botga forward qiladi (bir bosish).
+ * Matndagi summalardan biri kutilayotgan to'lov summasiga (narx + shaxsiy kod) AYNAN teng bo'lsa — to'lov
+ * tasdiqlanadi. Kodlar takrorlanmaydi (payCodeFor), shuning uchun summa to'lovchini aniq ko'rsatadi.
+ */
+
+/** Balans/qoldiq — undan keyingi summa tushgan pul emas */
+const BALANCE_LINE = /(balans|balance|qoldiq|ostatok|остаток|dostupno|доступно|💰)/i;
+const MONEY = /(?<![\d])(\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d{4,9})(?:[.,]\d{1,2})?(?![\d])/g;
+
+/** Pul chiqib ketgani haqidagi xabar (xarid, yechib olish) — kirim emas */
+const DEBIT = /(spisan|списан|pokupka|покупка|oplata|оплата|yechildi|chiqim|xarid|➖)/i;
+const CREDIT = /(popoln|пополн|zachisl|зачисл|perevod|перевод|tushdi|kirim|o'tkazma|➕|\+\s?\d)/i;
+
+/** Matndan pul summalarini ajratib olish: "+50 437.00 UZS", "50437,00 so'm", "Popolnenie: 50 437 UZS" → 50437 */
+export function parseAmounts(text: string): number[] {
+  if (DEBIT.test(text) && !CREDIT.test(text)) return [];
+  const out = new Set<number>();
+  for (const line of text.split(/\r?\n/)) {
+    // "…, dostupno 1 250 437 UZS" — balans so'zidan keyingi qism tashlab yuboriladi
+    const cut = line.search(BALANCE_LINE);
+    for (const m of (cut >= 0 ? line.slice(0, cut) : line).matchAll(MONEY)) {
+      const n = Number.parseInt(m[1].replace(/[^\d]/g, ""), 10);
+      if (n >= 1_000 && n <= 100_000_000) out.add(n);
+    }
+  }
+  return [...out];
+}
+
+type Matched = { paymentId: string; amount: number; editor: string };
+
+/**
+ * Tushgan pullarni kutilayotgan to'lovlarga moslash va tasdiqlash. Har bir summa yozib qo'yiladi:
+ * mos to'lov hali bo'lmasa (pul oldinroq tushgan bo'lsa) — to'lov yaratilganda matchPendingWithIncoming topadi.
+ */
+export async function matchIncoming(found: number[], source: "webhook" | "telegram", raw: string): Promise<Matched[]> {
+  // Faqat TOP to'lovi bo'lishi mumkin bo'lgan summalar (narx + 100…999 kod) — karta raqami, yil va h.k. yozilmaydi
+  const prices = (await getPlans()).map((p) => p.priceUzs);
+  const amounts = prices.length
+    ? found.filter((n) => n >= Math.min(...prices) + CODE_MIN && n < Math.max(...prices) + CODE_MIN + CODE_SPAN)
+    : found;
+  if (!amounts.length) return [];
+  const pending = await db
+    .select({ id: payments.id, amount: payments.amountUzs, editor: editorProfiles.displayName })
+    .from(payments)
+    .innerJoin(editorProfiles, eq(editorProfiles.id, payments.editorId))
+    .where(and(eq(payments.status, "PENDING"), inArray(payments.amountUzs, amounts)));
+  const matched: Matched[] = [];
+  for (const amount of amounts) {
+    const hits = pending.filter((p) => p.amount === amount);
+    // Bir xil summali ikki to'lov bo'lsa (bo'lmasligi kerak) — avtomatik emas, admin hal qiladi
+    const hit = hits.length === 1 ? hits[0] : null;
+    const [row] = await db
+      .insert(incomingTransfers)
+      .values({ amountUzs: amount, source, raw: raw.slice(0, 1000), paymentId: null })
+      .returning({ id: incomingTransfers.id });
+    if (!hit) continue;
+    const res = await approvePayment(hit.id, { label: `avto:${source}` });
+    if (!res.ok) continue;
+    await db.update(incomingTransfers).set({ paymentId: hit.id }).where(eq(incomingTransfers.id, row.id));
+    matched.push({ paymentId: hit.id, amount, editor: hit.editor });
+  }
+  // Webhook orqali kelganda adminga xabar; Telegram'da forward qilinganda bot o'zi javob beradi
+  if (matched.length && source === "webhook") {
+    sendAdminMessage(
+      matched.map((m) => `✅ <b>Avto-tasdiqlandi</b>: ${escapeHtml(m.editor)} — ${formatUzs(m.amount)} so'm. TOP yoqildi.`).join("\n"),
+    ).catch(() => {});
+  }
+  return matched;
+}
+
+/** Yangi to'lov yaratilganda: shu summadagi pul so'nggi 24 soatda allaqachon tushgan bo'lsa — darhol tasdiqlash */
+export async function matchPendingWithIncoming(paymentId: string, amount: number) {
+  const [hit] = await db
+    .select({ id: incomingTransfers.id })
+    .from(incomingTransfers)
+    .where(
+      and(
+        eq(incomingTransfers.amountUzs, amount),
+        isNull(incomingTransfers.paymentId),
+        gt(incomingTransfers.createdAt, new Date(Date.now() - PENDING_TTL_MS)),
+      ),
+    )
+    .orderBy(desc(incomingTransfers.createdAt))
+    .limit(1);
+  if (!hit) return false;
+  const res = await approvePayment(paymentId, { label: "avto:oldindan" });
+  if (res.ok) await db.update(incomingTransfers).set({ paymentId }).where(eq(incomingTransfers.id, hit.id));
+  return res.ok;
 }
 
 /** Bir xil vazndagi joy tekshiruvi va to'lov yozilishi bir vaqtda ikki kishiga oxirgi joyni bermasligi uchun */

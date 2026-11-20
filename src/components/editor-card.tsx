@@ -5,7 +5,6 @@ import { fmt, type Dict } from "@/lib/i18n";
 import { isTopRated } from "@/lib/ranking-shared";
 import { cn } from "@/lib/utils";
 import { Avatar } from "./avatar";
-import { Neon } from "./motion";
 import { RatingStars } from "./rating-stars";
 
 export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; className?: string }) {
@@ -15,21 +14,20 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
   return (
     <Link
       href={`/editors/${e.slug}`}
-      data-spotlight
       className={cn(
-        "card group flex h-full flex-col gap-4 p-5 transition duration-300 hover:-translate-y-1 hover:border-line-strong",
+        // TOP (pullik) montajor — nur o'rniga to'q ramka
+        "card group flex h-full flex-col gap-4 p-5 transition duration-300 hover:-translate-y-0.5 hover:border-fg",
+        boosted && "border-fg",
         className,
       )}
     >
-      {/* Ramka bo'ylab aylanuvchi nur — faqat TOP (pullik) montajorda */}
-      {boosted && <Neon tone="accent" />}
       <div className="flex items-start gap-3.5">
         <div className="relative">
           <Avatar name={e.displayName} avatarKey={e.avatarKey} image={e.userImage} size={56} />
           <span
             className={cn(
               "absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 border-bg",
-              e.isAvailable ? "bg-success" : "bg-muted",
+              e.isAvailable ? "bg-fg" : "bg-line-strong",
             )}
             title={e.isAvailable ? d.editors.available : d.editors.busy}
           />
@@ -37,7 +35,7 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <h3 className="truncate text-[1.05rem] font-medium tracking-tight">{e.displayName}</h3>
-            {e.isVerified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary-2" aria-label={d.editors.verified} />}
+            {e.isVerified && <BadgeCheck className="h-4 w-4 shrink-0 text-fg" aria-label={d.editors.verified} />}
           </div>
           <p className="mt-0.5 line-clamp-2 text-[0.82rem] leading-snug text-muted">{e.headline}</p>
         </div>

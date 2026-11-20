@@ -3,67 +3,52 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============ Ranglar ============
-   Qorong'i: qora fon, pushti (chap) + ko'k (o'ng) nur — "qidiruv paneli" referensi.
-   Yorug': och kulrang fon, binafsha shisha plitkalar — "Design Inspiration" referensi. */
+   Minimal oq-qora uslub (referens: minimal.gallery, lusion.co).
+   Yorug' (asosiy) — toza oq fon, qora matn. Qorong'i — qop-qora fon, oq matn.
+   Rangli urg'u yo'q: "primary" va "accent" ham matn rangiga teng; faqat xato (danger) qizil qoladi. */
 :root {
-  --bg: #f2f2f5;
-  --bg-2: #e9e8f1;
-  --fg: #0d0b18;
-  --muted: #625e78;
-  --line: rgba(32, 14, 72, 0.09);
-  --line-strong: rgba(32, 14, 72, 0.17);
-  --card: rgba(255, 255, 255, 0.8);
-  --card-2: #f6f4fb;
-  --primary: #7a2ff0;
-  --primary-2: #a35cff;
+  --bg: #ffffff;
+  --bg-2: #f5f5f4;
+  --fg: #0a0a0a;
+  --muted: #6e6e6e;
+  --line: rgba(10, 10, 10, 0.09);
+  --line-strong: rgba(10, 10, 10, 0.2);
+  --card: #ffffff;
+  --card-2: #f5f5f4;
+  --primary: #0a0a0a;
+  --primary-2: #0a0a0a;
   --primary-fg: #ffffff;
-  --accent: #d13fd6;
-  --accent-2: #f4a6ee;
-  --glow: rgba(122, 47, 240, 0.32);
-  --invert-bg: #08061a;
-  --invert-fg: #f1f0f6;
-  --success: #16a36a;
-  --danger: #e5484d;
-  --warn: #d98a00;
-  --shadow: 0 1px 2px rgba(30, 10, 70, 0.04), 0 14px 36px -14px rgba(60, 20, 140, 0.16);
-  --neon-c1: #7a2ff0;
-  --neon-tip: #b98cff;
-  /* Nurli ramka: chap (a) → o'ng (b), karta foni (plate), nur kuchi (halo) */
-  --ga: #d13fd6;
-  --gb: #6d3bff;
-  --plate: #ffffff;
-  --halo: 0.5;
+  --accent: #0a0a0a;
+  --accent-2: #0a0a0a;
+  --invert-bg: #0a0a0a;
+  --invert-fg: #ffffff;
+  --success: #0a0a0a;
+  --danger: #d92d20;
+  --warn: #0a0a0a;
+  --shadow: none;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
 }
 
 .dark {
-  --bg: #04040a;
-  --bg-2: #09091a;
-  --fg: #f2f2f7;
-  --muted: #9a9ab3;
-  --line: rgba(170, 170, 255, 0.1);
-  --line-strong: rgba(170, 170, 255, 0.19);
-  --card: rgba(10, 10, 21, 0.78);
-  --card-2: rgba(26, 26, 52, 0.55);
-  --primary: #3d4ce4;
-  --primary-2: #8a92ff;
-  --primary-fg: #ffffff;
-  --accent: #ff4fd8;
-  --accent-2: #ffb6f0;
-  --glow: rgba(61, 76, 228, 0.5);
-  --invert-bg: #f1f1f4;
-  --invert-fg: #0b0b1a;
-  --success: #3ddc97;
-  --danger: #ff6b6f;
-  --warn: #ffc24b;
-  --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 20px 50px -20px rgba(0, 0, 0, 0.7);
-  --neon-c1: #8a92ff;
-  --neon-tip: #ffffff;
-  --ga: #ff3fd1;
-  --gb: #3b5bff;
-  --plate: linear-gradient(180deg, #0b0b17, #040409);
-  --halo: 0.75;
+  --bg: #000000;
+  --bg-2: #0b0b0b;
+  --fg: #f5f5f5;
+  --muted: #8c8c8c;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --card: #000000;
+  --card-2: #101010;
+  --primary: #f5f5f5;
+  --primary-2: #f5f5f5;
+  --primary-fg: #000000;
+  --accent: #f5f5f5;
+  --accent-2: #f5f5f5;
+  --invert-bg: #f5f5f5;
+  --invert-fg: #000000;
+  --success: #f5f5f5;
+  --danger: #ff6b5f;
+  --warn: #f5f5f5;
   color-scheme: dark;
 }
 
@@ -86,55 +71,53 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warn: var(--warn);
-  --font-sans: "DM Sans Variable", "Onest Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Delight — lotin; kirill harflari (ruscha) Onest'dan olinadi */
+  --font-sans: var(--font-delight), "Onest Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
   --shadow-soft: var(--shadow);
 }
 
 @layer base {
-/* ============ Asos ============ */
-html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
-  interpolate-size: allow-keywords;
-}
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: clip;
-}
-/* Telefon himoyasi: grid ustunini uzun bir qatorli matn (truncate) kengaytirib yubormasin.
-   Aks holda sahifa ekrandan kengayib, telefonda yonga surilib/kichrayib ketadi. */
-:where(.grid) > * {
-  min-width: 0;
-}
-/* iPhone 16px dan kichik maydonga bosilganda sahifani kattalashtirib yuboradi — telefonda 16px */
-@media (max-width: 767px), (pointer: coarse) {
-  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
-  select,
-  textarea {
-    font-size: 16px !important;
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    interpolate-size: allow-keywords;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+  /* Telefon himoyasi: grid ustunini uzun bir qatorli matn (truncate) kengaytirib yubormasin */
+  :where(.grid) > * {
+    min-width: 0;
+  }
+  /* iPhone 16px dan kichik maydonga bosilganda sahifani kattalashtirib yuboradi — telefonda 16px */
+  @media (max-width: 767px), (pointer: coarse) {
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+  ::selection {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  :focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  img {
+    user-select: none;
   }
 }
-::selection {
-  background: color-mix(in oklab, var(--primary) 70%, transparent);
-  color: #fff;
-}
-:focus-visible {
-  outline: 2px solid var(--primary-2);
-  outline-offset: 3px;
-  border-radius: 10px;
-}
-img {
-  user-select: none;
-}
 
-}
-
-/* View Transition — mavzu almashganda doira bo'lib ochilish */
+/* View Transition — mavzu almashganda doira bo'lib ochilish (ThemeToggle) */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -142,1402 +125,576 @@ img {
 }
 
 @layer components {
-/* ============ Tipografiya (Nymera uslubi: ingichka, katta) ============ */
-.h-display {
-  overflow-wrap: break-word;
-  hyphens: auto;
-  font-weight: 250;
-  letter-spacing: -0.055em;
-  line-height: 0.92;
-}
-/* Asosiy sarlavha — qalin (REDSUN referensi) */
-.h-hero {
-  overflow-wrap: break-word;
-  hyphens: auto;
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-.h-section {
-  overflow-wrap: break-word;
-  hyphens: auto;
-  font-weight: 300;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-.text-gradient {
-  background: linear-gradient(100deg, var(--accent) 0%, #c9a6ff 32%, var(--primary-2) 62%, var(--accent) 100%);
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer 7s ease-in-out infinite;
-}
+  /* ============ Tipografiya ============ */
+  .h-display {
+    overflow-wrap: break-word;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+  .h-hero {
+    overflow-wrap: break-word;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
+  .h-section {
+    overflow-wrap: break-word;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+  }
+  /* Kichik yorliq: "— Bo'lim nomi" */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+  }
 
-/* ============ Komponentlar ============ */
-.container-x {
-  width: 100%;
-  max-width: 1240px;
-  margin-inline: auto;
-  padding-inline: 1rem;
-}
-@media (min-width: 640px) {
+  /* ============ Komponentlar ============ */
   .container-x {
-    padding-inline: 1.5rem;
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: 1rem;
   }
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 1.5rem;
-  box-shadow: var(--shadow);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
-}
-.glass {
-  background: color-mix(in oklab, var(--bg) 62%, transparent);
-  border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  height: 2.75rem;
-  padding-inline: 1.25rem;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.3s,
-    background-color 0.25s,
-    border-color 0.25s,
-    color 0.25s;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  cursor: pointer;
-}
-.btn:active {
-  transform: scale(0.97);
-}
-.btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.btn-primary {
-  color: #fff;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--primary-2) 42%, var(--primary)) 0%, var(--primary) 100%);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
-    0 10px 30px -8px var(--glow);
-}
-.btn-primary:hover {
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
-    0 14px 40px -6px var(--glow);
-  transform: translateY(-1px);
-}
-/* yaltirash effekti */
-.btn-primary::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform 0.7s ease;
-  z-index: -1;
-}
-.btn-primary:hover::after {
-  transform: translateX(120%);
-}
-.btn-ghost {
-  color: var(--fg);
-  border: 1px solid var(--line-strong);
-  background: color-mix(in oklab, var(--card) 60%, transparent);
-}
-.btn-ghost:hover {
-  border-color: var(--primary-2);
-  background: color-mix(in oklab, var(--primary) 10%, transparent);
-}
-.btn-light {
-  color: #0b0b1a;
-  background: #fff;
-}
-.btn-light:hover {
-  background: #eef0ff;
-}
-.btn-danger {
-  color: #fff;
-  background: var(--danger);
-}
-.btn-sm {
-  height: 2.25rem;
-  padding-inline: 0.95rem;
-  font-size: 0.84rem;
-}
-.btn-lg {
-  height: 3.25rem;
-  padding-inline: 1.6rem;
-  font-size: 1rem;
-}
-/* Nymera'dagi "→" doira tugma ichida */
-.btn-arrow {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  margin-right: -0.85rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary-2), var(--primary));
-  color: #fff;
-  transition: transform 0.3s;
-}
-.btn:hover .btn-arrow {
-  transform: translateX(3px) rotate(-12deg);
-}
-.btn-primary .btn-arrow {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  height: 1.6rem;
-  padding-inline: 0.65rem;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 500;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--card-2) 80%, transparent);
-  color: var(--muted);
-  white-space: nowrap;
-}
-.chip-primary {
-  color: #fff;
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--primary-2), var(--primary));
-}
-.chip-accent {
-  color: #fff;
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 45%, var(--primary)));
-}
-.chip-success {
-  color: var(--success);
-  border-color: color-mix(in oklab, var(--success) 35%, transparent);
-  background: color-mix(in oklab, var(--success) 10%, transparent);
-}
-
-.label {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-  color: var(--fg);
-}
-.hint {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 0.35rem;
-}
-.input {
-  width: 100%;
-  height: 2.9rem;
-  padding-inline: 1rem;
-  border-radius: 0.9rem;
-  border: 1px solid var(--line-strong);
-  background: color-mix(in oklab, var(--card) 90%, transparent);
-  color: var(--fg);
-  font-size: 0.95rem;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-}
-textarea.input {
-  height: auto;
-  min-height: 7rem;
-  padding-block: 0.8rem;
-  resize: vertical;
-}
-select.input {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239799b4' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  padding-right: 2.5rem;
-}
-.dark select.input option {
-  background: #0d0d22;
-}
-.input::placeholder {
-  color: color-mix(in oklab, var(--muted) 75%, transparent);
-}
-.input:focus {
-  outline: none;
-  border-color: var(--primary-2);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 22%, transparent);
-}
-input[type="file"].input {
-  padding: 0.55rem;
-  height: auto;
-}
-input[type="file"].input::file-selector-button {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  margin-right: 0.75rem;
-  background: var(--primary);
-  color: #fff;
-  font-weight: 500;
-  cursor: pointer;
-}
-.check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  font-size: 0.82rem;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-}
-.check:has(input:checked) {
-  border-color: var(--primary-2);
-  background: color-mix(in oklab, var(--primary) 16%, transparent);
-}
-.check input {
-  accent-color: var(--primary);
-}
-
-/* Teskari panel (Nymera: qorong'i sahifada oq bo'lim) */
-.panel-invert {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
-  --muted: color-mix(in oklab, var(--invert-fg) 58%, transparent);
-  --line: color-mix(in oklab, var(--invert-fg) 12%, transparent);
-}
-
-/* Sichqoncha ortidan yuruvchi yorug'lik */
-[data-spotlight] {
-  position: relative;
-  isolation: isolate;
-}
-[data-spotlight]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.35s;
-  background: radial-gradient(
-    420px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in oklab, var(--primary-2) 22%, transparent),
-    transparent 45%
-  );
-  z-index: 0;
-}
-[data-spotlight]:hover::before {
-  opacity: 1;
-}
-[data-spotlight] > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ============ Hero: planeta va ufq (FXIFY referensi) ============ */
-.planet {
-  position: absolute;
-  left: 50%;
-  top: -62vw;
-  width: 92vw;
-  max-width: 1100px;
-  aspect-ratio: 1;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 50% 100%, rgba(122, 132, 255, 0.55), transparent 42%),
-    radial-gradient(circle at 50% 55%, #0c0c26 0%, #05050f 70%);
-  box-shadow:
-    0 0 0 1px rgba(255, 150, 230, 0.35),
-    0 30px 80px -10px rgba(255, 79, 216, 0.55),
-    0 60px 160px 10px rgba(61, 76, 228, 0.45),
-    inset 0 -30px 60px -20px rgba(255, 110, 225, 0.55);
-  animation: planet-breathe 9s ease-in-out infinite;
-}
-@media (min-width: 1200px) {
-  .planet {
-    top: -760px;
+  @media (min-width: 640px) {
+    .container-x {
+      padding-inline: 1.5rem;
+    }
   }
-}
-.horizon {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 2px;
-  width: min(1100px, 92%);
-  background: linear-gradient(90deg, transparent, rgba(255, 79, 216, 0.15) 15%, #ff9be9 50%, rgba(255, 79, 216, 0.15) 85%, transparent);
-  box-shadow: 0 0 24px 2px rgba(255, 79, 216, 0.55);
-  animation: horizon 6s ease-in-out infinite;
-}
-.stars,
-.stars-2 {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.star-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  border-radius: 999px;
-  background: transparent;
-  animation: twinkle 4s ease-in-out infinite alternate;
-}
 
-/* Yulduzlar — bir marta CSS'da (har bir sahifa javobida takrorlanmasligi uchun) */
-.star-l1 {
-  box-shadow: 1473px 260px 0 0px rgba(220,224,255,0.35),852px 296px 0 0px rgba(220,224,255,0.82),869px 616px 0 0px rgba(220,224,255,0.84),387px 337px 0 0px rgba(220,224,255,0.88),86px 616px 0 0px rgba(220,224,255,0.80),1292px 111px 0 0px rgba(220,224,255,0.95),1102px 579px 0 0px rgba(220,224,255,0.95),1453px 335px 0 0px rgba(220,224,255,0.94),532px 137px 0 0px rgba(220,224,255,0.89),472px 844px 0 0px rgba(220,224,255,0.63),1405px 53px 0 0px rgba(220,224,255,0.82),814px 379px 0 0px rgba(220,224,255,0.71),88px 329px 0 0px rgba(220,224,255,0.94),1479px 463px 0 0px rgba(220,224,255,0.78),454px 328px 0 0px rgba(220,224,255,0.61),851px 553px 0 0px rgba(220,224,255,0.57),733px 777px 0 0px rgba(220,224,255,0.94),826px 454px 0 0px rgba(220,224,255,0.76),635px 637px 0 0px rgba(220,224,255,0.96),561px 298px 0 0px rgba(220,224,255,0.73),1404px 100px 0 0px rgba(220,224,255,0.87),651px 138px 0 0px rgba(220,224,255,0.40),352px 569px 0 0px rgba(220,224,255,1.00),949px 124px 0 1px rgba(220,224,255,0.65),1425px 797px 0 1px rgba(220,224,255,0.92),441px 9px 0 0px rgba(220,224,255,0.84),3px 555px 0 0px rgba(220,224,255,0.40),783px 619px 0 0px rgba(220,224,255,0.83),376px 337px 0 0px rgba(220,224,255,0.92),783px 3px 0 1px rgba(220,224,255,0.43),1475px 19px 0 1px rgba(220,224,255,0.76),1550px 509px 0 0px rgba(220,224,255,0.47),356px 188px 0 0px rgba(220,224,255,0.52),1231px 631px 0 0px rgba(220,224,255,0.38),52px 99px 0 1px rgba(220,224,255,0.67),1101px 804px 0 0px rgba(220,224,255,0.43),1378px 893px 0 1px rgba(220,224,255,0.92),671px 223px 0 0px rgba(220,224,255,0.85),637px 211px 0 0px rgba(220,224,255,0.92),894px 316px 0 0px rgba(220,224,255,0.93),536px 653px 0 0px rgba(220,224,255,0.83),499px 887px 0 1px rgba(220,224,255,0.48),1396px 826px 0 0px rgba(220,224,255,0.76),217px 448px 0 0px rgba(220,224,255,0.77),1513px 434px 0 0px rgba(220,224,255,0.85),266px 596px 0 0px rgba(220,224,255,0.64),811px 681px 0 0px rgba(220,224,255,0.71),42px 269px 0 0px rgba(220,224,255,0.84),1157px 262px 0 0px rgba(220,224,255,0.48),687px 68px 0 0px rgba(220,224,255,0.78),1465px 819px 0 0px rgba(220,224,255,0.88),40px 686px 0 0px rgba(220,224,255,0.97),1437px 33px 0 0px rgba(220,224,255,0.82),173px 76px 0 0px rgba(220,224,255,0.40),1513px 173px 0 0px rgba(220,224,255,0.74),1080px 219px 0 0px rgba(220,224,255,0.48),676px 606px 0 0px rgba(220,224,255,1.00),666px 55px 0 0px rgba(220,224,255,0.61),1559px 137px 0 1px rgba(220,224,255,0.87),195px 189px 0 0px rgba(220,224,255,0.68),125px 245px 0 0px rgba(220,224,255,0.46),769px 894px 0 0px rgba(220,224,255,0.71),503px 4px 0 0px rgba(220,224,255,0.62),146px 211px 0 1px rgba(220,224,255,0.62),1222px 393px 0 0px rgba(220,224,255,0.86),1282px 596px 0 0px rgba(220,224,255,0.98),651px 447px 0 0px rgba(220,224,255,0.58),1155px 599px 0 0px rgba(220,224,255,0.72),1415px 761px 0 1px rgba(220,224,255,0.82),779px 861px 0 1px rgba(220,224,255,0.63),127px 308px 0 0px rgba(220,224,255,0.58),1181px 860px 0 0px rgba(220,224,255,0.81),381px 719px 0 0px rgba(220,224,255,0.48),1280px 572px 0 0px rgba(220,224,255,0.95),709px 785px 0 0px rgba(220,224,255,0.70),433px 618px 0 0px rgba(220,224,255,0.92),300px 530px 0 0px rgba(220,224,255,0.61),1315px 304px 0 0px rgba(220,224,255,0.93),185px 277px 0 1px rgba(220,224,255,0.92),211px 358px 0 0px rgba(220,224,255,0.35),1437px 156px 0 0px rgba(220,224,255,0.80),1120px 158px 0 0px rgba(220,224,255,0.97),25px 731px 0 0px rgba(220,224,255,0.76),205px 298px 0 0px rgba(220,224,255,0.84),877px 529px 0 0px rgba(220,224,255,0.97),1174px 538px 0 0px rgba(220,224,255,0.81),981px 202px 0 0px rgba(220,224,255,0.38),357px 558px 0 0px rgba(220,224,255,0.51),383px 815px 0 0px rgba(220,224,255,0.88),651px 713px 0 0px rgba(220,224,255,0.80),167px 828px 0 0px rgba(220,224,255,0.87),680px 780px 0 0px rgba(220,224,255,0.88),1453px 772px 0 0px rgba(220,224,255,0.82),247px 113px 0 1px rgba(220,224,255,0.82),90px 69px 0 0px rgba(220,224,255,0.97),1392px 861px 0 0px rgba(220,224,255,0.96),48px 423px 0 0px rgba(220,224,255,0.48),517px 433px 0 0px rgba(220,224,255,0.44),71px 84px 0 0px rgba(220,224,255,0.39),1293px 655px 0 0px rgba(220,224,255,0.65),621px 552px 0 1px rgba(220,224,255,0.81),1539px 640px 0 0px rgba(220,224,255,0.85),274px 59px 0 0px rgba(220,224,255,0.87),690px 490px 0 0px rgba(220,224,255,0.77),195px 60px 0 0px rgba(220,224,255,0.67),551px 180px 0 0px rgba(220,224,255,0.58),83px 1px 0 0px rgba(220,224,255,0.43),71px 691px 0 0px rgba(220,224,255,0.92),1453px 717px 0 0px rgba(220,224,255,0.61),329px 579px 0 0px rgba(220,224,255,1.00);
-}
-.star-l2 {
-  box-shadow: 36px 724px 0 0px rgba(220,224,255,0.35),1083px 592px 0 0px rgba(220,224,255,0.83),855px 870px 0 0px rgba(220,224,255,0.51),676px 263px 0 0px rgba(220,224,255,0.52),1219px 862px 0 0px rgba(220,224,255,0.64),1585px 278px 0 0px rgba(220,224,255,0.57),266px 94px 0 0px rgba(220,224,255,0.85),669px 110px 0 0px rgba(220,224,255,0.47),1118px 785px 0 0px rgba(220,224,255,0.99),1415px 101px 0 0px rgba(220,224,255,0.76),436px 489px 0 0px rgba(220,224,255,0.65),313px 479px 0 0px rgba(220,224,255,0.68),328px 795px 0 0px rgba(220,224,255,1.00),345px 511px 0 0px rgba(220,224,255,0.70),1389px 10px 0 1px rgba(220,224,255,0.46),1516px 102px 0 0px rgba(220,224,255,0.71),1446px 313px 0 1px rgba(220,224,255,0.79),482px 513px 0 0px rgba(220,224,255,0.89),749px 400px 0 1px rgba(220,224,255,0.63),1533px 351px 0 0px rgba(220,224,255,0.45),658px 514px 0 0px rgba(220,224,255,0.97),520px 798px 0 0px rgba(220,224,255,0.97),1550px 78px 0 0px rgba(220,224,255,0.97),1303px 468px 0 0px rgba(220,224,255,0.84),495px 596px 0 0px rgba(220,224,255,0.87),518px 391px 0 0px rgba(220,224,255,0.48),950px 394px 0 0px rgba(220,224,255,0.49),559px 523px 0 0px rgba(220,224,255,0.94),293px 774px 0 0px rgba(220,224,255,0.94),100px 681px 0 1px rgba(220,224,255,0.88),295px 267px 0 0px rgba(220,224,255,0.36),435px 767px 0 0px rgba(220,224,255,0.78),698px 731px 0 0px rgba(220,224,255,0.94),725px 176px 0 0px rgba(220,224,255,0.92),969px 118px 0 0px rgba(220,224,255,0.66),937px 53px 0 0px rgba(220,224,255,0.62),749px 36px 0 1px rgba(220,224,255,0.58),581px 845px 0 0px rgba(220,224,255,0.97),1242px 545px 0 0px rgba(220,224,255,0.66),759px 488px 0 0px rgba(220,224,255,0.70),267px 488px 0 0px rgba(220,224,255,0.70),425px 201px 0 0px rgba(220,224,255,0.88),994px 889px 0 0px rgba(220,224,255,0.87),92px 32px 0 0px rgba(220,224,255,0.43),601px 479px 0 0px rgba(220,224,255,0.38),1244px 77px 0 0px rgba(220,224,255,0.74),495px 252px 0 1px rgba(220,224,255,0.68),360px 589px 0 0px rgba(220,224,255,0.85),1502px 746px 0 0px rgba(220,224,255,0.64),1026px 444px 0 0px rgba(220,224,255,0.47);
-  animation-delay: 2s !important;
-  animation-duration: 5s !important;
-}
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+  }
+  .glass {
+    background: color-mix(in oklab, var(--bg) 92%, transparent);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
 
-.film-ring {
-  animation: spin 60s linear infinite;
-}
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      transform 0.25s var(--ease-out),
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s,
+      opacity 0.2s;
+    cursor: pointer;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    color: var(--primary-fg);
+    background: var(--primary);
+  }
+  .btn-primary:hover {
+    opacity: 0.86;
+  }
+  .btn-ghost {
+    color: var(--fg);
+    border: 1px solid var(--line-strong);
+    background: transparent;
+  }
+  .btn-ghost:hover {
+    border-color: var(--fg);
+  }
+  .btn-light {
+    color: #0a0a0a;
+    background: #fff;
+  }
+  .btn-light:hover {
+    opacity: 0.86;
+  }
+  .btn-danger {
+    color: #fff;
+    background: var(--danger);
+  }
+  .btn-sm {
+    height: 2.25rem;
+    padding-inline: 0.95rem;
+    font-size: 0.84rem;
+  }
+  .btn-lg {
+    height: 3.25rem;
+    padding-inline: 1.6rem;
+    font-size: 1rem;
+  }
+  /* Tugma ichidagi "→" — hoverda biroz suriladi */
+  .btn-arrow {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-right: -0.85rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, currentColor 14%, transparent);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .btn:hover .btn-arrow {
+    transform: translateX(3px);
+  }
 
-/* Marquee */
-.marquee {
-  display: flex;
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
-}
-.marquee-track {
-  display: flex;
-  flex-shrink: 0;
-  gap: 3rem;
-  padding-right: 3rem;
-  animation: marquee var(--speed, 40s) linear infinite;
-}
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 1.6rem;
+    padding-inline: 0.65rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .chip-primary,
+  .chip-accent {
+    color: var(--primary-fg);
+    border-color: transparent;
+    background: var(--primary);
+  }
+  .chip-success {
+    color: var(--fg);
+    border-color: var(--line-strong);
+  }
 
-/* FAQ */
-details.faq summary {
-  list-style: none;
-  cursor: pointer;
-}
-details.faq summary::-webkit-details-marker {
-  display: none;
-}
-details.faq .faq-icon {
-  transition: transform 0.35s;
-}
-details.faq[open] .faq-icon {
-  transform: rotate(45deg);
-}
-details.faq::details-content {
-  block-size: 0;
-  overflow: hidden;
-  transition:
-    block-size 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-    content-visibility 0.4s allow-discrete;
-}
-details.faq[open]::details-content {
-  block-size: auto;
-}
+  .label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--fg);
+  }
+  .hint {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--muted);
+    margin-top: 0.4rem;
+  }
+  .input {
+    width: 100%;
+    height: 2.9rem;
+    padding-inline: 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.95rem;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  textarea.input {
+    height: auto;
+    min-height: 7rem;
+    padding-block: 0.8rem;
+    resize: vertical;
+  }
+  select.input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c8c8c' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+  .dark select.input option {
+    background: #000;
+  }
+  .input::placeholder {
+    color: color-mix(in oklab, var(--muted) 75%, transparent);
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--fg);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fg) 10%, transparent);
+  }
+  input[type="file"].input {
+    padding: 0.55rem;
+    height: auto;
+  }
+  input[type="file"].input::file-selector-button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    margin-right: 0.75rem;
+    background: var(--primary);
+    color: var(--primary-fg);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    font-size: 0.82rem;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+  .check:has(input:checked) {
+    border-color: var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .check input {
+    accent-color: var(--fg);
+  }
 
-}
+  /* Teskari panel: yorug'da qora blok, qorong'ida oq blok */
+  .panel-invert {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+    --fg: var(--invert-fg);
+    --muted: color-mix(in oklab, var(--invert-fg) 58%, transparent);
+    --line: color-mix(in oklab, var(--invert-fg) 14%, transparent);
+    --line-strong: color-mix(in oklab, var(--invert-fg) 28%, transparent);
+    --primary: var(--invert-fg);
+    --primary-fg: var(--invert-bg);
+  }
 
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+  /* Gemini'da chizilgan ingichka ikonka (<GlyphIcon>). Yo'llar pathLength="1" — chizilish animatsiyasi uchun.
+     stroke-width yo'lning ichki koordinatalarida (0.1 masshtab): ~48px ikonkada ≈ 1px chiziq. */
+  .glyph {
+    flex-shrink: 0;
+    overflow: visible;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-opacity: 0;
+    stroke-width: 100;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: transform 0.6s var(--ease-out);
+  }
+  /* Ko'rinishga kirganda bir marta chiziladi */
+  [data-reveal][data-in=""] .glyph {
+    animation: glyph-draw 1.8s cubic-bezier(0.45, 0, 0.25, 1) calc(var(--d, 0ms) + 150ms) backwards;
+  }
+  /* Kursor olib borilganda: biroz ko'tariladi va qaytadan chiziladi (yuqoridagi qoidadan keyin — ustun turadi) */
+  .glyph-host:hover .glyph,
+  .glyph-host:focus-visible .glyph,
+  [data-reveal][data-in=""].glyph-host:hover .glyph {
+    transform: translateY(-3px);
+    animation: glyph-redraw 1.5s cubic-bezier(0.45, 0, 0.25, 1) both;
+  }
+
+  /* Marquee — dasturlar nomi */
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    gap: 3rem;
+    padding-right: 3rem;
+    animation: marquee var(--speed, 40s) linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* FAQ */
+  details.faq summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  details.faq summary::-webkit-details-marker {
+    display: none;
+  }
+  details.faq .faq-icon {
+    transition: transform 0.35s var(--ease-out);
+  }
+  details.faq[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+  details.faq::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.4s var(--ease-out),
+      content-visibility 0.4s allow-discrete;
+  }
+  details.faq[open]::details-content {
+    block-size: auto;
+  }
+
+  /* ============ Hero: montaj taymlayni (chiziqlar chiziladi, pleyhed sekin yuradi) ============ */
+  .tl {
+    position: relative;
+    height: 5.5rem;
+    user-select: none;
+  }
+  .tl-ruler {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.6rem;
+    background: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 12px) bottom / 100% 0.35rem no-repeat,
+      repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 96px) bottom / 100% 0.6rem no-repeat;
+    border-bottom: 1px solid var(--line-strong);
+    animation: tl-draw 1.6s var(--ease-out) 0.35s both;
+  }
+  .tl-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1.2rem;
+  }
+  .tl-clip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border: 1px solid var(--fg);
+    border-radius: 0.35rem;
+    animation: tl-draw 1.1s var(--ease-out) both;
+  }
+  .tl-clip.is-fill {
+    background: var(--fg);
+  }
+  /* To'liq kenglikdagi qatlam 0 → 100% siljiydi, pleyhed uning chap chetida */
+  .tl-head {
+    position: absolute;
+    inset: -0.3rem 0 0;
+    pointer-events: none;
+    animation: tl-play 14s linear 1.8s infinite backwards;
+  }
+  .tl-head::before,
+  .tl-head::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    background: var(--fg);
+  }
+  .tl-head::before {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+  .tl-head::after {
+    top: 0;
+    left: -4px;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+  }
+  .tl-tc {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
 }
 
 /* ============ Animatsiyalar ============ */
-@keyframes shimmer {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes spin-angle {
-  to {
-    --angle: 360deg;
-  }
-}
 @keyframes marquee {
   to {
     transform: translateX(-100%);
   }
 }
-@keyframes twinkle {
-  from {
-    opacity: 0.25;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes planet-breathe {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.18);
-  }
-}
-@keyframes horizon {
-  0%,
-  100% {
-    opacity: 0.75;
-    width: min(1000px, 86%);
-  }
-  50% {
-    opacity: 1;
-    width: min(1180px, 96%);
-  }
-}
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-14px) rotate(1.5deg);
-  }
-}
-@keyframes rise {
+/* Matn va bloklar: blur yo'q — faqat opacity va biroz yuqoriga harakat */
+@keyframes word-in {
   from {
     opacity: 0;
-    transform: translateY(110%);
+    transform: translateY(0.35em);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+  }
+}
+@keyframes rv-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rv-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* Chiziq chapdan o'ngga chiziladi */
+@keyframes rv-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes tl-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tl-play {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+/* Ikonka chizilishi: kontur chapdan-o'ngga chiziladi, keyin ichi to'ladi va kontur yo'qoladi */
+@keyframes glyph-draw {
+  0% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: 1;
+  }
+  65% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+/* Xuddi shu, lekin boshqa nom — hoverda animatsiya har safar qaytadan boshlansin */
+@keyframes glyph-redraw {
+  0% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: 1;
+  }
+  65% {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    stroke-dashoffset: 0;
   }
 }
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(18px);
-    filter: blur(8px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translate(-50%, 24px) scale(0.96);
+    transform: translate(-50%, 16px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(-50%, 0);
   }
 }
-@keyframes scroll-dot {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
   }
-  80% {
-    transform: translateY(10px);
+}
+@keyframes nav-in {
+  from {
     opacity: 0;
-  }
-  100% {
-    opacity: 0;
+    transform: translateY(-8px);
   }
 }
 
-.animate-float {
-  animation: float 8s ease-in-out infinite;
-}
-
-/* ============ Hero: montaj studiyasi (kodda chizilgan illyustratsiya) ============
-   Barcha o'lchamlar .studio kengligiga nisbatan (cqw) — har qanday ekranda bir xil ko'rinadi.
-   Kirish: oyna ko'tarilib chiqadi (0.25s), panellar har tomondan prujina bilan uchib kelib (0.5–1.2s)
-   joyiga yumshoq "o'tiradi". Suzish (tebranish + og'ish + sahna chayqalishi) birinchi kadrdanoq
-   harakatda — panel qo'nganda to'xtab qolish yoki keyin birdan "sakrash" yo'q.
-   Pleyhed 8 soniyada taymlayn bo'ylab yuradi va 55% da klipni "kesadi". */
-@layer components {
-  .studio {
-    --st-bg: #12121c;
-    --st-panel: rgb(26 26 40 / 0.94);
-    --st-line: rgb(255 255 255 / 0.08);
-    --st-teal: #36e2c6;
-    /* Sinus kabi silliq: uchlarida sekinlashadi, lekin hech qachon keskin to'xtamaydi */
-    --st-sine: cubic-bezier(0.37, 0, 0.63, 1);
-    /* Prujina (linear() qo'llab-quvvatlanmasa — yengil "orqaga qaytish" egri chizig'i) */
-    --st-spring: cubic-bezier(0.34, 1.28, 0.5, 1);
-    position: relative;
-    width: min(100%, 40rem);
-    margin-inline: auto;
-    aspect-ratio: 10 / 8.6;
-    container-type: inline-size;
-    color: rgb(255 255 255 / 0.82);
-    font-size: 1.4cqw;
-    line-height: 1.2;
-    user-select: none;
-    perspective: 150cqw;
-  }
-  /* Ichki sahna: sekin 3D chayqalish; tashqi qatlam (StudioTilt) sichqonchaga qarab og'adi */
-  .studio > .st-stage {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-    transform: rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
-    transition: transform 0.9s var(--ease-out);
-    /* Manfiy kechikish: sahna 0° dan, allaqachon harakatda boshlanadi (avval -10° ga sakrar edi) */
-    animation: st-sway 9s var(--st-sine) -4.5s infinite alternate;
-  }
-  @supports (transition-timing-function: linear(0, 1)) {
-    .studio {
-      --st-spring: linear(0, 0.05, 0.171, 0.328, 0.493, 0.649, 0.784, 0.893, 0.974, 1.03, 1.064, 1.08, 1.083, 1.078, 1.067, 1.053, 1.04, 1.027, 1.016, 1.007, 1.001, 0.997, 0.994, 0.993, 0.993, 0.994, 0.995, 0.996, 1);
-    }
-  }
-  /* Telefonda uzluksiz 3D aylanish matnni xiralashtiradi (brauzer qatlamni past aniqlikda chizadi) —
-     u yerda sahna tekis: suzish, pleyhed, yorliqlar va orqa nur qoladi, matn tiniq. */
-  @media (max-width: 767px) {
-    .studio {
-      perspective: none;
-    }
-    .studio > .st-stage {
-      transform-style: flat;
-      animation: none;
-    }
-  }
-  .st-light {
-    position: absolute;
-    inset: -12% -8%;
-    border-radius: 999px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      color-mix(in oklab, var(--primary-2) 70%, transparent) 50deg,
-      transparent 110deg,
-      color-mix(in oklab, var(--accent) 60%, transparent) 170deg,
-      transparent 230deg,
-      color-mix(in oklab, var(--st-teal) 45%, transparent) 290deg,
-      transparent 360deg
-    );
-    -webkit-mask: radial-gradient(closest-side, #000 30%, transparent 100%);
-    mask: radial-gradient(closest-side, #000 30%, transparent 100%);
-    filter: blur(5cqw);
-    opacity: 0;
-    animation:
-      st-fade 2s ease 0.4s forwards,
-      st-spin 22s linear infinite;
-  }
-  .st-halo {
-    position: absolute;
-    inset: 14% 8%;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle at 35% 40%, color-mix(in oklab, var(--primary-2) 75%, transparent), transparent 60%),
-      radial-gradient(circle at 70% 70%, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%);
-    filter: blur(8cqw);
-    opacity: 0;
-    animation:
-      st-fade 1.6s ease 0.6s forwards,
-      st-breathe 7s ease-in-out 2.2s infinite;
-  }
-  .st-win {
-    position: absolute;
-    left: 11%;
-    top: 12%;
-    width: 78%;
-    height: 72%;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) 41%;
-    overflow: hidden;
-    border-radius: 3cqw;
-    background: linear-gradient(160deg, #1a1a28, var(--st-bg) 45%);
-    border: 1px solid var(--st-line);
-    box-shadow:
-      0 0 0 0.45cqw color-mix(in oklab, var(--primary-2) 45%, transparent),
-      0 5cqw 9cqw -3cqw rgb(0 0 0 / 0.7);
-    animation: st-win-in 1s cubic-bezier(0.2, 0.9, 0.2, 1) 0.25s both;
-  }
-  .st-bar {
-    display: flex;
-    align-items: center;
-    gap: 2cqw;
-    padding: 1.5cqw 2.2cqw;
-    border-bottom: 1px solid var(--st-line);
-  }
-  .st-dots {
-    display: flex;
-    gap: 0.8cqw;
-  }
-  .st-dots > i {
-    width: 1.2cqw;
-    height: 1.2cqw;
-    border-radius: 999px;
-    background: #ff5f6d;
-  }
-  .st-dots > i:nth-child(2) {
-    background: #ffbd4a;
-  }
-  .st-dots > i:nth-child(3) {
-    background: #3fd07a;
-  }
-  .st-tabs {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    width: 30cqw;
-    /* Chap tomonini "Graph Editor", o'ng chetini 3D panel yopadi — yorliqlar ko'rinadigan oraliqda */
-    margin-left: auto;
-    margin-right: 11cqw;
-    padding: 0.4cqw;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 0.05);
-    font-size: 1.35cqw;
-    text-align: center;
-  }
-  .st-tabs > span:not(.st-tab-pill) {
-    position: relative;
-    padding: 0.55cqw 0;
-    color: rgb(255 255 255 / 0.7);
-  }
-  .st-tab-pill {
-    position: absolute;
-    top: 0.4cqw;
-    bottom: 0.4cqw;
-    left: 0.4cqw;
-    width: calc((100% - 0.8cqw) / 4);
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--primary-2), var(--accent));
-    opacity: 0.9;
-    animation: st-tab 12s cubic-bezier(0.7, 0, 0.2, 1) 1.6s infinite;
-  }
-  .st-tc {
-    font-family: ui-monospace, monospace;
-    font-size: 1.5cqw;
-    font-weight: 600;
-    color: var(--st-teal);
-  }
-  .st-tlhead {
-    display: flex;
-    align-items: flex-end;
-    gap: 2.2cqw;
-  }
-  .st-tlhead > .st-ruler {
-    flex: 1;
-  }
-  .st-transport {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 1.8cqw;
-    padding: 0.9cqw 1cqw;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 0.06);
-  }
-  .st-transport > svg {
-    width: 1.9cqw;
-    height: 1.9cqw;
-    color: rgb(255 255 255 / 0.7);
-  }
-  .st-transport > .st-playbtn {
-    width: 2.4cqw;
-    height: 2.4cqw;
-    color: var(--st-teal);
-    fill: var(--st-teal);
-  }
-  .st-body {
-    display: grid;
-    grid-template-columns: 40% 1fr;
-    gap: 2.2cqw;
-    min-height: 0;
-    padding: 2cqw 2.2cqw;
-  }
-  .st-h {
-    margin-bottom: 0.9cqw;
-    font-size: 1.45cqw;
-    color: rgb(255 255 255 / 0.9);
-  }
-  .st-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto 1.1cqw;
-    align-items: center;
-    gap: 1cqw;
-    padding: 0.55cqw 0;
-    border-bottom: 1px solid rgb(255 255 255 / 0.04);
-    color: rgb(255 255 255 / 0.6);
-    font-size: 1.3cqw;
-  }
-  .st-v {
-    color: #5aa9ff;
-  }
-  .st-kf {
-    width: 0.9cqw;
-    height: 0.9cqw;
-    rotate: 45deg;
-    background: #ffd166;
-    animation: st-blink 2.4s ease-in-out calc(var(--i) * 0.3s + 1.6s) infinite;
-  }
-  .st-view {
-    position: relative;
-    align-self: start;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    border-radius: 1.6cqw;
-    box-shadow: 0 1.5cqw 3cqw -1cqw rgb(0 0 0 / 0.6);
-  }
-  .st-view > svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  .st-sun {
-    animation: st-sun 8s ease-in-out infinite;
-  }
-  .st-rec {
-    position: absolute;
-    top: 1cqw;
-    left: 1.2cqw;
-    font-size: 1cqw;
-    letter-spacing: 0.1em;
-    color: #fff;
-  }
-  .st-rec::before {
-    content: "";
-    display: inline-block;
-    width: 0.8cqw;
-    height: 0.8cqw;
-    margin-right: 0.5cqw;
-    border-radius: 999px;
-    background: #ff4f6d;
-    animation: rec 1.6s ease-in-out infinite;
-  }
-  .st-tl {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: 0.9cqw;
-    min-height: 0;
-    padding: 1.2cqw 2.2cqw 1.8cqw;
-    border-top: 1px solid var(--st-line);
-    background: rgb(0 0 0 / 0.18);
-  }
-  .st-ruler {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 0.5cqw;
-    font-family: ui-monospace, monospace;
-    font-size: 1.1cqw;
-    color: rgb(255 255 255 / 0.4);
-    background: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 1px, transparent 1px 1.8cqw) bottom / 100% 0.5cqw no-repeat;
-  }
-  .st-tracks {
-    position: relative;
-    display: grid;
-    grid-template-rows: 1fr 1fr 1.25fr;
-    gap: 0.7cqw;
-  }
-  .st-track {
-    position: relative;
-    border-radius: 0.8cqw;
-    background: rgb(255 255 255 / 0.04);
-  }
-  .st-clip {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    padding: 0 1cqw;
-    border-radius: 0.8cqw;
-    font-size: 1.2cqw;
-    white-space: nowrap;
-    color: rgb(255 255 255 / 0.92);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
-  }
-  .st-c-purple {
-    background: linear-gradient(90deg, #8b5cff, #c58bff);
-  }
-  .st-c-blue {
-    background: linear-gradient(90deg, #2f7bff, #36d1c4);
-  }
-  .st-cut {
-    animation: st-cut 8s linear 1.6s infinite;
-  }
-  .st-audio {
-    display: flex;
-    align-items: center;
-    gap: 0.35cqw;
-    padding: 0 0.8cqw;
-  }
-  .st-audio > i {
-    flex: 1;
-    border-radius: 999px;
-    background: var(--st-teal);
-    opacity: 0.75;
-    animation: st-wave 1.1s ease-in-out calc(var(--i) * -73ms) infinite alternate;
-  }
-  /* Pleyhed: to'liq kenglikdagi qatlam 0 → 100% siljiydi, chiziq uning chap chetida */
-  .st-playhead {
-    position: absolute;
-    inset: -1.6cqw 0 -0.4cqw;
-    /* backwards — boshlanguncha ham boshlang'ich nuqtada turadi (avval 0 → 20% ga sakrar edi) */
-    animation: st-play 8s linear 1.6s infinite backwards;
-  }
-  .st-playhead::before,
-  .st-playhead::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    background: var(--st-teal);
-  }
-  .st-playhead::before {
-    top: 0;
-    bottom: 0;
-    width: 0.35cqw;
-    margin-left: -0.175cqw;
-    box-shadow: 0 0 1.4cqw var(--st-teal);
-  }
-  .st-playhead::after {
-    top: -0.2cqw;
-    width: 1.8cqw;
-    height: 1.8cqw;
-    margin-left: -0.9cqw;
-    border-radius: 0.5cqw 0.5cqw 1cqw 1cqw;
-  }
-  .st-cursor {
-    position: absolute;
-    left: 0.6cqw;
-    top: 58%;
-    width: 2.8cqw;
-    height: 2.8cqw;
-    color: #fff;
-    fill: #fff;
-    filter: drop-shadow(0 0.4cqw 0.6cqw rgb(0 0 0 / 0.6));
-  }
-
-  /* ---- Suzuvchi panellar ----
-     Tashqi qatlam (.st-float): chuqurlik (translate Z) va prujinali kirish (transform).
-     Ichki panel: suzish — yuqori-past tebranish va yengil og'ish har xil davrda, alternate bilan.
-     Ikkalasining uchlari hech qachon bir vaqtga to'g'ri kelmaydi, shuning uchun panel to'xtab qolmaydi;
-     manfiy kechikish tufayli suzish kirish paytidayoq ketadi — qo'nish suzishga silliq ulanadi. */
-  .st-float {
-    position: absolute;
-    z-index: 2;
-    translate: 0 0 var(--z, 0);
-    animation: st-in 1.25s var(--st-spring) var(--d) both;
-  }
-  .st-float > .st-panel {
-    animation:
-      st-bob var(--t, 6s) var(--st-sine) var(--b, 0s) infinite alternate,
-      st-wob var(--rt, 9s) var(--st-sine) var(--b, 0s) infinite alternate;
-  }
-  .st-panel {
-    position: relative;
-    padding: 1.6cqw;
-    border-radius: 2cqw;
-    background: var(--st-panel);
-    border: 1px solid rgb(255 255 255 / 0.1);
-    box-shadow:
-      0 2.5cqw 5cqw -1cqw rgb(0 0 0 / 0.65),
-      inset 0 1px 0 rgb(255 255 255 / 0.08);
-  }
-  .st-graph {
-    left: 0;
-    top: 2%;
-    width: 40%;
-  }
-  .st-gpanel {
-    padding: 1.3cqw 1.4cqw 1.1cqw;
-    background: linear-gradient(180deg, rgb(32 32 46 / 0.96), rgb(22 22 34 / 0.96));
-  }
-  .st-curve {
-    display: block;
-    width: 100%;
-    overflow: visible;
-  }
-  .st-g-area {
-    fill: rgb(255 255 255 / 0.06);
-  }
-  .st-g-mark {
-    fill: var(--st-teal);
-  }
-  .st-g-grid {
-    stroke: rgb(255 255 255 / 0.06);
-    stroke-width: 0.6;
-  }
-  .st-g-label {
-    font-size: 7.5px;
-    fill: rgb(255 255 255 / 0.45);
-  }
-  .st-c1 {
-    fill: none;
-    stroke: #fff;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.35));
-    animation: st-draw 1.6s cubic-bezier(0.6, 0, 0.2, 1) 1.2s forwards;
-  }
-  .st-c2 {
-    stroke: #f4c430;
-    fill: #f4c430;
-    stroke-width: 1.2;
-    opacity: 0;
-    animation: st-fade 0.6s ease 1.9s forwards;
-  }
-  .st-g-head {
-    stroke: var(--st-teal);
-    stroke-width: 1.6;
-    filter: drop-shadow(0 0 3px var(--st-teal));
-  }
-  .st-g-dot {
-    fill: var(--st-teal);
-    stroke: #14141f;
-    stroke-width: 1;
-  }
-  /* Grafik pleyhedi ham taymlayn bilan birga yuradi */
-  .st-gph {
-    animation: st-gph 8s linear 1.6s infinite backwards;
-  }
-  .st-gtools {
-    display: flex;
-    align-items: center;
-    gap: 1.3cqw;
-    margin-top: 0.6cqw;
-    color: rgb(255 255 255 / 0.55);
-  }
-  .st-gtools > svg {
-    width: 1.6cqw;
-    height: 1.6cqw;
-  }
-  .st-gslider {
-    position: relative;
-    flex: 1;
-    height: 0.35cqw;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 0.12);
-  }
-  .st-gslider > i {
-    position: absolute;
-    top: 50%;
-    left: 38%;
-    width: 1.2cqw;
-    height: 1.2cqw;
-    margin: -0.6cqw;
-    border-radius: 999px;
-    background: #d9d9e6;
-  }
-  .st-cubebox {
-    right: 0;
-    top: 0;
-    width: 24%;
-  }
-  .st-3d {
-    aspect-ratio: 1;
-    overflow: hidden;
-    padding: 0;
-    perspective: 40cqw;
-  }
-  .st-grid3d {
-    position: absolute;
-    inset: -40% -40% -10%;
-    background-image:
-      linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
-    background-size: 2.6cqw 2.6cqw;
-    transform: rotateX(64deg) translateY(18%);
-  }
-  .st-cube {
-    position: absolute;
-    left: 50%;
-    top: 46%;
-    width: 8.5cqw;
-    height: 8.5cqw;
-    margin: -4.25cqw;
-    transform-style: preserve-3d;
-    animation: st-rot 10s linear infinite;
-  }
-  .st-face {
-    position: absolute;
-    inset: 0;
-    border: 0.25cqw solid #ff9f43;
-    background: rgb(255 159 67 / 0.08);
-  }
-  .st-f {
-    transform: translateZ(4.25cqw);
-  }
-  .st-b {
-    transform: rotateY(180deg) translateZ(4.25cqw);
-  }
-  .st-l {
-    transform: rotateY(-90deg) translateZ(4.25cqw);
-  }
-  .st-r {
-    transform: rotateY(90deg) translateZ(4.25cqw);
-  }
-  .st-t {
-    transform: rotateX(90deg) translateZ(4.25cqw);
-  }
-  .st-d {
-    transform: rotateX(-90deg) translateZ(4.25cqw);
-  }
-  .st-meters {
-    right: 0.5%;
-    top: 36%;
-    width: 9%;
-  }
-  .st-meters > .st-panel {
-    display: flex;
-    gap: 0.8cqw;
-    height: 21cqw;
-    padding: 1.2cqw;
-  }
-  .st-m {
-    flex: 1;
-    border-radius: 0.5cqw;
-    background: linear-gradient(to top, #2fe08a 0 60%, #ffd166 60% 82%, #ff5f6d 82%);
-    animation: st-meter var(--s) ease-in-out infinite alternate;
-  }
-  .st-tools {
-    left: 0.5%;
-    top: 38%;
-    width: 8.5%;
-  }
-  .st-tools > .st-panel {
-    display: grid;
-    justify-items: center;
-    gap: 1.3cqw;
-    padding: 1.6cqw 0;
-  }
-  .st-tools svg {
-    width: 2.8cqw;
-    height: 2.8cqw;
-    color: rgb(255 255 255 / 0.75);
-  }
-  .st-tools svg.st-on {
-    color: var(--st-teal);
-  }
-  .st-wheels {
-    left: 6%;
-    bottom: 0.5%;
-    width: 42%;
-  }
-  .st-wheels > .st-panel {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.2cqw;
-  }
-  .st-wheel {
-    display: grid;
-    justify-items: center;
-    gap: 0.7cqw;
-    font-size: 1.05cqw;
-  }
-  .st-wheel > em {
-    font-style: normal;
-    color: rgb(255 255 255 / 0.55);
-  }
-  .st-wheel > i {
-    position: relative;
-    width: 9cqw;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle, #1d1d2c 0 52%, transparent 53%),
-      conic-gradient(#ff5f6d, #ffd166, #2fe08a, #36d1c4, #4f7cff, #c06bff, #ff5f6d);
-    box-shadow: inset 0 0 0 0.3cqw rgb(0 0 0 / 0.35);
-  }
-  .st-wheel > i::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 1.3cqw;
-    height: 1.3cqw;
-    margin: -0.65cqw;
-    border-radius: 999px;
-    background: #fff;
-    box-shadow: 0 0 0.8cqw rgb(255 255 255 / 0.8);
-    animation: st-puck 6s ease-in-out calc(var(--i) * -2s) infinite;
-  }
-  .st-tile > .st-panel {
-    display: grid;
-    place-items: center;
-    width: 7.5cqw;
-    height: 7.5cqw;
-    padding: 0;
-    border-radius: 1.8cqw;
-  }
-  .st-tile svg {
-    width: 3.2cqw;
-    height: 3.2cqw;
-  }
-  .st-t1 {
-    left: 45%;
-    top: 3.5%;
-  }
-  .st-fxt {
-    font-family: Georgia, serif;
-    font-style: italic;
-    font-size: 3.4cqw;
-    color: #fff;
-  }
-  .st-t2 {
-    right: 3%;
-    bottom: 9%;
-  }
-  .st-t2 svg {
-    color: #c58bff;
-  }
-  .st-t3 {
-    left: 61%;
-    top: 4%;
-  }
-  .st-t3 svg {
-    color: var(--st-teal);
-  }
-  .st-t4 {
-    left: 1%;
-    bottom: 19%;
-  }
-  .st-t4 svg {
-    color: #ffd166;
-  }
-  .st-t4 .st-spark {
-    position: absolute;
-    top: 0.8cqw;
-    right: 0.8cqw;
-    width: 1.6cqw;
-    height: 1.6cqw;
-    animation: st-blink 1.8s ease-in-out infinite;
-  }
-}
-@keyframes st-fade {
-  to {
-    opacity: 1;
-  }
-}
-@keyframes st-win-in {
-  from {
-    opacity: 0;
-    transform: translateY(5cqw) scale(0.94);
-    filter: blur(1cqw);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-/* Uzoqdan (orqaroqdan, kichik va burilgan holda) uchib keladi; opacity prujinadan oldinroq to'ladi */
-@keyframes st-in {
-  from {
-    opacity: 0;
-    transform: translate3d(var(--fx), var(--fy), -10cqw) scale(0.78) rotate(var(--fr, -5deg));
-  }
-  45% {
-    opacity: 1;
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes st-bob {
-  from {
-    translate: -0.4cqw 1.1cqw;
-  }
-  to {
-    translate: 0.4cqw -1.1cqw;
-  }
-}
-@keyframes st-wob {
-  from {
-    rotate: -1.6deg;
-  }
-  to {
-    rotate: 1.6deg;
-  }
-}
-/* Butun sahna bir xil ritmda chayqaladi — panellar oyna oldida turgani uchun chuqurlik seziladi.
-   "rotate" alohida xususiyat: StudioTilt'ning "transform"i bilan to'qnashmaydi. */
-@keyframes st-sway {
-  from {
-    rotate: 0.3 1 0 -9deg;
-  }
-  to {
-    rotate: 0.3 1 0 9deg;
-  }
-}
-@keyframes st-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-@keyframes st-breathe {
-  0%,
-  100% {
-    opacity: 1;
-    scale: 1;
-  }
-  50% {
-    opacity: 0.7;
-    scale: 0.92;
-  }
-}
-@keyframes st-tab {
-  0%,
-  22% {
-    transform: translateX(0);
-  }
-  25%,
-  47% {
-    transform: translateX(100%);
-  }
-  50%,
-  72% {
-    transform: translateX(200%);
-  }
-  75%,
-  97% {
-    transform: translateX(300%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-/* Taymkod ustiga chiqmasligi uchun 20% dan boshlanadi */
-@keyframes st-play {
-  from {
-    transform: translateX(20%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-/* Pleyhed 55% ga yetgan lahza (20% + 80% × 0.44) — o'ng bo'lak biroz suriladi */
-@keyframes st-gph {
-  from {
-    transform: translateX(-84px);
-  }
-  to {
-    transform: translateX(104px);
-  }
-}
-@keyframes st-cut {
-  0%,
-  44% {
-    transform: none;
-  }
-  48%,
-  100% {
-    transform: translateX(0.8cqw);
-  }
-}
-@keyframes st-wave {
-  from {
-    transform: scaleY(1);
-  }
-  to {
-    transform: scaleY(0.4);
-  }
-}
-@keyframes st-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes st-rot {
-  from {
-    transform: rotateX(-24deg) rotateY(0deg);
-  }
-  to {
-    transform: rotateX(-24deg) rotateY(360deg);
-  }
-}
-@keyframes st-meter {
-  0% {
-    clip-path: inset(62% 0 0 0 round 0.5cqw);
-  }
-  35% {
-    clip-path: inset(22% 0 0 0 round 0.5cqw);
-  }
-  65% {
-    clip-path: inset(44% 0 0 0 round 0.5cqw);
-  }
-  100% {
-    clip-path: inset(8% 0 0 0 round 0.5cqw);
-  }
-}
-@keyframes st-puck {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(1.6cqw, -1cqw);
-  }
-  50% {
-    transform: translate(-0.6cqw, -1.8cqw);
-  }
-  75% {
-    transform: translate(-1.6cqw, 0.6cqw);
-  }
-}
-@keyframes st-sun {
-  50% {
-    transform: translateY(-2px);
-  }
-}
-@keyframes st-blink {
-  50% {
-    opacity: 0.35;
-  }
-}
-@keyframes rec {
-  50% {
-    opacity: 0.25;
-  }
-}
-.rise > span:not(.hidden) {
-  display: inline-block;
-  animation: rise 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
 .fade-up {
-  animation: fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: fade-up 0.8s var(--ease-out) both;
+}
+.hdr-in {
+  animation: nav-in 0.7s var(--ease-out) backwards;
+}
+
+/* So'zma-so'z paydo bo'lish (SplitText) */
+.split .w {
+  display: inline-block;
+}
+.split-load .w,
+.split[data-in=""] .w {
+  animation: word-in 0.9s var(--ease-out) backwards;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * var(--st, 50ms));
+}
+html[data-io] .split[data-split]:not([data-in]) .w {
+  opacity: 0;
+}
+
+/* Bloklar: ko'rinishga kirganda (MotionRoot `data-in` qo'yadi) */
+html[data-io] [data-reveal]:not([data-in]) {
+  opacity: 0;
+}
+html[data-io] [data-reveal="line"]:not([data-in]) {
+  opacity: 1;
+  transform: scaleX(0);
+}
+[data-reveal][data-in=""] {
+  animation: rv-up 0.9s var(--ease-out) backwards;
+  animation-delay: var(--d, 0ms);
+}
+[data-reveal="fade"][data-in=""] {
+  animation-name: rv-fade;
+  animation-duration: 1.2s;
+}
+[data-reveal="line"] {
+  transform-origin: 0 50%;
+}
+[data-reveal="line"][data-in=""] {
+  animation-name: rv-line;
+  animation-duration: 1.4s;
+}
+
+/* Cheksiz animatsiyalar ekrandan tashqarida to'xtaydi (MotionRoot `data-paused`) */
+[data-anim][data-paused] *,
+[data-anim][data-paused] {
+  animation-play-state: paused !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1549,900 +706,5 @@ details.faq[open]::details-content {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-  .mock-tilt {
-    animation: none !important;
-  }
-}
-
-/* =====================================================================
-   MOTION — FXIFY referensidagi animatsiyalar Montaj Club uchun
-   (neon ramkalar, so'zma-so'z matn, 3D paydo bo'lish, pol nurlari, zarrachalar)
-   ===================================================================== */
-
-/* ---------- Matn: kumush gradient (sarlavhalar) ---------- */
-.text-silver {
-  --tc: var(--fg);
-  background: linear-gradient(180deg, var(--tc) 36%, color-mix(in oklab, var(--tc) 52%, transparent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.panel-invert .text-silver {
-  --tc: var(--invert-fg);
-}
-
-/* ---------- So'zma-so'z paydo bo'lish ---------- */
-.split .w {
-  display: inline-block;
-}
-.split-load .w,
-.split[data-in=""] .w {
-  animation: word-in 1.1s var(--ease-out) backwards;
-  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * var(--st, 60ms));
-}
-html[data-io] .split[data-split]:not([data-in]) .w {
-  opacity: 0;
-}
-
-/* ---------- Bloklar: ko'rinishga kirganda ---------- */
-html[data-io] [data-reveal]:not([data-in]) {
-  opacity: 0;
-}
-[data-reveal][data-in=""] {
-  animation: rv-up 1s var(--ease-out) backwards;
-  animation-delay: var(--d, 0ms);
-}
-[data-reveal="3d"][data-in=""] {
-  animation-name: rv-3d;
-  animation-duration: 1.25s;
-  transform-origin: 50% 100%;
-}
-[data-reveal="fade"][data-in=""] {
-  animation-name: rv-fade;
-  animation-duration: 1.4s;
-}
-[data-reveal="line"][data-in=""] {
-  animation-name: rv-line;
-  animation-duration: 1.4s;
-}
-
-@layer components {
-  /* ---------- Nurli ramka (komponent: <Neon />) ----------
-     Referens: qorong'i qidiruv paneli. Pushti va ko'k ranglar ingichka chegara bo'ylab to'xtovsiz
-     aylanadi; atrofidagi yumshoq nur ham ular bilan birga aylanadi.
-     Har qatlam karta shaklida kesilgan, ichida katta kvadrat konus-gradient (`b`) transform bilan
-     aylanadi — GPU'da, sahifani qayta chizmasdan. Ramka ota element ichida z-index: -1 bilan turadi:
-     o'z fonini (plate) chizadi, matn esa ustida qoladi. */
-  :where(:has(> .neon)) {
-    isolation: isolate;
-  }
-  .neon {
-    --gm: color-mix(in oklab, var(--ga) 50%, var(--gb));
-    --hi: var(--gm);
-    /* kometa boshi: qorong'ida oq, yorug'da to'yingan pushti (oq fonda oq ko'rinmaydi) */
-    --cw: var(--ga);
-    /* asosiy (xira) aylana va ikki kometa: ko'k dumli va pushti dumli, boshi yorqin */
-    --base: conic-gradient(
-      color-mix(in oklab, var(--hi) 60%, transparent),
-      color-mix(in oklab, var(--gb) 55%, transparent) 70deg 110deg,
-      color-mix(in oklab, var(--hi) 60%, transparent) 180deg,
-      color-mix(in oklab, var(--ga) 55%, transparent) 250deg 290deg,
-      color-mix(in oklab, var(--hi) 60%, transparent)
-    );
-    --comets: conic-gradient(
-      transparent 0deg 95deg,
-      var(--gb) 160deg,
-      var(--cw) 178deg,
-      transparent 180deg 275deg,
-      var(--ga) 340deg,
-      var(--cw) 358deg,
-      transparent 360deg
-    );
-    position: absolute;
-    inset: -1px;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-  }
-  .dark .neon {
-    --hi: color-mix(in oklab, #fff 70%, var(--gm));
-    --cw: #fff;
-    --ring-w: 1.5px;
-  }
-  :root:not(.dark) .neon {
-    --ring-w: 2px;
-  }
-  .neon-accent {
-    --ga: var(--accent);
-    --gb: #ffb547;
-  }
-  .neon > i {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    overflow: hidden;
-  }
-  .neon > i > b {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 260%;
-    aspect-ratio: 1;
-    translate: -50% -50%;
-    background: var(--comets), var(--base);
-    animation: spin 4.5s linear infinite;
-  }
-  /* Keng, xira nur — asosan ranglar */
-  .neon > .neon-halo {
-    inset: -4px;
-    filter: blur(34px);
-    opacity: calc(var(--halo) * 0.7);
-    animation: glow-breathe 5s ease-in-out infinite;
-  }
-  .neon > .neon-halo > b {
-    background: conic-gradient(var(--gm), var(--gb) 90deg, var(--gm) 180deg, var(--ga) 270deg, var(--gm));
-  }
-  /* Yaqin nur — kometalar ostida yorqin dog'lar, ular bilan birga yuguradi */
-  .neon > .neon-glow {
-    inset: -1px;
-    filter: blur(9px);
-    opacity: calc(var(--halo) * 1.5);
-  }
-  .neon > .neon-plate {
-    background: var(--plate);
-  }
-  /* Chegara chizig'i */
-  .neon > .neon-ring {
-    padding: var(--ring-w, 1.5px);
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  }
-  /* Spotlight kartalardagi `> *` qoidasidan ustun turishi uchun */
-  [data-spotlight] > .neon {
-    position: absolute;
-    z-index: -1;
-  }
-  /* Guruhda nur faqat tanlangan kartada; sichqoncha qaysi kartada bo'lsa — nur o'sha yerga o'tadi */
-  .neon-group > * > .neon {
-    opacity: 0;
-  }
-  .neon-group > .is-featured > .neon {
-    opacity: 1;
-  }
-  @media (hover: hover) {
-    .neon-group:has(> :hover) > .is-featured:not(:hover) > .neon {
-      opacity: 0;
-    }
-    .neon-group > :hover > .neon {
-      opacity: 1;
-    }
-  }
-
-  /* Asosiy tugma: pushti va ko'k nur tugma atrofida aylanadi (ramka bilan bir xil til) */
-  .btn-glow {
-    animation: glow-orbit 6s linear infinite;
-  }
-
-  /* ---------- Bo'lim foni (komponent: <Aura />) ---------- */
-  .aura {
-    --tile: clamp(46px, 6.6vw, 88px);
-    --gap: 3px;
-    /* Plitkalar ortidagi umumiy nur maydoni (referens: muzli binafsha shisha).
-       f1 — yadro, f2 — atrofidagi binafsha, f3 — chapdagi lilak, f4 — o'ngdagi pushti, fbase — chetlar */
-    --f1: #8424ee;
-    --f2: rgba(166, 92, 255, 0.92);
-    --f3: rgba(190, 150, 255, 0.8);
-    --f4: rgba(228, 140, 250, 0.78);
-    --fbase: rgba(236, 226, 252, 0.85);
-    --sk: 1;
-    --tedge: rgba(255, 255, 255, 0.6);
-    --tdim: rgba(110, 50, 190, 0.12);
-    --tinner: rgba(255, 255, 255, 0.2);
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .aura-haze,
-  .aura-dots,
-  .aura-cols {
-    position: absolute;
-    inset: 0;
-  }
-  /* Rang maydoni. Yorug': pastda — plitkalar ortidan ko'tarilgan binafsha tuman.
-     Qorong'i: chapda pushti, o'ngda ko'k (referensdagidek) */
-  .aura-haze {
-    background:
-      radial-gradient(ellipse 30% 46% at 40% 100%, color-mix(in oklab, var(--gb) 20%, transparent), transparent 72%),
-      radial-gradient(ellipse 30% 40% at 62% 100%, color-mix(in oklab, var(--ga) 16%, transparent), transparent 72%);
-  }
-  .dark .aura-haze {
-    background:
-      radial-gradient(ellipse 36% 40% at 26% 62%, color-mix(in oklab, var(--ga) 26%, transparent), transparent 70%),
-      radial-gradient(ellipse 36% 40% at 74% 62%, color-mix(in oklab, var(--gb) 30%, transparent), transparent 70%);
-  }
-  .aura-dots {
-    display: none;
-    background:
-      radial-gradient(ellipse 40% 46% at 26% 62%, var(--ga), transparent 72%),
-      radial-gradient(ellipse 40% 46% at 74% 62%, var(--gb), transparent 72%),
-      rgba(255, 255, 255, 0.09);
-    opacity: 0.75;
-    -webkit-mask:
-      radial-gradient(circle, #000 0.85px, transparent 1.35px) 0 0 / 13px 13px,
-      linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
-    -webkit-mask-composite: source-in;
-    mask:
-      radial-gradient(circle, #000 0.85px, transparent 1.35px) 0 0 / 13px 13px,
-      linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
-    mask-composite: intersect;
-  }
-  .dark .aura-dots {
-    display: block;
-  }
-  /* Yorug': binafsha shisha plitkalar */
-  .aura-cols {
-    background-image: linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: calc(var(--tile) + var(--gap)) 100%;
-    background-position: calc(50% - var(--tile) / 2 - var(--gap) / 2) 0;
-    -webkit-mask: linear-gradient(to bottom, transparent, #000 20%, #000 70%, transparent);
-    mask: linear-gradient(to bottom, transparent, #000 20%, #000 70%, transparent);
-  }
-  .aura-tiles {
-    --step: calc(var(--tile) + var(--gap));
-    position: absolute;
-    left: 50%;
-    bottom: calc(var(--gap) * -1);
-    translate: -50% 0;
-    display: grid;
-    gap: var(--gap);
-    /* eng baland ustunlar tepasi fonga erib ketadi */
-    -webkit-mask: linear-gradient(to top, #000 50%, rgba(0, 0, 0, 0.35) 85%, transparent);
-    mask: linear-gradient(to top, #000 50%, rgba(0, 0, 0, 0.35) 85%, transparent);
-  }
-  /* Har plitka umumiy maydonning o'z bo'lagini ko'rsatadi (+ bir-ikki px siljish — shishadagi sinish),
-     ustida yaltirash va yorug' qirralar */
-  .aura-tiles > i {
-    --x: calc(var(--c) * var(--step) * -1 + var(--jx));
-    --y: calc(var(--r) * var(--step) * -1 + var(--jy));
-    --fs: calc(var(--cols) * var(--step)) calc(var(--rows) * var(--step));
-    width: var(--tile);
-    aspect-ratio: 1;
-    border-radius: calc(var(--tile) * 0.1);
-    background-color: var(--fbase);
-    background-image:
-      linear-gradient(140deg, rgba(255, 255, 255, calc(var(--s) * var(--sk))), transparent 58%),
-      radial-gradient(ellipse 24% 46% at var(--fx) var(--fy), var(--f1), transparent 74%),
-      radial-gradient(ellipse 46% 90% at var(--fx) var(--fy), var(--f2), transparent 78%),
-      radial-gradient(ellipse 32% 70% at calc(var(--fx) - 20%) 95%, var(--f3), transparent 74%),
-      radial-gradient(ellipse 36% 72% at calc(var(--fx) + 34%) 88%, var(--f4), transparent 74%);
-    background-size:
-      100% 100%,
-      var(--fs),
-      var(--fs),
-      var(--fs),
-      var(--fs);
-    background-position:
-      0 0,
-      var(--x) var(--y),
-      var(--x) var(--y),
-      var(--x) var(--y),
-      var(--x) var(--y);
-    background-repeat: no-repeat;
-    box-shadow:
-      inset 1px 1px 0 var(--tedge),
-      inset -1px -1px 0 var(--tdim),
-      inset 0 0 calc(var(--tile) * 0.22) var(--tinner);
-  }
-  .aura-tiles > i.x {
-    visibility: hidden;
-  }
-  /* Yorug' mavzuda plitkalar ustidagi kartalar — muzli shisha: binafsha rang xira ko'rinib turadi.
-     Faqat plitkali fonda (doim qorong'i TOP bo'limida plitka yo'q — u yerga tegmaydi) */
-  :root:not(.dark) .aura-tiled ~ * .card {
-    --card: rgba(255, 255, 255, 0.62);
-    --plate: rgba(255, 255, 255, 0.84);
-    -webkit-backdrop-filter: blur(28px) saturate(150%);
-    backdrop-filter: blur(28px) saturate(150%);
-  }
-  .dark .aura-cols,
-  .dark .aura-tiles {
-    display: none;
-  }
-
-  /* Hero: plitkalar ikkala mavzuda. Qorong'ida — qora shisha, ichidan pushti/ko'k/binafsha yorug'lik */
-  /* Qorong'ida ham referensdagi o'sha binafsha muzli shisha — faqat chetlari qorong'ilikka erib ketadi */
-  .dark .aura-hero {
-    --f1: #8a2bf0;
-    --f2: rgba(164, 96, 255, 0.9);
-    --f3: rgba(186, 146, 255, 0.72);
-    --f4: rgba(232, 140, 250, 0.7);
-    --fbase: rgba(150, 110, 240, 0.1);
-    --sk: 0.75;
-    --tedge: rgba(255, 255, 255, 0.3);
-    --tdim: rgba(40, 0, 90, 0.25);
-    --tinner: rgba(255, 255, 255, 0.1);
-  }
-  .dark .aura-hero .aura-cols {
-    display: block;
-  }
-  .dark .aura-hero .aura-tiles {
-    display: grid;
-  }
-  .aura-hero .aura-haze {
-    background:
-      radial-gradient(ellipse 44% 58% at 40% 100%, color-mix(in oklab, var(--gb) 22%, transparent), transparent 72%),
-      radial-gradient(ellipse 30% 44% at 62% 100%, color-mix(in oklab, var(--ga) 18%, transparent), transparent 72%);
-  }
-  .dark .aura-hero .aura-haze {
-    background:
-      radial-gradient(ellipse 44% 58% at 38% 100%, color-mix(in oklab, var(--ga) 30%, transparent), transparent 72%),
-      radial-gradient(ellipse 36% 50% at 64% 100%, color-mix(in oklab, var(--gb) 36%, transparent), transparent 72%);
-  }
-  /* TOP bo'limi: rang maydonlari rejalar ortida (o'ngda) */
-  @media (min-width: 1024px) {
-    .aura-promo {
-      left: 30%;
-    }
-  }
-
-  /* ---------- Header: elementlar ketma-ket tushadi ---------- */
-  .hdr-in > div > * {
-    animation: nav-in 0.9s var(--ease-out) backwards;
-  }
-  .hdr-in > div > :nth-child(2) {
-    animation-delay: 0.08s;
-  }
-  .hdr-in > div > :nth-child(3) {
-    animation-delay: 0.16s;
-  }
-  .hdr-in nav > a {
-    animation: nav-in 0.8s var(--ease-out) backwards;
-    animation-delay: calc(0.2s + var(--n, 0) * 70ms);
-  }
-
-  /* ---------- Zarrachalar ---------- */
-  .particles > span {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: var(--s);
-    height: var(--s);
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--primary-2) 45%, var(--neon-tip));
-    box-shadow: 0 0 6px 1px color-mix(in oklab, var(--primary-2) 70%, transparent);
-    opacity: 0;
-    animation: particle var(--t) linear infinite;
-    animation-delay: var(--pd);
-  }
-
-  /* ---------- Piksel to'r (FAQ) ---------- */
-  .pixels {
-    --px: 22px;
-    display: grid;
-    gap: 6px;
-    mask-image: radial-gradient(ellipse 60% 60% at 40% 50%, #000 20%, transparent 75%);
-  }
-  .pixels > span {
-    width: var(--px);
-    height: var(--px);
-    border-radius: 5px;
-    border: 1px solid var(--line);
-  }
-  .pixels > .on {
-    animation: pixel var(--t) ease-in-out infinite;
-    animation-delay: var(--pd);
-  }
-
-  /* ---------- Bento (reyting) vizuallari ---------- */
-  .bento-visual {
-    position: relative;
-    display: grid;
-    place-items: center;
-    height: 10.5rem;
-  }
-  .bento-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 26px 26px;
-    background-position: center;
-    mask-image: radial-gradient(ellipse 55% 65% at 50% 50%, #000 10%, transparent 75%);
-  }
-  .link {
-    position: absolute;
-    top: 50%;
-    left: 9%;
-    width: 31%;
-    height: 1px;
-    overflow: hidden;
-    background: linear-gradient(90deg, transparent, var(--line-strong));
-  }
-  .link-r {
-    left: auto;
-    right: 9%;
-    transform: scaleX(-1);
-  }
-  .link > i {
-    position: absolute;
-    inset-block: 0;
-    left: 0;
-    width: 45%;
-    background: linear-gradient(90deg, var(--neon-tip), var(--tone) 30%, transparent);
-    animation: link-beam 2.8s var(--ease-out) infinite;
-    animation-delay: var(--ld, 0s);
-  }
-  .node {
-    position: absolute;
-    top: 50%;
-    left: 9%;
-    width: 5px;
-    height: 5px;
-    margin: -2.5px 0 0 -2.5px;
-    border-radius: 999px;
-    background: var(--fg);
-    box-shadow: 0 0 10px 1px var(--tone);
-    animation: node 2.8s ease-in-out infinite;
-    animation-delay: var(--ld, 0s);
-  }
-  .node-r {
-    left: auto;
-    right: 9%;
-    margin: -2.5px -2.5px 0 0;
-  }
-  .icon-tile {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 3.75rem;
-    height: 3.75rem;
-    border-radius: 1.15rem;
-    color: var(--tone);
-    background: linear-gradient(160deg, color-mix(in oklab, var(--tone) 24%, var(--bg)), var(--bg) 85%);
-    border: 1px solid color-mix(in oklab, var(--tone) 38%, transparent);
-    box-shadow:
-      0 0 0 6px color-mix(in oklab, var(--tone) 7%, transparent),
-      0 14px 40px -10px color-mix(in oklab, var(--tone) 65%, transparent);
-    animation: float 7s ease-in-out infinite;
-  }
-  .icon-tile::before {
-    content: "";
-    position: absolute;
-    top: -1px;
-    left: 22%;
-    right: 22%;
-    height: 3px;
-    border-radius: 0 0 4px 4px;
-    background: var(--tone);
-    box-shadow: 0 0 12px 1px var(--tone);
-  }
-  .radar {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-  }
-  .radar > i {
-    position: absolute;
-    width: 3.75rem;
-    height: 3.75rem;
-    border-radius: 999px;
-    border: 1px solid color-mix(in oklab, var(--tone) 70%, transparent);
-    opacity: 0;
-    animation: radar 3.6s var(--ease-out) infinite;
-  }
-  .radar > i:nth-child(2) {
-    animation-delay: 1.2s;
-  }
-  .radar > i:nth-child(3) {
-    animation-delay: 2.4s;
-  }
-  .corner-num {
-    position: absolute;
-    top: 1rem;
-    left: 1.25rem;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.7rem;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .corner-num::before {
-    content: "";
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: var(--tone, var(--primary-2));
-    box-shadow: 0 0 6px var(--tone, var(--primary-2));
-  }
-  /* Kartadagi kichik grafiklar karta ochilganda o'sadi */
-  [data-in=""] .grow-x {
-    transform-origin: left;
-    animation: grow-x 1.6s var(--ease-out) backwards;
-    animation-delay: 0.45s;
-  }
-  [data-in=""] .grow-y {
-    transform-origin: bottom;
-    animation: grow-y 1.1s var(--ease-out) backwards;
-    animation-delay: calc(0.4s + var(--i, 0) * 60ms);
-  }
-  [data-in=""] .pop {
-    animation: pop 0.7s var(--ease-out) backwards;
-    animation-delay: calc(0.4s + var(--i, 0) * 90ms);
-  }
-
-  /* ---------- Bo'lim belgisi (pill) ---------- */
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    height: 1.75rem;
-    padding-inline: 0.75rem;
-    border-radius: 999px;
-    border: 1px solid var(--line-strong);
-    background: color-mix(in oklab, var(--primary) 12%, transparent);
-    font-size: 0.75rem;
-    color: var(--fg);
-  }
-  .eyebrow::before {
-    content: "";
-    width: 5px;
-    height: 5px;
-    border-radius: 999px;
-    background: var(--primary-2);
-    box-shadow: 0 0 8px var(--primary-2);
-    animation: node 2.4s ease-in-out infinite;
-  }
-
-  /* ---------- FAQ: chiziq chiziladi, ochilganda nurlanadi ---------- */
-  details.faq {
-    position: relative;
-  }
-  details.faq::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    height: 1px;
-    background: var(--line);
-    transform-origin: left;
-    transition: background 0.4s;
-  }
-  details.faq[data-in=""]::after {
-    animation: grow-x 1.3s var(--ease-out) backwards;
-    animation-delay: calc(var(--d, 0ms) + 0.15s);
-  }
-  details.faq[open]::after,
-  details.faq:hover::after {
-    background: linear-gradient(90deg, var(--primary-2), color-mix(in oklab, var(--primary-2) 25%, transparent) 60%, transparent);
-  }
-  .corner-glow {
-    position: absolute;
-    width: 46px;
-    height: 46px;
-    border: 0 solid var(--primary-2);
-    filter: drop-shadow(0 0 6px var(--primary-2));
-    animation: halo 4s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  /* ---------- Yakuniy CTA: horizont yoyi, to'r, 3D panel ---------- */
-  .cta-arc {
-    position: absolute;
-    left: 50%;
-    width: max(150%, 1100px);
-    aspect-ratio: 1;
-    translate: -50% 0;
-    border-radius: 999px;
-    border-top: 1px solid rgba(170, 178, 255, 0.75);
-    background: radial-gradient(circle at 50% 0%, rgba(61, 76, 228, 0.55), transparent 22%);
-    box-shadow:
-      0 -24px 90px -20px rgba(61, 76, 228, 0.9),
-      inset 0 40px 90px -40px rgba(138, 146, 255, 0.85);
-    animation: planet-breathe 7s ease-in-out infinite;
-    pointer-events: none;
-  }
-  .cta-grid {
-    background-image:
-      radial-gradient(circle, rgba(170, 178, 255, 0.55) 1.2px, transparent 1.8px),
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 132px 132px;
-    background-position:
-      -66px -66px,
-      0 0,
-      0 0;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 80%);
-  }
-  .mock-stage {
-    perspective: 1600px;
-  }
-  .bar {
-    border-radius: 4px 4px 1px 1px;
-    background: linear-gradient(to top, color-mix(in oklab, var(--primary) 35%, transparent), var(--primary-2));
-  }
-
-  /* ---------- Hamjamiyat kartalari: markazdagi ikonka + sxema chiziqlari ---------- */
-  .circuit-line {
-    stroke: var(--line-strong);
-    stroke-width: 1;
-  }
-  .circuit-beam {
-    stroke: var(--primary-2);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-dasharray: 16 84;
-    filter: drop-shadow(0 0 3px var(--primary-2));
-    animation: dash 3s linear infinite;
-    animation-delay: var(--cd, 0s);
-  }
-  .circuit-dot {
-    transform-box: fill-box;
-    transform-origin: center;
-    fill: var(--fg);
-    filter: drop-shadow(0 0 4px var(--primary-2));
-    animation: node 3s ease-in-out infinite;
-    animation-delay: var(--cd, 0s);
-  }
-  .circuit-icon {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 999px;
-    color: #fff;
-    background: radial-gradient(circle at 50% 30%, #6f79f2, #2a35b8 70%);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.18) inset,
-      0 0 0 7px rgba(61, 76, 228, 0.12),
-      0 10px 40px -6px rgba(61, 76, 228, 0.9);
-    transition: transform 0.5s var(--ease-out);
-  }
-  .circuit-icon::before {
-    content: "";
-    position: absolute;
-    inset: -14px;
-    border-radius: inherit;
-    border: 1px dashed rgba(170, 178, 255, 0.35);
-    animation: spin 22s linear infinite;
-  }
-  .group:hover .circuit-icon {
-    transform: scale(1.08);
-  }
-
-  /* ---------- Footer yuqori chizig'ida yuguruvchi nur ---------- */
-  .beam-line {
-    position: absolute;
-    top: -1px;
-    left: 0;
-    width: 32%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--primary-2), var(--neon-tip), transparent);
-    animation: beam-line 8s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  /* ---------- Ekrandan uzoq bo'limlar: cheksiz animatsiyalar to'xtaydi ---------- */
-  [data-anim][data-paused] *,
-  [data-anim][data-paused] *::before,
-  [data-anim][data-paused] *::after {
-    animation-play-state: paused !important;
-  }
-}
-
-/* 3D panel: skroll bilan tekislanadi (qo'llab-quvvatlanmasa — oddiy turadi) */
-@supports (animation-timeline: view()) {
-  .mock-tilt {
-    transform-origin: 50% 0%;
-    animation: mock-tilt linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 40%;
-  }
-}
-
-@keyframes word-in {
-  from {
-    opacity: 0;
-    filter: blur(12px);
-    transform: translate3d(0, 0.38em, 0) scale(0.97);
-  }
-  55% {
-    opacity: 1;
-  }
-}
-@keyframes rv-up {
-  from {
-    opacity: 0;
-    filter: blur(8px);
-    transform: translate3d(0, 28px, 0);
-  }
-}
-@keyframes rv-3d {
-  from {
-    opacity: 0;
-    filter: blur(6px);
-    transform: perspective(1000px) translate3d(0, 56px, 0) rotateX(26deg) scale(0.94);
-  }
-}
-@keyframes rv-fade {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-  }
-}
-@keyframes rv-line {
-  from {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-}
-@keyframes nav-in {
-  from {
-    opacity: 0;
-    filter: blur(6px);
-    transform: translate3d(0, -12px, 0);
-  }
-}
-@keyframes glow-orbit {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
-      -13px 0 30px -9px var(--ga),
-      13px 0 30px -9px var(--gb);
-  }
-  25% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
-      0 -11px 30px -9px var(--ga),
-      0 11px 30px -9px var(--gb);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
-      13px 0 30px -9px var(--ga),
-      -13px 0 30px -9px var(--gb);
-  }
-  75% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.16) inset,
-      0 11px 30px -9px var(--ga),
-      0 -11px 30px -9px var(--gb);
-  }
-}
-@keyframes glow-breathe {
-  0%,
-  100% {
-    opacity: calc(var(--halo) * 0.45);
-  }
-  50% {
-    opacity: calc(var(--halo) * 0.7);
-  }
-}
-@keyframes halo {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-@keyframes particle {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0);
-  }
-  15%,
-  80% {
-    opacity: var(--o, 0.7);
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(16px, -130px, 0);
-  }
-}
-@keyframes pixel {
-  0%,
-  100% {
-    background: transparent;
-    border-color: var(--line);
-    box-shadow: none;
-  }
-  45%,
-  60% {
-    background: color-mix(in oklab, var(--primary) 50%, transparent);
-    border-color: var(--primary-2);
-    box-shadow: 0 0 18px 2px color-mix(in oklab, var(--primary) 45%, transparent);
-  }
-}
-@keyframes link-beam {
-  from {
-    transform: translateX(230%);
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  to {
-    transform: translateX(-110%);
-    opacity: 1;
-  }
-}
-@keyframes node {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-@keyframes radar {
-  from {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(3.1);
-  }
-}
-@keyframes grow-x {
-  from {
-    transform: scaleX(0);
-  }
-}
-@keyframes grow-y {
-  from {
-    transform: scaleY(0);
-  }
-}
-@keyframes pop {
-  from {
-    opacity: 0;
-    transform: scale(0.3) rotate(-25deg);
-  }
-}
-@keyframes dash {
-  from {
-    stroke-dashoffset: 16;
-  }
-  to {
-    stroke-dashoffset: -84;
-  }
-}
-@keyframes beam-line {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(320%);
-  }
-}
-@keyframes mock-tilt {
-  from {
-    opacity: 0.35;
-    transform: rotateX(30deg) scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }

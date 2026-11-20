@@ -1,7 +1,7 @@
 import { uploadUrl } from "@/lib/uploads-url";
 import { cn, initials } from "@/lib/utils";
 
-/** Profil rasmi: yuklangan rasm → Google rasmi → bosh harflar (gradient) */
+/** Profil rasmi: yuklangan rasm → Google rasmi → bosh harflar (oq-qora) */
 export function Avatar({
   name,
   avatarKey,
@@ -33,16 +33,11 @@ export function Avatar({
       />
     );
   }
-  const hue = [...name].reduce((a, c) => a + c.charCodeAt(0), 0) % 60;
   return (
     <span
       aria-hidden
-      className={cn("grid shrink-0 place-items-center rounded-full font-medium text-white ring-1 ring-line", className)}
-      style={{
-        ...style,
-        fontSize: size * 0.36,
-        background: `linear-gradient(135deg, hsl(${230 + hue} 85% 66%), hsl(${245 + hue} 70% 46%))`,
-      }}
+      className={cn("grid shrink-0 place-items-center rounded-full bg-card-2 font-medium text-fg ring-1 ring-line", className)}
+      style={{ ...style, fontSize: size * 0.36 }}
     >
       {initials(name)}
     </span>

@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ];
   return (
     <>
-      <SiteHeader overDark={false} />
+      <SiteHeader />
       <div className="container-x pt-28 pb-20">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h1 className="h-hero text-4xl">Boshqaruv</h1>

@@ -5,13 +5,13 @@ import { db } from "@/db";
 import { editorProfiles, orders, payments, users } from "@/db/schema";
 import { SITE_NAME } from "@/lib/constants";
 import { env } from "@/lib/env";
-import { approvePayment, rejectPayment } from "@/lib/payments";
+import { approvePayment, expireStalePayments, matchIncoming, parseAmounts, rejectPayment } from "@/lib/payments";
 import { escapeHtml, tgCall } from "@/lib/telegram";
 import { formatUzs } from "@/lib/utils";
 
 type TgUser = { id: number; username?: string; first_name?: string };
 type Update = {
-  message?: { chat: { id: number }; from?: TgUser; text?: string };
+  message?: { chat: { id: number }; from?: TgUser; text?: string; caption?: string };
   callback_query?: { id: string; from: TgUser; data?: string; message?: { chat: { id: number } } };
 };
 
@@ -38,7 +38,10 @@ export async function POST(req: Request) {
 
   try {
     if (update.callback_query) await handleCallback(update.callback_query);
-    else if (update.message?.text) await handleMessage(update.message as Required<Update>["message"]);
+    else if (update.message?.text || update.message?.caption) {
+      const m = update.message;
+      await handleMessage({ ...m, text: m.text ?? m.caption });
+    }
   } catch (e) {
     console.error("[telegram] webhook error", e);
   }
@@ -75,6 +78,7 @@ async function handleMessage(msg: { chat: { id: number }; from?: TgUser; text?: 
         msg.from ? `Sizning ID: <code>${msg.from.id}</code>` : "",
         "",
         "Buyruqlar: /stats — statistika, /pending — kutilayotgan to'lovlar",
+        "Bank xabarini (kartaga pul tushgani haqida) shu yerga forward qiling — summa mos kelsa, TOP avtomatik yoqiladi.",
       ].join("\n"),
     );
     return;
@@ -108,6 +112,20 @@ async function handleMessage(msg: { chat: { id: number }; from?: TgUser; text?: 
         `💳 Kutilayotgan to'lovlar: ${p.pending}`,
         `💰 Shu oy tushum: ${formatUzs(p.month)} so'm`,
       ].join("\n"),
+    );
+    return;
+  }
+
+  // Buyruq emas — bank xabari bo'lishi mumkin: summani kutilayotgan to'lovlarga moslaymiz
+  if (!cmd.startsWith("/")) {
+    await expireStalePayments();
+    const amounts = parseAmounts(text);
+    if (!amounts.length) return;
+    const matched = await matchIncoming(amounts, "telegram", text);
+    await reply(
+      matched.length
+        ? matched.map((m) => `✅ ${escapeHtml(m.editor)} — ${formatUzs(m.amount)} so'm. TOP yoqildi.`).join("\n")
+        : `🔎 Mos kutilayotgan to'lov topilmadi (${amounts.map((a) => formatUzs(a)).join(", ")} so'm). /pending — ro'yxat`,
     );
     return;
   }

@@ -241,7 +241,7 @@ export const reviews = pgTable(
 export const promotionPlans = pgTable("promotion_plans", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  days: integer("days").notNull().default(10),
+  days: integer("days").notNull().default(7),
   priceUzs: integer("price_uzs").notNull(),
   weight: integer("weight").notNull(),
   isActive: boolean("is_active").notNull().default(true),
@@ -271,7 +271,8 @@ export const payments = pgTable(
     payCode: integer("pay_code").notNull().default(0),
     method: text("method").notNull(), // VISA | UZCARD | HUMO
     payerNote: text("payer_note").notNull().default(""),
-    receiptKey: text("receipt_key").notNull(),
+    // Chek ixtiyoriy: to'lov odatda bank xabaridan avtomatik tasdiqlanadi (incoming_transfers)
+    receiptKey: text("receipt_key"),
     status: paymentStatus("status").notNull().default("PENDING"),
     adminNote: text("admin_note"),
     reviewedBy: text("reviewed_by"),
@@ -280,6 +281,23 @@ export const payments = pgTable(
     createdAt: ts("created_at").notNull().defaultNow(),
   },
   (t) => [index("payments_status_idx").on(t.status, t.createdAt.desc()), index("payments_user_idx").on(t.userId)],
+);
+
+/**
+ * Kartaga tushgan pullar (bank SMS / bildirishnomasidan): avtomatik to'lov tasdiqlash uchun.
+ * Summa kutilayotgan to'lov summasiga (narx + shaxsiy kod) aynan teng bo'lsa — to'lov o'zi tasdiqlanadi.
+ */
+export const incomingTransfers = pgTable(
+  "incoming_transfers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    amountUzs: integer("amount_uzs").notNull(),
+    source: text("source").notNull(), // webhook | telegram
+    raw: text("raw").notNull().default(""),
+    paymentId: uuid("payment_id").references(() => payments.id, { onDelete: "set null" }),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("incoming_amount_idx").on(t.amountUzs, t.createdAt.desc())],
 );
 
 export const promotions = pgTable(

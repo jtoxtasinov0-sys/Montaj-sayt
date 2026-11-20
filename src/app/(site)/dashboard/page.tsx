@@ -1,7 +1,6 @@
 import { ArrowRight, Clock, Flame, Gauge, Plus, Star, Trophy } from "lucide-react";
 import Link from "next/link";
 import { OrderRow } from "@/components/order-row";
-import { Neon } from "@/components/motion";
 import { Empty } from "@/components/page-bits";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { myClientOrders, myEditorOrders } from "@/lib/dashboard-data";
@@ -34,9 +33,8 @@ export default async function DashboardHome() {
               <div className="text-xs text-muted">{s.l}</div>
             </div>
           ))}
-          <Link href="/dashboard/promote" className="card relative flex flex-col justify-between p-5">
-            {boosted && <Neon tone="accent" />}
-            <Flame className={`h-5 w-5 ${boosted ? "text-accent" : "text-muted"}`} />
+          <Link href="/dashboard/promote" className={`card relative flex flex-col justify-between p-5 ${boosted ? "border-fg" : ""}`}>
+            <Flame className={`h-5 w-5 ${boosted ? "fill-current text-fg" : "text-muted"}`} />
             <p className="mt-3 text-sm">
               {boosted ? fmt(d.dashboard.boostActive, { plan: "TOP", days: daysLeft(editor.boostUntil!) }) : d.dashboard.boostNone}
             </p>

@@ -18,7 +18,6 @@ import { ActionForm, SubmitButton } from "@/components/form";
 import { TelegramIcon } from "@/components/icons";
 import { Field, StatusBadge } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
-import { Stars } from "@/components/stars";
 import { db } from "@/db";
 import { editorProfiles, orders, proposals, reviews, users } from "@/db/schema";
 import { getCurrentUser, getEditorProfileByUser } from "@/lib/auth/current";
@@ -87,9 +86,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <section className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3">
-        <Stars className="absolute inset-0 -z-10 opacity-60" />
-        <div className="horizon bottom-0 -z-10" aria-hidden />
+      <section className="border-b border-line">
         <div className="container-x pt-32 pb-12">
           <div className="fade-up flex flex-wrap items-center gap-2">
             <StatusBadge status={o.status} label={d.orderStatus[o.status]} />
@@ -152,7 +149,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               {proposalList.map(({ pr, ed, image }) => (
                 <div key={pr.id} className="card p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <Link href={`/editors/${ed.slug}`} className="flex items-center gap-3 hover:text-primary-2">
+                    <Link href={`/editors/${ed.slug}`} className="flex items-center gap-3 hover:underline hover:underline-offset-4">
                       <Avatar name={ed.displayName} avatarKey={ed.avatarKey} image={image} size={44} />
                       <div>
                         <p className="font-medium">{ed.displayName}</p>
@@ -302,7 +299,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 <Avatar name={editor.p.displayName} avatarKey={editor.p.avatarKey} image={editor.image} size={40} />
                 <div className="min-w-0">
                   <p className="text-xs text-muted">{d.order.editor}</p>
-                  <Link href={`/editors/${editor.p.slug}`} className="truncate font-medium hover:text-primary-2">
+                  <Link href={`/editors/${editor.p.slug}`} className="truncate font-medium hover:underline hover:underline-offset-4">
                     {editor.p.displayName}
                   </Link>
                 </div>

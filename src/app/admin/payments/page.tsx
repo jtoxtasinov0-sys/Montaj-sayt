@@ -10,7 +10,7 @@ import { editorProfiles, payments, users } from "@/db/schema";
 import { formatUzs } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
-const LABEL = { PENDING: "Kutilmoqda", APPROVED: "Tasdiqlangan", REJECTED: "Rad etilgan" } as const;
+const LABEL = { PENDING: "Kutilmoqda", APPROVED: "Tasdiqlangan", REJECTED: "Rad etilgan / bekor" } as const;
 
 export default async function AdminPayments({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   await requireAdmin(); // har bir sahifada alohida tekshiruv (faqat layout'ga ishonmaymiz)
@@ -36,13 +36,20 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
       <div className="grid gap-3 lg:grid-cols-2">
         {rows.map(({ p, email, name, slug }) => (
           <article key={p.id} className="card flex gap-3 p-3 sm:gap-4 sm:p-4">
-            <a href={`/api/files/${p.receiptKey}`} target="_blank" rel="noopener" className="shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/api/files/${p.receiptKey}`} alt="Chek" className="h-28 w-20 rounded-xl border border-line object-cover sm:h-36 sm:w-28" loading="lazy" />
-            </a>
+            {p.receiptKey ? (
+              <a href={`/api/files/${p.receiptKey}`} target="_blank" rel="noopener" className="shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/api/files/${p.receiptKey}`} alt="Chek" className="h-28 w-20 rounded-xl border border-line object-cover sm:h-36 sm:w-28" loading="lazy" />
+              </a>
+            ) : (
+              // Chek yo'q: to'lov bank xabaridan avtomatik tasdiqlanadi (yoki muddati o'tib bekor bo'ladi)
+              <span className="grid h-28 w-20 shrink-0 place-items-center rounded-xl border border-dashed border-line-strong p-2 text-center text-[0.68rem] leading-tight text-muted sm:h-36 sm:w-28">
+                Chek yo&apos;q · avto
+              </span>
+            )}
             <div className="min-w-0 flex-1 space-y-1.5 text-sm">
               <div className="flex items-start justify-between gap-2">
-                <Link href={`/editors/${slug}`} className="font-medium hover:text-primary-2">
+                <Link href={`/editors/${slug}`} className="font-medium hover:underline">
                   {name}
                 </Link>
                 <StatusBadge status={p.status} label={LABEL[p.status]} />
@@ -55,7 +62,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
                     kod {p.payCode}
                   </span>
                 )}{" "}
-                · TOP {p.planName} · {p.days} kun
+                · {p.planName} · {p.days} kun
               </p>
               <p className="text-xs text-muted">
                 {p.method} · {p.createdAt.toISOString().slice(0, 16).replace("T", " ")}

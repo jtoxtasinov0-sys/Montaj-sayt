@@ -6,7 +6,6 @@ import { Avatar } from "@/components/avatar";
 import { InstagramIcon, TelegramIcon, YoutubeIcon } from "@/components/icons";
 import { Empty } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
-import { Stars } from "@/components/stars";
 import { VideoTile } from "@/components/video-tile";
 import { getCurrentUser } from "@/lib/auth/current";
 import { getEditorBySlug } from "@/lib/data";
@@ -67,16 +66,13 @@ export default async function EditorProfilePage({ params }: Params) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <section className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3">
-        <Stars className="absolute inset-0 -z-10 opacity-60" />
-        <div className="horizon bottom-0 -z-10" aria-hidden />
-        <div aria-hidden className="absolute -top-40 -right-20 -z-10 h-[30rem] w-[30rem] rounded-full bg-primary/30 blur-[120px]" />
+      <section className="border-b border-line">
         <div className="container-x grid gap-8 pt-32 pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="fade-up flex flex-col gap-6 sm:flex-row sm:items-end">
             <div className="relative">
-              <Avatar name={p.displayName} avatarKey={p.avatarKey} image={data.userImage} size={120} className="ring-4 ring-primary/30" />
+              <Avatar name={p.displayName} avatarKey={p.avatarKey} image={data.userImage} size={120} className="ring-1 ring-line" />
               {p.isAvailable && (
-                <span className="absolute right-1 bottom-1 h-5 w-5 rounded-full border-4 border-[#05050f] bg-success" title={d.editors.available} />
+                <span className="absolute right-1 bottom-1 h-5 w-5 rounded-full border-4 border-bg bg-fg" title={d.editors.available} />
               )}
             </div>
             <div className="min-w-0">
@@ -150,7 +146,7 @@ export default async function EditorProfilePage({ params }: Params) {
           { icon: Clock, v: onTimePct !== null ? `${onTimePct}%` : "—", l: d.rating.onTime },
           { icon: Calendar, v: formatDate(data.userCreatedAt, locale), l: d.profile.memberSince },
         ].map((s) => (
-          <div key={s.l} data-spotlight className="card p-4 sm:p-5">
+          <div key={s.l} className="card p-4 sm:p-5">
             <s.icon className="h-5 w-5 text-primary-2" />
             <div className="mt-4 text-3xl font-light tracking-tight">{s.v}</div>
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">

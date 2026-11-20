@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DashNav } from "@/components/dash-nav";
 import { ProfileAvatar } from "@/components/profile-avatar";
-import { Stars } from "@/components/stars";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { fmt, getDict } from "@/lib/i18n";
 
@@ -27,9 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ];
   return (
     <>
-      <section className="dark relative isolate mx-2 mt-2 overflow-hidden rounded-[2rem] border border-line bg-[#05050f] text-fg sm:mx-3">
-        <Stars className="absolute inset-0 -z-10 opacity-50" />
-        <div aria-hidden className="absolute -top-32 left-1/3 -z-10 h-72 w-[40rem] rounded-full bg-primary/25 blur-[100px]" />
+      <section className="border-b border-line">
         <div className="container-x flex flex-col gap-6 pt-28 pb-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
