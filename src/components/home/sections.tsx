@@ -19,37 +19,21 @@ function Rule({ className }: { className?: string }) {
   return <span data-reveal="line" aria-hidden className={cn("block h-px bg-line-strong", className)} />;
 }
 
-/**
- * Skroll lentasi uchun tayanch nuqta (ScrollRibbon): "loop" — shu joy atrofida halqa, "via" — lenta shu nuqtadan o'tadi.
- * x — sahifa kengligiga nisbatan (0…1, chetdan tashqari ham bo'lishi mumkin), y — element balandligiga nisbatan.
- */
-type Rb = { mode: "loop" | "via"; x: number; y?: number; dir?: "cw" | "ccw"; r?: number };
-const rb = (o: Rb) => ({
-  "data-rb": o.mode,
-  "data-rb-x": o.x,
-  "data-rb-y": o.y ?? 0.5,
-  ...(o.dir && { "data-rb-dir": o.dir }),
-  ...(o.r && { "data-rb-r": o.r }),
-});
-
 export function SectionHead({
   title,
   subtitle,
   action,
   eyebrow,
   className,
-  ribbon,
 }: {
   title: string;
   subtitle?: string;
   action?: React.ReactNode;
   eyebrow?: string;
   className?: string;
-  /** Lenta shu sarlavha atrofida halqa yasaydi */
-  ribbon?: Rb;
 }) {
   return (
-    <div {...(ribbon && rb(ribbon))} className={cn("mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between", className)}>
+    <div className={cn("mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between", className)}>
       <div className="max-w-2xl">
         {eyebrow && (
           <span data-reveal className="eyebrow mb-5">
@@ -103,7 +87,7 @@ export function StatsStrip({ d, s }: { d: Dict; s: { editors: number; completed:
   ];
   return (
     <section className="container-x pt-16">
-      <div {...rb({ mode: "via", x: 0.72, y: 0.3 })} className="grid grid-cols-2 gap-y-10 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-y-10 md:grid-cols-4">
         {items.map((it, i) => (
           <div key={it.label} data-reveal className="pr-4" style={delay(i * 90)}>
             <div className="text-5xl font-light tracking-tight sm:text-6xl">
@@ -140,7 +124,6 @@ export function TopEditorsSection({ d, editors }: { d: Dict; editors: EditorCard
       ) : (
         // Telefonda — yonga suriladigan qator (20 ta kartani uzun ustunga tizmaslik uchun), kattaroq ekranda — to'r
         <div
-          {...rb({ mode: "via", x: 1.06, y: 0.55 })}
           className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
         >
           {editors.map((e, i) => (
@@ -165,9 +148,9 @@ export function TiersSection({
   counts: Record<number, { editors: number; jobs: number }>;
 }) {
   return (
-    <section className="container-x pt-28">
+    <section data-rb-shape="a" className="container-x pt-28">
       <Rule className="mb-12" />
-      <SectionHead ribbon={{ mode: "loop", x: 0.32, y: 0.6, dir: "ccw", r: 1.7 }} title={d.tiers.title} subtitle={d.tiers.subtitle} />
+      <SectionHead title={d.tiers.title} subtitle={d.tiers.subtitle} />
       {/* Telefonda ikki ustun (uzun ro'yxat bo'lmasin), toq oxirgi karta to'liq kenglikda */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {tiers.map((t, i) => (
@@ -222,7 +205,6 @@ export function CategoriesSection({ d }: { d: Dict }) {
     <section className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead
-        ribbon={{ mode: "loop", x: 0.36, y: 0.7, dir: "ccw", r: 1.6 }}
         title={d.categoriesSection.title}
         action={
           <Link href="/editors" className="btn btn-ghost">
@@ -230,9 +212,7 @@ export function CategoriesSection({ d }: { d: Dict }) {
           </Link>
         }
       />
-      <div {...rb({ mode: "via", x: -0.08, y: 0.6 })}>
-        <CategoriesStack items={items} />
-      </div>
+      <CategoriesStack items={items} />
     </section>
   );
 }
@@ -250,7 +230,7 @@ const WORK_PHOTOS = [
 
 export function ShowcaseSection({ d }: { d: Dict }) {
   return (
-    <section className="container-x pt-28">
+    <section data-rb-shape="b" className="container-x pt-28">
       <Rule className="mb-12" />
       <SectionHead
         title={d.showcase.title}
@@ -262,7 +242,7 @@ export function ShowcaseSection({ d }: { d: Dict }) {
         }
       />
       {/* Ikki ustun, o'ng ustun pastroqda (zinapoya) */}
-      <div {...rb({ mode: "via", x: 1.08, y: 0.3 })} className="grid gap-x-5 gap-y-12 md:grid-cols-2 md:gap-y-16">
+      <div className="grid gap-x-5 gap-y-12 md:grid-cols-2 md:gap-y-16">
         {WORK_PHOTOS.map((it, i) => (
           <Link key={it.key} href={`/editors?category=${it.key}`} className={cn("work group block", i % 2 === 1 && "md:mt-24")}>
             <div className="work-media aspect-[16/9]">
@@ -304,9 +284,9 @@ export function ReviewsSection({ d, items }: { d: Dict; items: ReviewItem[] }) {
   if (items.length < 3) return null;
   const list = items.slice(0, items.length >= 6 ? 6 : 3);
   return (
-    <section className="container-x pt-28">
+    <section data-rb-shape="a" className="container-x pt-28">
       <Rule className="mb-12" />
-      <h2 {...rb({ mode: "loop", x: 0.5, y: 0.8, dir: "ccw", r: 1.8 })} className="h-section mx-auto max-w-3xl text-center text-[clamp(2.2rem,5vw,4rem)] text-balance">
+      <h2 className="h-section mx-auto max-w-3xl text-center text-[clamp(2.2rem,5vw,4rem)] text-balance">
         <SplitText text={d.reviewsSection.title} />
       </h2>
       <div className="mt-14 grid gap-4 md:grid-cols-3">
@@ -383,7 +363,7 @@ export function HowItWorks({ d }: { d: Dict }) {
     <section id="how" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
       <SectionHead title={d.how.title} />
-      <div {...rb({ mode: "via", x: 0.55, y: 0.6 })} className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <HowCard
           label={d.how.forClients}
           lead={d.how.clientLead}
@@ -416,7 +396,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
   return (
     <section id="top" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
-      <div {...rb({ mode: "via", x: 1.08, y: 0.35 })} className="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,28rem)] lg:gap-20">
+      <div className="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,28rem)] lg:gap-20">
         <div className="glyph-host" data-reveal>
           <GlyphIcon name="e-top" className="h-16 w-16" />
           <h2 className="h-section mt-8 text-[clamp(2.4rem,5vw,4.4rem)] text-balance">

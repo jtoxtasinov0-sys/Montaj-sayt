@@ -5,43 +5,41 @@ import { useEffect, useRef } from "react";
 type Pt = [number, number];
 
 /**
- * Halqa nuqtalari (rx, ry birliklarida). "ccw" — o'ngdan kirib, pastdan chapga, chap tomondan yuqoriga,
- * tepadan o'ngga aylanadi va o'ng tomondan pastga tushib, kirish chizig'ini kesib o'tadi (lusion.co dagidek halqa).
- * "cw" — xuddi shu, ko'zgudagidek (chapdan kiradi).
+ * Lenta shakli (lusion.co videosidagidek), 1440 × 900 dizayn maydonida: chap chetdan kirib, katta yoy bilan pastga
+ * tushadi, chap tomonda bitta yumshoq halqa yasaydi (o'z chizig'ini kesib o'tadi) va uzun S-to'lqin bilan o'ng chetdan chiqadi.
+ * Nuqtalar bir-biridan teng uzoqlikda — burilishlar burchaksiz, silliq chiqadi.
  */
-const LOOP: Pt[] = [
-  [1.9, 0.95],
-  [0.2, 1.0],
-  [-0.95, 0.2],
-  [-0.45, -0.9],
-  [0.5, -0.85],
-  [0.98, 0.05],
-  [0.45, 1.55],
+const SHAPE: Pt[] = [
+  [-90, 30],
+  [250, 130],
+  [450, 330],
+  [440, 560],
+  [320, 720],
+  [160, 700],
+  [120, 560],
+  [240, 470],
+  [440, 510],
+  [680, 640],
+  [930, 800],
+  [1200, 860],
+  [1540, 800],
 ];
 
 /**
- * Lenta yo'li sahifadagi belgilangan elementlarga bog'lanadi (ekran o'lchami o'zgarsa ham halqa o'z sarlavhasi atrofida qoladi):
- *  - `data-rb="via"` — bitta nuqta: x = data-rb-x × kenglik, y = element tepasi + data-rb-y × element balandligi;
- *  - `data-rb="loop"` — shu nuqta atrofida halqa (data-rb-dir: ccw | cw, data-rb-r: radius ko'paytiruvchisi).
+ * Lenta faqat `data-rb-shape` belgisi bor bo'limlarda chiziladi ("a" — oddiy, "b" — ko'zgudagidek).
+ * Har bir bo'lim uchun alohida chiziq: shakl bo'lim tepasidan boshlanadi, kenglikka moslab masshtablanadi.
  */
-function anchorPoints(wrap: HTMLElement, w: number): Pt[] {
+function shapeGroups(wrap: HTMLElement, w: number): Pt[][] {
   const base = wrap.getBoundingClientRect();
-  const r0 = w < 640 ? w * 0.24 : Math.min(190, Math.max(110, w * 0.11));
-  const pts: Pt[] = [];
-  wrap.querySelectorAll<HTMLElement>("[data-rb]").forEach((el) => {
-    const r = el.getBoundingClientRect();
-    const x = parseFloat(el.dataset.rbX ?? "0.5") * w;
-    const y = r.top - base.top + parseFloat(el.dataset.rbY ?? "0.5") * r.height;
-    if (el.dataset.rb === "loop") {
-      const rx = r0 * parseFloat(el.dataset.rbR ?? "1");
-      const ry = rx * 1.05;
-      const s = el.dataset.rbDir === "cw" ? -1 : 1;
-      for (const [ox, oy] of LOOP) pts.push([x + s * ox * rx, y + oy * ry]);
-    } else {
-      pts.push([x, y]);
-    }
+  const u = Math.max(w / 1440, 0.42);
+  return [...wrap.querySelectorAll<HTMLElement>("[data-rb-shape]")].map((el) => {
+    const top = el.getBoundingClientRect().top - base.top;
+    const flip = el.dataset.rbShape === "b";
+    return SHAPE.map(([x, y]) => {
+      const px = w / 2 + (x - 720) * u;
+      return [flip ? w - px : px, top + y * u] as Pt;
+    });
   });
-  return pts;
 }
 
 /**
@@ -74,65 +72,60 @@ function smoothPath(pts: Pt[]) {
   return d;
 }
 
-const SAMPLES = 1600;
+const SAMPLES = 900;
 /** Lenta uchi ekranning shu qismigacha chizilgan bo'ladi */
 const TIP = 0.72;
 /** Chizish tezligi chegarasi (lenta uzunligi, px/kadr) — halqalar qalam bilan chizilgandek bir tekis chiziladi */
 const SPEED = 38;
 
 /**
- * Skroll bilan chiziladigan yo'g'on lenta (referens: lusion.co). Bosh sahifa kontenti ortida turadi:
- * kartalar ustidan yopadi, bo'sh joylarda ko'rinadi, bo'lim sarlavhalari atrofida halqa yasaydi.
+ * Skroll bilan chiziladigan yo'g'on lenta (referens: lusion.co). Faqat 2–3 ta belgilangan bo'limda, kontent ortida:
+ * kartalar ustidan yopadi, bo'sh joylarda ko'rinadi.
  * Uchi doim ko'rinish oynasining ~72% balandligida — pastga tushganda chiziladi, yuqoriga qaytganda o'chadi.
  */
 export function ScrollRibbon() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const pathRef = useRef<SVGPathElement>(null);
 
   useEffect(() => {
     const layer = wrapRef.current;
     const svg = svgRef.current;
-    const path = pathRef.current;
     const wrap = layer?.parentElement;
-    if (!layer || !svg || !path || !wrap) return;
+    if (!layer || !svg || !wrap) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // reachY[i] — lenta boshidan i/SAMPLES qismigacha chizilganda erishilgan eng pastki nuqta (px)
-    let reachY = new Float32Array(SAMPLES + 1);
-    let total = 1;
+    // Har bir chiziq: reachY[i] — boshidan i/SAMPLES qismigacha chizilganda erishilgan eng pastki nuqta (px)
+    type Line = { el: SVGPathElement; reachY: Float32Array; total: number; cur: number; target: number };
+    let lines: Line[] = [];
     let top = 0;
-    let cur = 0;
-    let target = 0;
     let raf = 0;
 
-    const draw = (v: number) => {
-      path.style.strokeDashoffset = String(1 - v);
-    };
-
-    const targetFor = () => {
+    const targetFor = (l: Line) => {
       const y = window.scrollY + window.innerHeight * TIP - top;
       let lo = 0;
       let hi = SAMPLES;
       while (lo < hi) {
         const mid = (lo + hi) >> 1;
-        if (reachY[mid] >= y) hi = mid;
+        if (l.reachY[mid] >= y) hi = mid;
         else lo = mid + 1;
       }
       return lo / SAMPLES;
     };
 
     const tick = () => {
-      const diff = target - cur;
-      const max = SPEED / total;
-      const step = Math.max(-max, Math.min(max, diff * 0.16));
-      cur = Math.abs(diff) < 0.0003 ? target : cur + step;
-      draw(cur);
-      raf = cur === target ? 0 : requestAnimationFrame(tick);
+      let moving = false;
+      for (const l of lines) {
+        const diff = l.target - l.cur;
+        const max = SPEED / l.total;
+        l.cur = Math.abs(diff) < 0.0003 ? l.target : l.cur + Math.max(-max, Math.min(max, diff * 0.16));
+        l.el.style.strokeDashoffset = String(1 - l.cur);
+        if (l.cur !== l.target) moving = true;
+      }
+      raf = moving ? requestAnimationFrame(tick) : 0;
     };
 
     const onScroll = () => {
-      target = targetFor();
+      for (const l of lines) l.target = targetFor(l);
       if (!raf) raf = requestAnimationFrame(tick);
     };
 
@@ -140,29 +133,36 @@ export function ScrollRibbon() {
       const w = layer.clientWidth;
       const h = layer.clientHeight;
       if (!w || !h) return;
-      const pts = anchorPoints(wrap, w);
-      if (pts.length < 2) return;
       top = layer.getBoundingClientRect().top + window.scrollY;
       svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      path.setAttribute("d", smoothPath(pts));
-      path.setAttribute("stroke-width", String(w < 640 ? 16 : w < 1024 ? 24 : 34));
-      total = path.getTotalLength();
-      const next = new Float32Array(SAMPLES + 1);
-      let max = -Infinity;
-      for (let i = 0; i <= SAMPLES; i++) {
-        max = Math.max(max, path.getPointAtLength((total * i) / SAMPLES).y);
-        next[i] = max;
-      }
-      reachY = next;
-      if (reduced) {
-        cur = target = 1;
-        draw(1);
-        return;
-      }
-      target = targetFor();
-      cur = Math.min(cur, target);
-      draw(cur);
-      if (!raf) raf = requestAnimationFrame(tick);
+      const groups = shapeGroups(wrap, w);
+      const prev = lines;
+      svg.replaceChildren();
+      lines = groups.map((pts, gi) => {
+        const el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        el.setAttribute("d", smoothPath(pts));
+        el.setAttribute("pathLength", "1");
+        el.setAttribute("fill", "none");
+        el.setAttribute("stroke", "var(--ribbon-a)");
+        el.setAttribute("stroke-linecap", "round");
+        el.setAttribute("stroke-linejoin", "round");
+        el.setAttribute("stroke-width", String(w < 640 ? 16 : w < 1024 ? 24 : 34));
+        el.style.strokeDasharray = "1";
+        svg.appendChild(el);
+        const total = el.getTotalLength();
+        const reachY = new Float32Array(SAMPLES + 1);
+        let max = -Infinity;
+        for (let i = 0; i <= SAMPLES; i++) {
+          max = Math.max(max, el.getPointAtLength((total * i) / SAMPLES).y);
+          reachY[i] = max;
+        }
+        const line: Line = { el, reachY, total, cur: 0, target: 0 };
+        line.target = reduced ? 1 : targetFor(line);
+        line.cur = reduced ? 1 : Math.min(prev[gi]?.cur ?? 0, line.target);
+        el.style.strokeDashoffset = String(1 - line.cur);
+        return line;
+      });
+      if (!reduced && !raf) raf = requestAnimationFrame(tick);
     };
 
     build();
@@ -188,16 +188,7 @@ export function ScrollRibbon() {
 
   return (
     <div ref={wrapRef} aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <svg ref={svgRef} className="block h-full w-full" fill="none">
-        <path
-          ref={pathRef}
-          pathLength={1}
-          stroke="var(--ribbon-a)"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
-        />
-      </svg>
+      <svg ref={svgRef} className="block h-full w-full" fill="none" />
     </div>
   );
 }
