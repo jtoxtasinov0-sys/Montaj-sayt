@@ -243,6 +243,8 @@ export const uz = {
     reviews: "{n} ta baho",
     topRated: "Yuqori reyting",
     newcomer: "Yangi",
+    online: "Onlayn — hozir saytda",
+    offline: "Hozir saytda emas",
   },
   profile: {
     about: "Men haqimda",

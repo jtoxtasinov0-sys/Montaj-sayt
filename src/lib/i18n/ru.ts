@@ -245,6 +245,8 @@ export const ru: Dict = {
     reviews: "{n} оценок",
     topRated: "Высокий рейтинг",
     newcomer: "Новичок",
+    online: "В сети — сейчас на сайте",
+    offline: "Сейчас не на сайте",
   },
   profile: {
     about: "Обо мне",

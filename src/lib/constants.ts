@@ -7,6 +7,11 @@ export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Montaj Club";
 /** Bosh sahifadagi TOP montajorlar soni (TOP joylari soniga teng — to'lagan har bir montajor bosh sahifada ko'rinadi) */
 export const HOME_TOP_COUNT = 20;
 
+/** So'nggi shuncha vaqt ichida saytda faol bo'lgan montajor "onlayn" (yashil nuqta) hisoblanadi */
+export const ONLINE_WINDOW_MS = 3 * 60_000;
+/** Ochiq tab shu oraliqda "shu yerdaman" signalini yuboradi (ONLINE_WINDOW_MS dan kichik bo'lsin) */
+export const PRESENCE_PING_MS = 60_000;
+
 /** TOPdagi bir xil rejadagi montajorlar necha daqiqada navbat bilan almashadi */
 export const TOP_ROTATE_MINUTES = 30;
 
@@ -57,3 +62,6 @@ export const DEFAULT_CARDS = [
   { type: "VISA", number: "4000 1234 5678 9010", holder: `${SITE_NAME.toUpperCase()} TEST`, bank: "Test bank" },
   { type: "UZCARD", number: "8600 1234 5678 9012", holder: `${SITE_NAME.toUpperCase()} TEST`, bank: "Test bank" },
 ];
+
+export const isOnline = (lastSeenAt: Date | string | null | undefined) =>
+  !!lastSeenAt && Date.now() - new Date(lastSeenAt).getTime() < ONLINE_WINDOW_MS;

@@ -5,6 +5,7 @@ import { getDict, getLocale } from "@/lib/i18n";
 import { Avatar } from "./avatar";
 import { HeaderShell, MobileMenu, NavPills } from "./header-client";
 import { LangSwitcher } from "./lang-switcher";
+import { PresencePing } from "./presence-ping";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -41,6 +42,7 @@ export async function SiteHeader() {
 
   return (
     <HeaderShell>
+      {user && <PresencePing />}
       <div className="container-x flex items-center justify-between gap-3">
         <Logo />
         <NavPills items={items} />

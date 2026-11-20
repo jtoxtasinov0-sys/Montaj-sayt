@@ -245,6 +245,8 @@ export const en: Dict = {
     reviews: "{n} reviews",
     topRated: "Top rated",
     newcomer: "New",
+    online: "Online — on the site now",
+    offline: "Not on the site right now",
   },
   profile: {
     about: "About me",

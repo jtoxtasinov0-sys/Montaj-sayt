@@ -78,7 +78,7 @@ export const getCurrentSession = cache(async (): Promise<{ sessionId: string; us
   if (!token || token.length > 100) return null;
   const id = hashToken(token);
   const rows = await db
-    .select({ expiresAt: sessions.expiresAt, user: sessionUserColumns })
+    .select({ expiresAt: sessions.expiresAt, lastSeenAt: users.lastSeenAt, user: sessionUserColumns })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
     .where(and(eq(sessions.id, id), gt(sessions.expiresAt, new Date())))
@@ -88,6 +88,13 @@ export const getCurrentSession = cache(async (): Promise<{ sessionId: string; us
   if (row.user.status === "BANNED") {
     await db.delete(sessions).where(eq(sessions.id, id));
     return null;
+  }
+  // "Onlayn" belgisi uchun oxirgi faollik — 45 soniyada ko'pi bilan bir marta yoziladi, javobni kutmaydi
+  if (!row.lastSeenAt || Date.now() - row.lastSeenAt.getTime() > 45_000) {
+    db.update(users)
+      .set({ lastSeenAt: new Date() })
+      .where(eq(users.id, row.user.id))
+      .catch(() => {});
   }
   // sliding expiration
   if (row.expiresAt.getTime() - Date.now() < REFRESH_WHEN_LEFT) {

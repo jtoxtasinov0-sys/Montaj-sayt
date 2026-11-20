@@ -211,6 +211,12 @@ async function main() {
       .where(eq(s.editorProfiles.id, editorId));
   }
 
+  // Onlayn belgisi: yarmi hozir saytda (yashil), qolgani bir necha soat oldin bo'lgan (kulrang)
+  for (const [i, id] of editorIds.entries()) {
+    const [ed] = await db.select({ userId: s.editorProfiles.userId }).from(s.editorProfiles).where(eq(s.editorProfiles.id, id));
+    await db.update(s.users).set({ lastSeenAt: new Date(Date.now() - (i % 2 ? 4 * 3_600_000 : 30_000)) }).where(eq(s.users.id, ed.userId));
+  }
+
   // TOP: 3 ta montajor (yagona reja — bir xil vazn, har 30 daqiqada navbat bilan almashadi)
   const now = Date.now();
   const [topPlan] = await db.select().from(s.promotionPlans).where(eq(s.promotionPlans.isActive, true)).orderBy(s.promotionPlans.sort).limit(1);
