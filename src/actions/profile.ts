@@ -13,7 +13,7 @@ import { deleteUpload, saveImage } from "@/lib/uploads";
 import { keyFromUploadUrl, uploadUrl } from "@/lib/uploads-url";
 import { cleanHandle } from "@/lib/video";
 import { computeScore } from "@/lib/ranking";
-import { fail, file, guarded, isHttpsUrl, ok, str } from "./_helpers";
+import { fail, file, guarded, ok, str } from "./_helpers";
 
 const RESERVED = new Set(["new", "admin", "api", "edit", "dashboard", "login", "me", "top"]);
 
@@ -54,8 +54,6 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
       .getAll("categories")
       .filter((s): s is string => typeof s === "string" && (CATEGORY_KEYS as readonly string[]).includes(s))
       .slice(0, 6);
-    const youtube = str(fd, "youtube");
-    if (youtube && !isHttpsUrl(youtube)) return fail(d.errors.badUrl);
 
     const taken = await db
       .select({ id: editorProfiles.id })
@@ -71,9 +69,7 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
       skills,
       categories,
       telegram: cleanHandle(str(fd, "telegram")),
-      telegramChannel: cleanHandle(str(fd, "telegramChannel")),
-      instagram: cleanHandle(str(fd, "instagram")),
-      youtube: youtube || null,
+      // Telegram kanal/guruh, Instagram, YouTube va Google Drive — Portfolio bo'limida (savePortfolioLinks)
       isAvailable: fd.get("isAvailable") === "on",
       isPublished: fd.get("isPublished") === "on",
       updatedAt: new Date(),

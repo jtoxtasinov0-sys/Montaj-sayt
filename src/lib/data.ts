@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, gte, ilike, lt, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, lt, ne, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import {
   editorProfiles,
@@ -197,7 +197,8 @@ export async function getEditorBySlug(slug: string) {
       db
         .select()
         .from(portfolioItems)
-        .where(eq(portfolioItems.editorId, id))
+        // Saytga yuklangan videolar — faqat siqib bo'lingach (yuklanayotgan/xato bo'lganlar ko'rinmaydi)
+        .where(and(eq(portfolioItems.editorId, id), or(ne(portfolioItems.provider, "upload"), eq(portfolioItems.videoStatus, "ready"))))
         .orderBy(asc(portfolioItems.sort), desc(portfolioItems.createdAt)),
       db
         .select({
@@ -318,7 +319,7 @@ export async function getRecentPortfolio(limit = 10) {
       })
       .from(portfolioItems)
       .innerJoin(editorProfiles, eq(editorProfiles.id, portfolioItems.editorId))
-      .where(visible)
+      .where(and(visible, or(ne(portfolioItems.provider, "upload"), eq(portfolioItems.videoStatus, "ready"))))
       .orderBy(desc(portfolioItems.createdAt))
       .limit(limit),
   );

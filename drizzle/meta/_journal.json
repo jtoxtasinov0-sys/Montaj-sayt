@@ -43,6 +43,13 @@
       "when": 1795183008061,
       "tag": "0005_remove_10_20_tier",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795237369531,
+      "tag": "0006_portfolio_videos",
+      "breakpoints": true
     }
   ]
 }

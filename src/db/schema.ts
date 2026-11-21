@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  bigint,
   bigserial,
   boolean,
   index,
@@ -91,6 +92,8 @@ export const editorProfiles = pgTable(
     telegramChannel: text("telegram_channel"),
     instagram: text("instagram"),
     youtube: text("youtube"),
+    // Google Drive papka/fayl havolasi (to'liq portfolio)
+    driveUrl: text("drive_url"),
     avatarKey: text("avatar_key"),
     isAvailable: boolean("is_available").notNull().default(true),
     isPublished: boolean("is_published").notNull().default(true),
@@ -142,14 +145,25 @@ export const portfolioItems = pgTable(
       .references(() => editorProfiles.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     url: text("url").notNull(),
-    provider: text("provider").notNull(), // youtube | vimeo | instagram | telegram | drive | other
+    provider: text("provider").notNull(), // youtube | vimeo | instagram | telegram | drive | other | upload
     embedId: text("embed_id"),
     coverKey: text("cover_key"),
     category: text("category").notNull().default("other"),
     sort: integer("sort").notNull().default(0),
+    // ---- faqat saytga yuklangan videolar (provider = "upload") ----
+    // uploading → queued → processing → ready | failed
+    videoStatus: text("video_status"),
+    videoKey: text("video_key"), // "videos/uuid.mp4" (tayyor bo'lganda)
+    uploadBytes: bigint("upload_bytes", { mode: "number" }), // yuklanayotgan asl fayl hajmi
+    durationSec: real("duration_sec"),
+    width: integer("width"),
+    height: integer("height"),
+    videoError: text("video_error"), // duration | invalid | transcode
+    attempts: integer("attempts").notNull().default(0),
+    processingAt: ts("processing_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
   },
-  (t) => [index("portfolio_editor_idx").on(t.editorId)],
+  (t) => [index("portfolio_editor_idx").on(t.editorId), index("portfolio_video_status_idx").on(t.videoStatus, t.createdAt)],
 );
 
 export const priceTiers = pgTable("price_tiers", {
