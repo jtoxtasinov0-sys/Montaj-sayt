@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-export function DashNav({ items }: { items: { href: string; label: string; badge?: number }[] }) {
+export function DashNav({ items }: { items: { href: string; label: string; badge?: number; icon?: React.ReactNode }[] }) {
   const path = usePathname();
   const ref = useRef<HTMLElement>(null);
   // Telefonda faol bo'lim ekrandan tashqarida qolmasin — uni markazga suramiz (sahifa o'zi siljimaydi)
@@ -32,8 +32,12 @@ export function DashNav({ items }: { items: { href: string; label: string; badge
               active ? "bg-fg text-bg" : "text-muted hover:text-fg",
             )}
           >
+            {it.icon}
             {it.label}
-            {!!it.badge && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-fg px-1 text-[0.7rem] font-semibold text-bg">{it.badge}</span>}
+            {!!it.badge && (
+              // Qizil — e'tibor talab qiladi (faol, qora tugma ustida ham ko'rinadi)
+              <span className="grid h-5 min-w-5 place-items-center rounded-full bg-danger px-1 text-[0.7rem] font-semibold text-white">{it.badge}</span>
+            )}
           </Link>
         );
       })}

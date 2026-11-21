@@ -4,19 +4,14 @@ import { saveEditorProfile } from "@/actions/profile";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { ProfileAvatar } from "@/components/profile-avatar";
-import { SlugInput } from "@/components/slug-input";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
-import { env } from "@/lib/env";
-import { fmt, getDict } from "@/lib/i18n";
-import { slugify } from "@/lib/utils";
+import { getDict } from "@/lib/i18n";
 
 export default async function ProfileFormPage() {
   const user = await requireUser("/dashboard/profile");
   const [d, p] = await Promise.all([getDict(), getEditorProfileByUser(user.id)]);
   const f = d.profileForm;
-  const suggested = `${slugify(user.name || user.email.split("@")[0]) || "editor"}-${user.id.slice(0, 4)}`;
-  const host = env.appUrl.replace(/^https?:\/\//, "");
 
   return (
     <ActionForm action={saveEditorProfile} className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -31,8 +26,8 @@ export default async function ProfileFormPage() {
           <Field label={f.displayName}>
             <input name="displayName" required minLength={2} maxLength={60} defaultValue={p?.displayName ?? user.name} className="input" />
           </Field>
-          <Field label={f.slug} hint={fmt(f.slugHint, { url: `${host}/editors/…` })}>
-            <SlugInput defaultValue={p?.slug ?? suggested} base={host} />
+          <Field label={f.city}>
+            <input name="city" maxLength={60} defaultValue={p?.city ?? "Toshkent"} className="input" />
           </Field>
         </div>
         <Field label={f.headline}>
@@ -41,7 +36,7 @@ export default async function ProfileFormPage() {
         <Field label={f.bio}>
           <textarea name="bio" maxLength={3000} rows={5} defaultValue={p?.bio} className="input" />
         </Field>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-3">
           <Field label={f.level}>
             <select name="level" defaultValue={p?.level ?? "BEGINNER"} className="input">
               {LEVELS.map((l) => (
@@ -56,9 +51,6 @@ export default async function ProfileFormPage() {
           </Field>
           <Field label={f.priceFrom}>
             <input name="priceFrom" type="number" required min={5} max={5000} defaultValue={p?.priceFrom ?? 10} className="input" />
-          </Field>
-          <Field label={f.city}>
-            <input name="city" maxLength={60} defaultValue={p?.city ?? "Toshkent"} className="input" />
           </Field>
         </div>
         <p className="hint -mt-3">{f.priceFromHint}</p>

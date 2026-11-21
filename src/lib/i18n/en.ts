@@ -381,8 +381,6 @@ export const en: Dict = {
   },
   profileForm: {
     displayName: "Name or alias",
-    slug: "Profile link (username)",
-    slugHint: "Not your home address — it’s the web link to your profile. Latin letters, digits and “-” only. E.g. aziz-edits",
     headline: "Headline",
     headlinePh: "E.g. Reels & YouTube editing, 4 years of experience",
     bio: "About",
@@ -528,7 +526,6 @@ export const en: Dict = {
     uploadType: "Only JPG, PNG or WEBP images are allowed.",
     uploadSize: "The file must be 5MB or smaller.",
     uploadRequired: "Please upload the receipt image.",
-    slugTaken: "This username is taken. Pick another one.",
     selfOrder: "You can’t order from yourself.",
     notEditor: "Create your editor profile first.",
     limit: "You’ve reached the limit.",

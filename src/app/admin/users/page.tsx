@@ -1,6 +1,6 @@
 import { desc, ilike, or } from "drizzle-orm";
 import { adminSetRole, adminSetUserStatus } from "@/actions/admin";
-import { AdminSearch, Table } from "@/components/admin-bits";
+import { AdminHead, AdminSearch, shortDay, Table } from "@/components/admin-bits";
 import { Avatar } from "@/components/avatar";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { db } from "@/db";
@@ -23,11 +23,15 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
 
   return (
     <>
+      <AdminHead
+        title="Foydalanuvchilar"
+        text="Saytga Google orqali kirgan hamma: mijozlar ham, montajorlar ham. Bloklangan odam saytga kira olmaydi va profili yashiriladi. Admin qilingan odam shu panelni to'liq boshqaradi."
+      />
       <AdminSearch action="/admin/users" q={q} placeholder="Email yoki ism" />
-      <Table head={["Foydalanuvchi", "Rol", "Holat", "Ro'yxatdan o'tgan", "Amallar"]}>
+      <Table head={["Foydalanuvchi", "Rol", "Holat", "Ro'yxatdan o'tgan", "Amallar"]} empty={rows.length === 0}>
         {rows.map((u) => (
           <tr key={u.id} className="align-top">
-            <td className="px-4 py-3">
+            <td className="px-4 py-4">
               <div className="flex items-center gap-3">
                 <Avatar name={u.name || u.email} image={u.image} size={32} />
                 <div>
@@ -37,20 +41,26 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                 </div>
               </div>
             </td>
-            <td className="px-4 py-3">{u.role === "ADMIN" ? <span className="chip chip-primary">ADMIN</span> : <span className="chip">USER</span>}</td>
-            <td className="px-4 py-3">
+            <td className="px-4 py-4">
+              {u.role === "ADMIN" ? <span className="chip chip-primary">Admin</span> : <span className="chip">Oddiy</span>}
+            </td>
+            <td className="px-4 py-4">
               {u.status === "BANNED" ? <span className="chip text-danger">Bloklangan</span> : <span className="chip chip-success">Faol</span>}
               {u.bannedReason && <p className="mt-1 text-xs text-muted">{u.bannedReason}</p>}
             </td>
-            <td className="px-4 py-3 text-xs text-muted">
-              {u.createdAt.toISOString().slice(0, 10)}
-              {u.lastLoginAt && <p>oxirgi: {u.lastLoginAt.toISOString().slice(0, 10)}</p>}
+            <td className="px-4 py-4 text-xs text-muted">
+              {shortDay(u.createdAt)}
+              {u.lastLoginAt && <p>oxirgi kirish: {shortDay(u.lastLoginAt)}</p>}
             </td>
-            <td className="space-y-1.5 px-4 py-3">
+            <td className="space-y-1.5 px-4 py-4">
               {u.id !== me.id && (
                 <>
                   {u.status === "ACTIVE" ? (
-                    <ActionForm action={adminSetUserStatus.bind(null, u.id, "BANNED")} confirmText="Bloklansinmi? Barcha sessiyalari o'chiriladi." className="flex gap-1">
+                    <ActionForm
+                      action={adminSetUserStatus.bind(null, u.id, "BANNED")}
+                      confirmText="Bloklansinmi? Barcha sessiyalari o'chiriladi."
+                      className="flex gap-1"
+                    >
                       <input name="reason" placeholder="Sabab" maxLength={200} className="input !h-8 w-28 !px-2 text-xs" />
                       <SubmitButton size="sm" variant="danger" className="!h-8 text-xs">
                         Bloklash

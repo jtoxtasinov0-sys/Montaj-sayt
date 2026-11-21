@@ -2,7 +2,7 @@ import { requireAdmin } from "@/lib/auth/current";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { adminCancelOrder } from "@/actions/admin";
-import { FilterTabs, Table } from "@/components/admin-bits";
+import { AdminHead, FilterTabs, shortDay, Table } from "@/components/admin-bits";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { StatusBadge } from "@/components/page-bits";
 import { db } from "@/db";
@@ -34,8 +34,12 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
 
   return (
     <>
+      <AdminHead
+        title="Buyurtmalar"
+        text="Mijozlar montajorlarga bergan ishlar. Odatda aralashish shart emas — faqat muammo bo'lsa (aldov, nizo, spam) buyurtmani bekor qilasiz."
+      />
       <FilterTabs base="/admin/orders" current={status} items={[{ label: "Barchasi" }, ...STATUSES.map((s) => ({ value: s, label: LABEL[s] }))]} />
-      <Table head={["Buyurtma", "Mijoz / Montajor", "Narx", "Muddat", "Holat", ""]}>
+      <Table head={["Buyurtma", "Mijoz / Montajor", "Narx", "Muddat", "Holat", ""]} empty={rows.length === 0}>
         {rows.map(({ o, client, editor }) => (
           <tr key={o.id} className="align-top">
             <td className="max-w-xs px-4 py-3">
@@ -43,15 +47,17 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                 {o.title}
               </Link>
               <p className="text-xs text-muted">
-                {o.category} · {o.isPublic ? "ochiq" : "to'g'ridan-to'g'ri"} · {o.proposalCount} taklif
+                {o.isPublic ? "Hammaga ochiq" : "Montajorga to'g'ridan-to'g'ri"} · {o.proposalCount} ta taklif
               </p>
             </td>
             <td className="px-4 py-3 text-xs">
-              {client}
-              <p className="text-muted">{editor ?? "—"}</p>
+              <span className="text-muted">Mijoz:</span> {client}
+              <p>
+                <span className="text-muted">Montajor:</span> {editor ?? "—"}
+              </p>
             </td>
             <td className="px-4 py-3">${o.agreedPriceUsd ?? o.budgetUsd}</td>
-            <td className="px-4 py-3 text-xs text-muted">{o.deadline.toISOString().slice(0, 10)}</td>
+            <td className="px-4 py-3 text-xs text-muted">{shortDay(o.deadline)}</td>
             <td className="px-4 py-3">
               <StatusBadge status={o.status} label={LABEL[o.status]} />
               {o.cancelReason && <p className="mt-1 text-xs text-muted">{o.cancelReason}</p>}

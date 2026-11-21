@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, asc, eq, ne, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
@@ -93,13 +93,12 @@ export async function adminGrantBoost(editorId: string, _p: ActionState, fd: For
   return guarded({ key: "adm-boost", ...A }, async ({ user }) => {
     if (!uuid.safeParse(editorId).success) return fail("Noto'g'ri ID");
     const days = Number.parseInt(str(fd, "days"), 10);
-    const planId = Number.parseInt(str(fd, "planId"), 10);
     if (!(days >= 1 && days <= 90)) return fail("Kun soni 1 dan 90 gacha bo'lsin");
-    const [plan] = Number.isFinite(planId) ? await db.select().from(promotionPlans).where(eq(promotionPlans.id, planId)).limit(1) : [];
-    if (!plan) return fail("Rejani tanlang");
-    await grantBoost(editorId, days, plan.weight, { label: user.email, actorId: user.id });
+    // Yagona TOP tarifi: qo'lda berilgan TOP ham pullik TOP'lar bilan bir navbatda turadi
+    const plan = await topPlan();
+    await grantBoost(editorId, days, plan?.weight ?? 10, { label: user.email, actorId: user.id });
     revalidatePath("/admin/editors");
-    return ok(`TOP ${plan.name} — ${days} kunga berildi`);
+    return ok(`TOP ${days} kunga berildi`);
   });
 }
 
@@ -146,33 +145,34 @@ export async function adminToggleReview(reviewId: string, _p: ActionState, _fd: 
 }
 
 // ---------------- rejalar, kartalar, narx bo'limlari ----------------
+/** Saytda bitta TOP tarifi bor — admin faqat uning narxi, muddati va joylar sonini o'zgartiradi */
+async function topPlan() {
+  const [plan] = await db.select().from(promotionPlans).orderBy(asc(promotionPlans.sort), asc(promotionPlans.id)).limit(1);
+  return plan;
+}
+
 const planSchema = z.object({
-  name: z.string().min(2).max(40),
-  days: z.coerce.number().int().min(1).max(90),
   priceUzs: z.coerce.number().int().min(1000).max(100_000_000),
-  weight: z.coerce.number().int().min(1).max(1000),
-  sort: z.coerce.number().int().min(0).max(100),
+  days: z.coerce.number().int().min(1).max(90),
   slots: z.coerce.number().int().min(0).max(1000),
 });
 
-export async function adminSavePlan(planId: number | null, _p: ActionState, fd: FormData): Promise<ActionState> {
+export async function adminSavePlan(_p: ActionState, fd: FormData): Promise<ActionState> {
   return guarded({ key: "adm-plan", ...A }, async ({ user, ip }) => {
     const parsed = planSchema.safeParse({
-      name: str(fd, "name"),
+      priceUzs: str(fd, "priceUzs").replace(/\D/g, ""),
       days: str(fd, "days"),
-      priceUzs: str(fd, "priceUzs"),
-      weight: str(fd, "weight"),
-      sort: str(fd, "sort") || "0",
       slots: str(fd, "slots") || "0",
     });
-    if (!parsed.success) return fail("Maydonlarni to'g'ri to'ldiring");
-    const values = { ...parsed.data, isActive: fd.get("isActive") === "on", isPopular: fd.get("isPopular") === "on" };
-    if (planId) await db.update(promotionPlans).set(values).where(eq(promotionPlans.id, planId));
-    else await db.insert(promotionPlans).values(values);
+    if (!parsed.success) return fail("Narx kamida 1 000 so'm, muddat 1–90 kun bo'lsin");
+    const values = { ...parsed.data, isActive: fd.get("isActive") === "on" };
+    const plan = await topPlan();
+    if (plan) await db.update(promotionPlans).set(values).where(eq(promotionPlans.id, plan.id));
+    else await db.insert(promotionPlans).values({ name: "TOP", weight: 10, sort: 1, ...values });
     invalidate("plans");
-    await audit({ actorId: user.id, actorLabel: user.email, action: "plan.save", targetType: "plan", targetId: String(planId ?? "new"), meta: values, ip });
-    revalidatePath("/admin/plans");
-    return ok("Saqlandi");
+    await audit({ actorId: user.id, actorLabel: user.email, action: "plan.save", targetType: "plan", targetId: String(plan?.id ?? "new"), meta: values, ip });
+    revalidatePath("/admin", "layout");
+    return ok("Saqlandi — yangi narx darhol saytda ko'rinadi");
   });
 }
 

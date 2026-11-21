@@ -226,10 +226,16 @@
     --line: rgba(255, 255, 255, 0.12);
     --line-strong: rgba(255, 255, 255, 0.26);
     --primary: #f5f5f5;
+    --primary-2: #f5f5f5;
     --primary-fg: #0a0a0a;
     --accent: #f5f5f5;
+    --accent-2: #f5f5f5;
+    --success: #f5f5f5;
+    --warn: #f5f5f5;
+    --danger: #ff6b5f;
     --offline: #6b6b6b;
     color: var(--fg);
+    color-scheme: dark;
   }
   /* Qorong'i mavzuda sahifa o'zi qora — karta biroz ochroq, shunda u ham ajralib turadi */
   .dark .card-solid {
