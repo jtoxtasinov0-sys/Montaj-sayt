@@ -3,9 +3,9 @@ import { SITE_NAME, type Locale } from "@/lib/constants";
 
 /**
  * Havola ko'rinishi (Telegram, Instagram, Facebook, X) uchun asosiy rasm — 1200×630.
- * Rasm o'zgarsa yangi fayl nomi bering (og-home-v4.jpg): Telegram eski rasmni shu manzil bo'yicha uzoq saqlaydi.
+ * Rasm o'zgarsa yangi fayl nomi bering (og-home-v5.jpg): Telegram eski rasmni shu manzil bo'yicha uzoq saqlaydi.
  */
-export const OG_IMAGE = { url: "/images/og-home-v3.jpg", width: 1200, height: 630 } as const;
+export const OG_IMAGE = { url: "/images/og-home-v4.jpg", width: 1200, height: 630 } as const;
 
 export const OG_LOCALE: Record<Locale, string> = { uz: "uz_UZ", ru: "ru_RU", en: "en_US" };
 
