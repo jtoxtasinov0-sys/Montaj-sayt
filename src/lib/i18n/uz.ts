@@ -419,7 +419,7 @@ export const uz = {
     url: "Video havolasi",
     urlHint: "YouTube, Instagram, Telegram, Vimeo yoki Google Drive",
     category: "Yo’nalish",
-    cover: "Muqova rasmi",
+    cover: "Muqova (cover) rasmi",
     coverHint: "YouTube va Vimeo uchun muqova avtomatik olinadi.",
     add: "Portfolioga qo’shish",
     count: "{n} / {max} ta video",
