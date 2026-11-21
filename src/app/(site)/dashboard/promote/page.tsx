@@ -1,9 +1,10 @@
-import { Check, CreditCard, Flame, Info, Repeat, Users, Zap } from "lucide-react";
+import { Check, Flame, Info, Repeat, Users, Zap } from "lucide-react";
 import { redirect } from "next/navigation";
 import { attachReceipt, cancelPayment, startPayment } from "@/actions/payments";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { ActionForm, CopyButton, SubmitButton } from "@/components/form";
 import { Field, StatusBadge } from "@/components/page-bits";
+import { PaymentCardView } from "@/components/payment-card";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { TOP_ROTATE_MINUTES } from "@/lib/constants";
 import { myPayments } from "@/lib/dashboard-data";
@@ -67,23 +68,16 @@ export default async function PromotePage() {
             {pending.payCode > 0 && <p className="mt-2 max-w-2xl text-sm text-muted">{fmt(d.promote.exact, { code: pending.payCode })}</p>}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            {cards.map((c) => (
-              <div key={c.type + c.number} className="card p-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold tracking-widest">{c.type}</span>
-                  <CreditCard className="h-5 w-5 text-muted" />
-                </div>
-                <p className="mt-6 font-mono text-xl tracking-[0.1em] sm:text-2xl">{c.number}</p>
-                <div className="mt-4 flex items-end justify-between gap-3">
-                  <div className="text-xs">
-                    <p className="text-muted">{d.promote.holder}</p>
-                    <p className="font-medium">{c.holder}</p>
-                    {c.bank && <p className="text-muted">{c.bank}</p>}
-                  </div>
-                  <CopyButton text={c.number} label={d.common.copy} done={d.common.copied} />
-                </div>
-              </div>
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+            {cards.map((c, i) => (
+              <PaymentCardView
+                key={c.type + c.number}
+                card={c}
+                index={i}
+                holderLabel={d.promote.holder}
+                copyLabel={d.common.copy}
+                copiedLabel={d.common.copied}
+              />
             ))}
           </div>
 
