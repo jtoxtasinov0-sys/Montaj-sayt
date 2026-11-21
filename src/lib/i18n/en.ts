@@ -213,6 +213,13 @@ export const en: Dict = {
       },
     ],
   },
+  pwa: {
+    title: `${SITE_NAME} app`,
+    text: "Install it on your phone — opens from your home screen in one tap and runs faster.",
+    install: "Install",
+    iosText: "In Safari, tap Share, then choose “Add to Home Screen”.",
+    footerInstall: "Install the app",
+  },
   footer: {
     about: "A platform that connects video editors with clients. Built in Tashkent.",
     platform: "Platform",
@@ -443,6 +450,11 @@ export const en: Dict = {
     saveLinks: "Save links",
     byLinkTitle: "Add by link",
     byLinkHint: "For work longer than a minute: YouTube and Vimeo open right on the page, others as a link.",
+    videoCoverHint: "Leave it empty and a frame from the video is used. Matching the video’s shape (9:16 or 16:9) looks best.",
+    coverPick: "Choose cover",
+    coverRemove: "Remove cover",
+    coverChange: "Change cover",
+    coverChanged: "Cover updated",
   },
   servicesForm: {
     title: "Service name",

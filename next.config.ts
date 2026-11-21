@@ -52,6 +52,19 @@ const nextConfig: NextConfig = {
         source: "/images/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
+      {
+        // PWA service worker: brauzer har safar yangi versiyani tekshirsin (aks holda yangilanish kechikadi)
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+        ],
+      },
+      {
+        source: "/offline.html",
+        headers: [{ key: "Cache-Control", value: "no-cache" }],
+      },
     ];
   },
 };

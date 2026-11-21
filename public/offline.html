@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Offline</title>
+    <link rel="icon" href="/icon-192.png" />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #0a0a0a;
+        --muted: #6b6b6b;
+        --line: rgba(0, 0, 0, 0.1);
+        color-scheme: light;
+      }
+      :root.dark {
+        --bg: #000000;
+        --fg: #f5f5f5;
+        --muted: #9a9a9a;
+        --line: rgba(255, 255, 255, 0.14);
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+      }
+      .mark {
+        display: block;
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 28px;
+      }
+      .mark .b {
+        fill: var(--fg);
+      }
+      .mark .f {
+        fill: var(--bg);
+      }
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background: #e5484d;
+        vertical-align: middle;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      h1 {
+        margin: 20px 0 10px;
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.55;
+      }
+      button {
+        margin-top: 28px;
+        width: 100%;
+        height: 48px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--fg);
+        color: var(--bg);
+        font: inherit;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      button:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect class="b" width="32" height="32" rx="9" />
+        <path class="f" d="M12.5 9.6 23 16l-10.5 6.4Z" />
+      </svg>
+      <span class="status"><span class="dot"></span><span id="s">Internet yo‘q</span></span>
+      <h1 id="t">Internetga ulanmagansiz</h1>
+      <p id="d">Ulanish tiklanishi bilan sahifa o‘zi ochiladi. Wi-Fi yoki mobil internetni tekshiring.</p>
+      <button id="r" type="button">Qayta urinish</button>
+    </main>
+    <script>
+      (function () {
+        var T = {
+          uz: ["Internet yo‘q", "Internetga ulanmagansiz", "Ulanish tiklanishi bilan sahifa o‘zi ochiladi. Wi-Fi yoki mobil internetni tekshiring.", "Qayta urinish"],
+          ru: ["Нет сети", "Нет подключения к интернету", "Страница откроется сама, как только связь восстановится. Проверьте Wi-Fi или мобильный интернет.", "Повторить"],
+          en: ["Offline", "You’re offline", "The page will open by itself as soon as you’re back online. Check your Wi-Fi or mobile data.", "Try again"],
+        };
+        var c = document.cookie;
+        var m = /(?:^|;\s*)lang=(uz|ru|en)\b/.exec(c);
+        var lang = m ? m[1] : "uz";
+        if (/(?:^|;\s*)theme=dark\b/.test(c)) document.documentElement.className = "dark";
+        var t = T[lang];
+        document.documentElement.lang = lang;
+        ["s", "t", "d", "r"].forEach(function (id, i) {
+          document.getElementById(id).textContent = t[i];
+        });
+        document.title = t[1];
+        var go = function () {
+          location.reload();
+        };
+        document.getElementById("r").addEventListener("click", go);
+        window.addEventListener("online", go);
+      })();
+    </script>
+  </body>
+</html>
