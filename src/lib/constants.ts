@@ -49,6 +49,8 @@ export const LEVELS = ["BEGINNER", "MIDDLE", "PRO"] as const;
 export type Level = (typeof LEVELS)[number];
 
 export const PAYMENT_METHODS = ["VISA", "UZCARD", "HUMO"] as const;
+/** Admin sozlamalarida nechtagacha to'lov kartasi qo'shish mumkin */
+export const MAX_PAYMENT_CARDS = 4;
 
 export const LIMITS = {
   portfolioItems: 30,

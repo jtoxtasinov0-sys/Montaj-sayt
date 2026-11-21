@@ -308,7 +308,7 @@ export const incomingTransfers = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     amountUzs: integer("amount_uzs").notNull(),
-    source: text("source").notNull(), // webhook | telegram
+    source: text("source").notNull(), // webhook | telegram | test (admin sinovi)
     raw: text("raw").notNull().default(""),
     paymentId: uuid("payment_id").references(() => payments.id, { onDelete: "set null" }),
     createdAt: ts("created_at").notNull().defaultNow(),

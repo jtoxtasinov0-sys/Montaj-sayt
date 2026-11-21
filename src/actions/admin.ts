@@ -9,9 +9,10 @@ import type { ActionState } from "@/lib/action-types";
 import { audit } from "@/lib/audit";
 import { destroyAllUserSessions } from "@/lib/auth/session";
 import { invalidate } from "@/lib/cache";
-import { PAYMENT_METHODS } from "@/lib/constants";
+import { formatUzs } from "@/lib/utils";
+import { MAX_PAYMENT_CARDS, PAYMENT_METHODS } from "@/lib/constants";
 import { env } from "@/lib/env";
-import { approvePayment, grantBoost, rejectPayment, removeBoost } from "@/lib/payments";
+import { approvePayment, expireStalePayments, grantBoost, matchIncoming, parseAmounts, rejectPayment, removeBoost } from "@/lib/payments";
 import { recomputeEditorStats } from "@/lib/ranking";
 import { getTelegramWebhookInfo, sendAdminMessage, setTelegramWebhook, telegramEnabled } from "@/lib/telegram";
 import { fail, guarded, ok, str } from "./_helpers";
@@ -179,7 +180,7 @@ export async function adminSavePlan(_p: ActionState, fd: FormData): Promise<Acti
 export async function adminSaveCards(_p: ActionState, fd: FormData): Promise<ActionState> {
   return guarded({ key: "adm-cards", ...A }, async ({ user, ip }) => {
     const cards: { type: string; number: string; holder: string; bank: string }[] = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < MAX_PAYMENT_CARDS; i++) {
       const type = str(fd, `type${i}`);
       const number = str(fd, `number${i}`).replace(/[^\d ]/g, "");
       const holder = str(fd, `holder${i}`).slice(0, 60);
@@ -218,6 +219,31 @@ export async function adminSaveTier(tierId: number | null, _p: ActionState, fd: 
     await audit({ actorId: user.id, actorLabel: user.email, action: "tier.save", meta: values, ip });
     revalidatePath("/admin/settings");
     return ok("Saqlandi");
+  });
+}
+
+/**
+ * Avto-tasdiqlashni sinash: admin bank SMS'i matnini yozadi — u haqiqiy SMS kelgandek tekshiriladi
+ * (xuddi SMS forwarder yoki Telegram botdagi kabi). Summa kutilayotgan to'lovga aynan teng bo'lsa — TOP o'zi yoqiladi.
+ * Pul haqiqatan tushganini tekshirmaydi: bu faqat admin uchun, "Pul tushdi — tasdiqlash" tugmasi bilan bir xil huquq.
+ */
+export async function adminTestIncoming(_p: ActionState, fd: FormData): Promise<ActionState> {
+  return guarded({ key: "adm-test-incoming", ...A }, async ({ user, ip }) => {
+    const text = str(fd, "text").slice(0, 2000);
+    if (!text) return fail("Bank xabari matnini yozing");
+    await expireStalePayments();
+    const amounts = parseAmounts(text);
+    if (!amounts.length) {
+      return fail("Matnda summa topilmadi (yoki bu pul yechilgani haqidagi xabar). Masalan: «Popolnenie: +50 437.00 UZS»");
+    }
+    const matched = await matchIncoming(amounts, "test", text);
+    const found = amounts.map((n) => `${formatUzs(n)} so'm`).join(", ");
+    if (!matched.length) {
+      return fail(`Mos kutilayotgan to'lov yo'q. Matndan topilgan summa: ${found}. Montajor «TOP ga chiqish»ni bosgan va summa aynan bir xil bo'lishi kerak.`);
+    }
+    await audit({ actorId: user.id, actorLabel: user.email, action: "payment.auto", targetType: "payment", targetId: matched[0].paymentId, meta: { test: true }, ip });
+    revalidatePath("/admin", "layout");
+    return ok(matched.map((m) => `✅ Avto-tasdiqlandi: ${m.editor} — ${formatUzs(m.amount)} so'm. TOP yoqildi.`).join(" "));
   });
 }
 

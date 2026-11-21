@@ -1,12 +1,13 @@
 import { requireAdmin } from "@/lib/auth/current";
 import { asc } from "drizzle-orm";
-import { adminSaveCards, adminSaveTier, adminTelegramSetup, adminTelegramTest } from "@/actions/admin";
+import { adminSaveCards, adminSaveTier, adminTelegramSetup, adminTelegramTest, adminTestIncoming } from "@/actions/admin";
 import { AdminHead } from "@/components/admin-bits";
+import { PaymentCardFields } from "@/components/admin-cards";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { db } from "@/db";
 import { priceTiers, type PriceTier } from "@/db/schema";
-import { PAYMENT_METHODS } from "@/lib/constants";
+import { MAX_PAYMENT_CARDS, PAYMENT_METHODS } from "@/lib/constants";
 import { getPaymentCards } from "@/lib/data";
 import { env } from "@/lib/env";
 
@@ -37,7 +38,6 @@ function TierForm({ t }: { t?: PriceTier }) {
 export default async function AdminSettings() {
   await requireAdmin(); // har bir sahifada alohida tekshiruv (faqat layout'ga ishonmaymiz)
   const [cards, tiers] = await Promise.all([getPaymentCards(), db.select().from(priceTiers).orderBy(asc(priceTiers.sort))]);
-  const slots = [...cards, ...Array(Math.max(0, 4 - cards.length)).fill(null)].slice(0, 4);
   const tg = env.telegram;
   const check = (v: boolean) => (v ? "✅" : "❌");
 
@@ -53,27 +53,11 @@ export default async function AdminSettings() {
             <div>
               <h2 className="text-lg font-medium">To&apos;lov kartalari</h2>
               <p className="text-sm text-muted">
-                Montajorlar TOP uchun shu kartalarga o&apos;tkazadi. Bo&apos;sh qoldirilgan qatorlar o&apos;chiriladi.
+                Montajorlar TOP uchun shu kartalarga o&apos;tkazadi. Olib tashlangan yoki bo&apos;sh qoldirilgan kartalar saqlanganda
+                o&apos;chadi.
               </p>
             </div>
-            {slots.map((c, i) => (
-              <div key={i} className="grid gap-2 rounded-2xl border border-line p-3 sm:grid-cols-[132px_1fr]">
-                <select name={`type${i}`} defaultValue={c?.type ?? "UZCARD"} className="input !h-10">
-                  {PAYMENT_METHODS.map((m) => (
-                    <option key={m}>{m}</option>
-                  ))}
-                </select>
-                <input
-                  name={`number${i}`}
-                  defaultValue={c?.number ?? ""}
-                  placeholder="8600 0000 0000 0000"
-                  inputMode="numeric"
-                  className="input !h-10 font-mono"
-                />
-                <input name={`holder${i}`} defaultValue={c?.holder ?? ""} placeholder="Karta egasi" className="input !h-10 sm:col-start-2" />
-                <input name={`bank${i}`} defaultValue={c?.bank ?? ""} placeholder="Bank (ixtiyoriy)" className="input !h-10 sm:col-start-2" />
-              </div>
-            ))}
+            <PaymentCardFields cards={cards} types={PAYMENT_METHODS} max={MAX_PAYMENT_CARDS} />
             <SubmitButton>Kartalarni saqlash</SubmitButton>
           </ActionForm>
         </section>
@@ -115,6 +99,28 @@ export default async function AdminSettings() {
             <p className="text-xs text-muted">
               24 soat ichida to&apos;lanmagan (chek ham yuborilmagan) to&apos;lovlar o&apos;zi bekor bo&apos;ladi va joy bo&apos;shaydi.
             </p>
+
+            <ActionForm action={adminTestIncoming} resetOnSuccess className="space-y-3 border-t border-line pt-4">
+              <div>
+                <h3 className="font-medium">Avto-tasdiqlashni sinash</h3>
+                <p className="mt-1 text-sm text-muted">
+                  Montajor akkauntida «TOP ga chiqish»ni bosing va chiqqan aniq summani yodda tuting. Keyin shu yerga bank SMS&apos;iga
+                  o&apos;xshash matn yozing — sayt uni haqiqiy SMS kelgandek tekshiradi va summa mos kelsa TOP&apos;ni o&apos;zi yoqadi.
+                </p>
+              </div>
+              <textarea
+                name="text"
+                required
+                rows={3}
+                maxLength={2000}
+                placeholder="Popolnenie: +50 437.00 UZS. Karta *1234"
+                className="input min-h-24 py-3"
+              />
+              <SubmitButton size="sm" variant="ghost">
+                Bank xabarini sinash
+              </SubmitButton>
+              <p className="text-xs text-muted">Pul haqiqatan tushganini tekshirmaydi — faqat sinov uchun.</p>
+            </ActionForm>
           </div>
 
           <div className="card card-solid space-y-4 p-6">

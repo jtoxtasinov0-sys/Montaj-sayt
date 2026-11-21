@@ -116,7 +116,7 @@ type Matched = { paymentId: string; amount: number; editor: string };
  * Tushgan pullarni kutilayotgan to'lovlarga moslash va tasdiqlash. Har bir summa yozib qo'yiladi:
  * mos to'lov hali bo'lmasa (pul oldinroq tushgan bo'lsa) — to'lov yaratilganda matchPendingWithIncoming topadi.
  */
-export async function matchIncoming(found: number[], source: "webhook" | "telegram", raw: string): Promise<Matched[]> {
+export async function matchIncoming(found: number[], source: "webhook" | "telegram" | "test", raw: string): Promise<Matched[]> {
   // Faqat TOP to'lovi bo'lishi mumkin bo'lgan summalar (narx + 100…999 kod) — karta raqami, yil va h.k. yozilmaydi
   const prices = (await getPlans()).map((p) => p.priceUzs);
   const amounts = prices.length
@@ -146,6 +146,9 @@ export async function matchIncoming(found: number[], source: "webhook" | "telegr
     // Kutilayotgan to'lov yo'q, lekin shu summa yaqinda tasdiqlangan — bu o'sha pulning takror xabari.
     // O'sha to'lovga bog'lab qo'yiladi, aks holda keyingi to'lovni "oldindan tushgan pul" deb tasdiqlab yuborardi
     const duplicateOf = hits.length ? null : (recentApproved.find((r) => r.amount === amount)?.id ?? null);
+    // Admin sinovi (qo'lda yozilgan matn) faqat kutilayotgan to'lovni tasdiqlaydi: mos to'lov bo'lmasa
+    // "oldindan tushgan pul" deb yozib qo'yilmaydi — aks holda keyingi to'lov puli tushmasdan tasdiqlanardi
+    if (!hit && source === "test") continue;
     const [row] = await db
       .insert(incomingTransfers)
       .values({ amountUzs: amount, source, raw: raw.slice(0, 1000), paymentId: duplicateOf })
