@@ -3,6 +3,7 @@
 import { ExternalLink, Play, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { uploadUrl, videoUrl } from "@/lib/uploads-url";
+import { useScrollLock } from "@/lib/scroll-lock";
 import { cn } from "@/lib/utils";
 import { embedSrc, formatDuration, isVerticalVideo, videoFormatLabel, videoThumb } from "@/lib/video";
 
@@ -57,15 +58,13 @@ export function VideoTile({
   const tall = vertical && !uniform;
   const format = uniform && file ? videoFormatLabel(item.width, item.height) : null;
 
+  // Video ochiq turganda orqadagi sahifa skroll bo'lmasin (iPhone'da ham)
+  useScrollLock(open);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
   const inner = (

@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { pageScrollY, useScrollLock } from "@/lib/scroll-lock";
 import { cn } from "@/lib/utils";
 import { PillTrack } from "./pill-track";
 
@@ -13,7 +14,8 @@ type NavItem = { href: string; label: string };
 export function HeaderShell({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 12);
+    // Menyu/video ochiq bo'lsa sahifa qulflangan (window.scrollY = 0) — header ko'rinishi o'zgarmasin
+    const on = () => setScrolled(pageScrollY() > 12);
     on();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
@@ -57,12 +59,7 @@ export function MobileMenu({ items, footer, label }: { items: NavItem[]; footer:
   const [open, setOpen] = useState(false);
   const path = usePathname();
   useEffect(() => setOpen(false), [path]);
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  useScrollLock(open);
   return (
     <div className="lg:hidden">
       <button
