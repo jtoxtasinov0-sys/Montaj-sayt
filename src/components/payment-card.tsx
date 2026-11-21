@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 
 /* Haqiqiy bank kartasi ko'rinishi: ISO o'lcham (85.6 × 54 mm → 1.586), chip, kontaktsiz belgisi, to'lov tizimi nomi.
    Ichidagi hamma o'lchamlar kartaning kengligiga (cqw) bog'langan — telefonda ham, kompyuterda ham bir xil ko'rinadi.
-   Sayt oq-qora, shuning uchun kartalar ham to'q: tizimlar bir-biridan faqat ozgina sovuq/iliq tus bilan farq qiladi. */
+   Sayt oq-qora: oq mavzuda kartalar to'q, qora mavzuda esa qora fonga qo'shilib ketmasin deb — yumshoq qaymoq rang
+   (oppoq emas, ko'zni qamashtirmaydi). Tizimlar bir-biridan faqat ozgina sovuq/iliq tus bilan farq qiladi. */
 const SKINS: Record<string, string> = {
-  VISA: "from-[#2a2b30] via-[#111114] to-[#050506]",
-  UZCARD: "from-[#2a3038] via-[#13171c] to-[#060709]",
-  HUMO: "from-[#35312b] via-[#181613] to-[#080706]",
+  VISA: "from-[#2a2b30] via-[#111114] to-[#050506] dark:from-[#f6f1e7] dark:via-[#ebe3d3] dark:to-[#d9cdb6]",
+  UZCARD: "from-[#2a3038] via-[#13171c] to-[#060709] dark:from-[#f3f0e9] dark:via-[#e5e0d4] dark:to-[#cfc8b9]",
+  HUMO: "from-[#35312b] via-[#181613] to-[#080706] dark:from-[#f7eee0] dark:via-[#ecdec7] dark:to-[#dbc7a6]",
 };
 
 /** "8600123456789012" → "8600 1234 5678 9012" (admin raqamni bo'sh joysiz yozsa ham) */
@@ -20,7 +21,7 @@ export function formatCardNumber(number: string) {
 
 function Chip({ id }: { id: string }) {
   return (
-    <svg viewBox="0 0 50 38" aria-hidden className="h-auto w-[13cqw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.45)]">
+    <svg viewBox="0 0 50 38" aria-hidden className="h-auto w-[13cqw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.45)] dark:drop-shadow-[0_1px_1px_rgba(60,45,20,0.35)]">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#f1f1f1" />
@@ -42,7 +43,7 @@ function Chip({ id }: { id: string }) {
 
 function Contactless() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" className="h-auto w-[6.5cqw] text-white/75">
+    <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" className="h-auto w-[6.5cqw] text-white/75 dark:text-[#1d1a16]/55">
       <path d="M7 9.2a4.5 4.5 0 0 1 0 5.6" />
       <path d="M10.8 7a8.2 8.2 0 0 1 0 10" />
       <path d="M14.6 4.8a12 12 0 0 1 0 14.4" />
@@ -58,8 +59,8 @@ function NetworkMark({ type }: { type: string }) {
   if (t === "MASTERCARD")
     return (
       <span aria-label="Mastercard" className="flex">
-        <span className="h-[8cqw] w-[8cqw] rounded-full bg-white/85" />
-        <span className="-ml-[3.2cqw] h-[8cqw] w-[8cqw] rounded-full bg-white/45" />
+        <span className="h-[8cqw] w-[8cqw] rounded-full bg-white/85 dark:bg-[#1d1a16]/80" />
+        <span className="-ml-[3.2cqw] h-[8cqw] w-[8cqw] rounded-full bg-white/45 dark:bg-[#1d1a16]/40" />
       </span>
     );
   return <span className="text-[5cqw] leading-none font-extrabold tracking-[0.06em]">{t}</span>;
@@ -79,22 +80,22 @@ export function PaymentCardView({ card, index, holderLabel, copyLabel, copiedLab
         <div
           aria-label={`${card.type} ${number}`}
           className={cn(
-            "relative isolate flex aspect-[1.586] flex-col justify-between overflow-hidden rounded-[5cqw] bg-gradient-to-br p-[6.5cqw] text-white",
-            "shadow-[0_24px_48px_-24px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.18)] ring-1 ring-white/10 ring-inset",
+            "relative isolate flex aspect-[1.586] flex-col justify-between overflow-hidden rounded-[5cqw] bg-gradient-to-br p-[6.5cqw] text-white dark:text-[#1d1a16]",
+            "shadow-[0_24px_48px_-24px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.18)] ring-1 ring-white/10 ring-inset dark:ring-white/40",
             SKINS[card.type.toUpperCase()] ?? SKINS.VISA,
           )}
         >
           {/* Yorug'lik aksi va bezak doiralari — plastik/metall hissi uchun */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_0%_0%,rgba(255,255,255,0.17),transparent_55%)]"
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_0%_0%,rgba(255,255,255,0.17),transparent_55%)] dark:bg-[radial-gradient(120%_90%_at_0%_0%,rgba(255,255,255,0.7),transparent_55%)]"
           />
           <svg
             aria-hidden
             viewBox="0 0 200 200"
             fill="none"
             stroke="currentColor"
-            className="pointer-events-none absolute -right-[22%] -bottom-[58%] -z-10 w-[88%] text-white/[0.07]"
+            className="pointer-events-none absolute -right-[22%] -bottom-[58%] -z-10 w-[88%] text-white/[0.07] dark:text-[#5a4a30]/[0.12]"
           >
             <circle cx="100" cy="100" r="99" />
             <circle cx="100" cy="100" r="80" />
@@ -103,20 +104,20 @@ export function PaymentCardView({ card, index, holderLabel, copyLabel, copiedLab
           </svg>
 
           <div className="flex items-start justify-between gap-[4cqw]">
-            <span className="truncate text-[4.4cqw] leading-tight font-medium tracking-wide text-white/90">{card.bank || SITE_NAME}</span>
+            <span className="truncate text-[4.4cqw] leading-tight font-medium tracking-wide text-white/90 dark:text-[#1d1a16]/85">{card.bank || SITE_NAME}</span>
             <Contactless />
           </div>
 
           <div>
             <Chip id={`card-chip-${index}`} />
-            <p className="mt-[4.5cqw] font-mono text-[6.3cqw] leading-none tracking-[0.07em] whitespace-nowrap tabular-nums [text-shadow:0_1px_0_rgba(0,0,0,0.7),0_-1px_0_rgba(255,255,255,0.14)]">
+            <p className="mt-[4.5cqw] font-mono text-[6.3cqw] leading-none tracking-[0.07em] whitespace-nowrap tabular-nums [text-shadow:0_1px_0_rgba(0,0,0,0.7),0_-1px_0_rgba(255,255,255,0.14)] dark:[text-shadow:0_1px_0_rgba(255,255,255,0.75),0_-1px_0_rgba(70,55,30,0.18)]">
               {number}
             </p>
           </div>
 
           <div className="flex items-end justify-between gap-[4cqw]">
             <div className="min-w-0">
-              <p className="text-[2.7cqw] tracking-[0.16em] text-white/55 uppercase">{holderLabel}</p>
+              <p className="text-[2.7cqw] tracking-[0.16em] text-white/55 uppercase dark:text-[#1d1a16]/50">{holderLabel}</p>
               <p className="mt-[1.2cqw] truncate text-[4.1cqw] leading-tight font-medium tracking-[0.08em] uppercase">{card.holder}</p>
             </div>
             <NetworkMark type={card.type} />
