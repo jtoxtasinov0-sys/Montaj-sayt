@@ -67,7 +67,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Asosiy mavzu — oq. Qora mavzu tugma bilan yoqiladi; tanlov cookie'da (server darhol to'g'ri rang bilan chizadi, "miltillash" yo'q)
   const dark = jar.get("theme")?.value === "dark";
   return (
-    <html lang={locale} className={dark ? `dark ${delight.variable}` : delight.variable} suppressHydrationWarning>
+    // data-scroll-behavior: sahifadan sahifaga o'tishda Next.js skrollni darhol (animatsiyasiz) qiladi —
+    // aks holda globals.css dagi "scroll-behavior: smooth" har bir o'tishda sahifani sekin tepaga suradi
+    <html
+      lang={locale}
+      className={dark ? `dark ${delight.variable}` : delight.variable}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body className="min-h-screen">
         {children}
         <MotionRoot />

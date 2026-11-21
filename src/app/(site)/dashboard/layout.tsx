@@ -3,13 +3,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DashNav } from "@/components/dash-nav";
 import { ProfileAvatar } from "@/components/profile-avatar";
-import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
+import { getCurrentUser, getEditorProfileByUser } from "@/lib/auth/current";
 import { fmt, getDict } from "@/lib/i18n";
 
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireUser("/dashboard");
+  // Kirmagan mehmonni sahifaning o'zi kirishga yuboradi (har bir sahifada requireUser("/dashboard/…")) —
+  // shunda kirgach aynan bosgan sahifasiga qaytadi (masalan "TOP ga chiqish" → /dashboard/promote), kabinet boshiga emas
+  const user = await getCurrentUser();
+  if (!user) return children;
   const [d, editor] = await Promise.all([getDict(), getEditorProfileByUser(user.id)]);
   const items = [
     { href: "/dashboard", label: d.dashboard.overview },

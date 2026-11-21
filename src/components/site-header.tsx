@@ -15,7 +15,7 @@ export async function SiteHeader() {
     { href: "/editors", label: d.nav.editors },
     { href: "/jobs", label: d.nav.jobs },
     { href: "/#how", label: d.nav.how },
-    { href: "/#top", label: d.nav.top },
+    { href: "/dashboard/promote", label: d.nav.top },
   ];
 
   const account = user ? (

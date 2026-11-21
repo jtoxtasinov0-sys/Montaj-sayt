@@ -446,6 +446,67 @@
     accent-color: var(--fg);
   }
 
+  /* ============ Pilla menyular (PillTrack) ============
+     Sichqoncha borganda — ostida kulrang shakl, bandlar orasida silliq suriladi.
+     Bosilganda — qora shakl o'sha bandga suriladi va biroz "botadi". Tanlangan band — qora. */
+  .pill-track {
+    position: relative;
+    isolation: isolate;
+  }
+  .pill-ind {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.9;
+    transition:
+      translate 0.5s var(--ease-out),
+      width 0.5s var(--ease-out),
+      height 0.5s var(--ease-out),
+      scale 0.35s var(--ease-out),
+      opacity 0.25s ease,
+      background-color 0.25s;
+  }
+  .pill-ind[data-shown] {
+    opacity: 1;
+    scale: 1;
+  }
+  .pill-ind[data-instant] {
+    transition: none;
+  }
+  .pill-ind-hover {
+    background: color-mix(in oklab, var(--fg) 8%, transparent);
+  }
+  .pill-ind-on {
+    background: var(--fg);
+  }
+  .pill-ind-on[data-down] {
+    scale: 0.94;
+  }
+  .pill-item {
+    position: relative;
+    color: var(--muted);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.3s var(--ease-out);
+  }
+  @media (hover: hover) {
+    .pill-item:hover {
+      color: var(--fg);
+    }
+  }
+  .pill-item[data-on] {
+    color: var(--bg);
+  }
+  /* JS hali ishga tushmagan (sahifa yuklanmoqda) — tanlangan band oddiy qora fon bilan */
+  .pill-track:not([data-ready]) .pill-item:is([aria-current="page"], [aria-pressed="true"]) {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
   /* Teskari panel: yorug'da qora blok, qorong'ida oq blok */
   .panel-invert {
     background: var(--invert-bg);

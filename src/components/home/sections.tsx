@@ -337,7 +337,7 @@ export function HowItWorks({ d }: { d: Dict }) {
           icons={EDITOR_ICONS}
           ctas={[
             { href: "/dashboard/profile", label: d.how.editorCta, primary: true },
-            { href: "/#top", label: d.how.editorCta2 },
+            { href: "/dashboard/promote", label: d.how.editorCta2 },
           ]}
         />
       </div>
@@ -350,7 +350,7 @@ export function PromoSection({ d, plans }: { d: Dict; plans: PromotionPlan[] }) 
   const m = TOP_ROTATE_MINUTES;
   const slots = plans[0]?.slots || HOME_TOP_COUNT;
   return (
-    <section id="top" className="container-x scroll-mt-24 pt-28">
+    <section id="tarif" className="container-x scroll-mt-24 pt-28">
       <Rule className="mb-12" />
       <div className="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,28rem)] lg:gap-20">
         <div className="glyph-host" data-reveal>
