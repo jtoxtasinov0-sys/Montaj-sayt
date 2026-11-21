@@ -5,13 +5,14 @@ import { Empty, PageHero, Pagination } from "@/components/page-bits";
 import { CATEGORY_KEYS } from "@/lib/constants";
 import { getTiers, listOpenJobs, tierLabel } from "@/lib/data";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import { clampInt, cn, formatDate } from "@/lib/utils";
 
 type SP = { tier?: string; category?: string; page?: string };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const d = await getDict();
-  return { title: d.jobs.title, description: d.jobs.subtitle };
+  const [d, locale] = await Promise.all([getDict(), getLocale()]);
+  return pageMeta({ title: d.meta.jobsTitle, description: d.meta.jobsDescription, path: "/jobs", locale });
 }
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<SP> }) {

@@ -1,9 +1,36 @@
 import { SITE_NAME } from "@/lib/constants";
 export const uz = {
+  // SEO: sarlavha ~60, tavsif ~155 belgidan oshmasin (Google qolganini kesadi)
   meta: {
-    title: `${SITE_NAME} — videomontajorlar platformasi`,
+    title: `${SITE_NAME} — videomontajchilar va montajorlar platformasi`,
     description:
-      "Boshlang’ich montajordan professionalgacha: portfolio, reyting va buyurtmalar bitta joyda. Montajor toping yoki o’z mijozlaringizni toping.",
+      "O’zbekistondagi videomontajchilar bitta joyda: Reels, YouTube, reklama va podkast montaji. Portfolio, narxlar va haqiqiy reyting — montajor toping.",
+    keywords: [
+      "montajchi",
+      "montajor",
+      "videomontaj",
+      "video montaj",
+      "videomontajchi kerak",
+      "montajchi kerak",
+      "reels montaj",
+      "youtube montaj",
+      "reklama video",
+      "motion dizayn",
+      "podkast montaj",
+      "rang korreksiyasi",
+      "freelance montajchi",
+      "Toshkent",
+      "O’zbekiston",
+    ],
+    editorsTitle: "Videomontajchilar katalogi — montajor toping",
+    editorsDescription:
+      "O’zbekistondagi videomontajchilar: portfolio, narx, daraja va haqiqiy baholar. Reels, YouTube, reklama, motion va podkast montaji bo’yicha saralang.",
+    jobsTitle: "Videomontaj buyurtmalari — ochiq e’lonlar",
+    jobsDescription:
+      "Mijozlarning ochiq videomontaj buyurtmalari narx bo’limlari bo’yicha. Montajor sifatida mos ishni tanlang va taklif yuboring.",
+    /** Profilida “O’zi haqida” bo’sh montajor sahifasining tavsifi */
+    editorDescription: "{name} — videomontajor. {details}. Portfolio, narxlar va mijozlar baholari {site}’da.",
+    editorFallbackTitle: "Videomontajor",
   },
   common: {
     login: "Kirish",
