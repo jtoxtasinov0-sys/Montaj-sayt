@@ -3,9 +3,30 @@ import type { Dict } from "./uz";
 
 export const en: Dict = {
   meta: {
-    title: `${SITE_NAME} — the platform for video editors`,
+    title: `${SITE_NAME} — hire video editors in Uzbekistan`,
     description:
-      "From beginner editors to pros: portfolios, ratings and orders in one place. Hire a video editor or find your next clients.",
+      "Uzbekistan’s video editors in one place: Reels, YouTube, ads and podcast editing. Portfolios, prices and honest ratings — hire an editor today.",
+    keywords: [
+      "video editor",
+      "hire video editor",
+      "video editing",
+      "reels editor",
+      "youtube editor",
+      "video ads",
+      "motion design",
+      "podcast editing",
+      "color grading",
+      "freelance video editor",
+      "Tashkent",
+      "Uzbekistan",
+    ],
+    editorsTitle: "Video editors directory — hire an editor",
+    editorsDescription:
+      "Video editors from Uzbekistan with portfolios, prices, levels and honest reviews. Filter by Reels, YouTube, ads, motion design and podcasts.",
+    jobsTitle: "Video editing jobs — open requests",
+    jobsDescription: "Open video editing jobs grouped by budget. Pick a project that fits you and send a proposal as an editor.",
+    editorDescription: "{name} — video editor. {details}. Portfolio, prices and client reviews on {site}.",
+    editorFallbackTitle: "Video editor",
   },
   common: {
     login: "Sign in",

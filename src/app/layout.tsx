@@ -7,6 +7,7 @@ import { MotionRoot } from "@/components/client-effects";
 import { SITE_NAME } from "@/lib/constants";
 import { env } from "@/lib/env";
 import { getDict, getLocale } from "@/lib/i18n";
+import { OG_IMAGE, OG_LOCALE } from "@/lib/seo";
 
 // Asosiy shrift — Delight (lotin). Kirill harflari yo'q, ruscha matn Onest bilan chiqadi.
 const delight = localFont({
@@ -17,22 +18,38 @@ const delight = localFont({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const d = await getDict();
+  const [d, locale] = await Promise.all([getDict(), getLocale()]);
   return {
     metadataBase: new URL(env.appUrl),
     title: { default: d.meta.title, template: `%s — ${SITE_NAME}` },
     description: d.meta.description,
+    keywords: d.meta.keywords,
     applicationName: SITE_NAME,
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    category: "business",
+    formatDetection: { telephone: false, email: false, address: false },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+    },
+    // Google Search Console / Yandex Webmaster "HTML tag" usuli bilan tasdiqlash (ixtiyoriy, .env da)
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+      yandex: process.env.YANDEX_VERIFICATION || undefined,
+    },
+    appleWebApp: { title: SITE_NAME, statusBarStyle: "default" },
+    // Sahifa o'zi bermasa — havola ko'rinishi bosh sahifaniki (rasm: lib/seo.ts → OG_IMAGE)
     openGraph: {
       type: "website",
       siteName: SITE_NAME,
+      locale: OG_LOCALE[locale],
       title: d.meta.title,
       description: d.meta.description,
-      // Havola ko'rinishi (Telegram, Facebook...) — bosh sahifadagi hero. Rasm o'zgarsa yangi fayl nomi
-      // bering: Telegram va brauzerlar eski rasmni shu manzil bo'yicha uzoq saqlaydi.
-      images: [{ url: "/images/og-home-v2.jpg", width: 1200, height: 630, alt: d.meta.title }],
+      images: [{ ...OG_IMAGE, alt: d.meta.title }],
     },
-    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: ["/images/og-home-v2.jpg"] },
+    twitter: { card: "summary_large_image", title: d.meta.title, description: d.meta.description, images: [OG_IMAGE.url] },
   };
 }
 

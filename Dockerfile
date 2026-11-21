@@ -28,6 +28,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
+# Havola rasmlari (opengraph-image) uchun shriftlar
+COPY --from=builder --chown=nextjs:nodejs /app/assets ./assets
 COPY --from=builder --chown=nextjs:nodejs /app/server-cluster.cjs ./server-cluster.cjs
 
 RUN mkdir -p /app/uploads && chown -R nextjs:nodejs /app/uploads

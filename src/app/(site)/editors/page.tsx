@@ -5,14 +5,16 @@ import { EditorCard } from "@/components/editor-card";
 import { Empty, PageHero, Pagination } from "@/components/page-bits";
 import { CATEGORY_KEYS, LEVELS } from "@/lib/constants";
 import { getTiers, listEditors, tierLabel } from "@/lib/data";
-import { fmt, getDict } from "@/lib/i18n";
+import { fmt, getDict, getLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import { clampInt, cn } from "@/lib/utils";
 
 type SP = { q?: string; tier?: string; category?: string; level?: string; sort?: string; page?: string };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const d = await getDict();
-  return { title: d.editors.title, description: d.editors.subtitle };
+  const [d, locale] = await Promise.all([getDict(), getLocale()]);
+  // Filtr/sahifa parametrlari bilan ochilsa ham canonical — /editors (Google dublikat sahifa deb hisoblamaydi)
+  return pageMeta({ title: d.meta.editorsTitle, description: d.meta.editorsDescription, path: "/editors", locale });
 }
 
 export default async function EditorsPage({ searchParams }: { searchParams: Promise<SP> }) {

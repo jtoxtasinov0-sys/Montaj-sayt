@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-bits";
 import { SITE_NAME } from "@/lib/constants";
-import { getDict } from "@/lib/i18n";
+import { getDict, getLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: (await getDict()).footer.terms };
+  const [d, locale] = await Promise.all([getDict(), getLocale()]);
+  return pageMeta({ title: d.footer.terms, description: d.meta.description, path: "/terms", locale });
 }
 
 // Qisqa namunaviy matn — ishga tushirishdan oldin yurist bilan to'ldiring

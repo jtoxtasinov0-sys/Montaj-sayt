@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { and, desc, eq, gt, inArray, isNull, lt, ne, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, isNull, lt, ne, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { editorProfiles, incomingTransfers, payments, promotions } from "@/db/schema";
 import { audit } from "@/lib/audit";
@@ -25,10 +25,17 @@ const CODE_SPAN = 900;
 export const isValidPayCode = (n: number) => Number.isInteger(n) && n >= CODE_MIN && n < CODE_MIN + CODE_SPAN;
 
 export async function payCodeFor(userId: string, prices: number[]) {
+  // So'nggi 24 soatda tasdiqlangan summalar ham band: o'sha pulning kechikkan takror xabari (SMS qayta yuborildi,
+  // admin botga ham forward qildi) yangi to'lovni bepul tasdiqlab yubormasligi uchun
   const rows = await db
     .select({ amount: payments.amountUzs })
     .from(payments)
-    .where(and(eq(payments.status, "PENDING"), ne(payments.userId, userId)));
+    .where(
+      or(
+        and(eq(payments.status, "PENDING"), ne(payments.userId, userId)),
+        and(eq(payments.status, "APPROVED"), gt(payments.reviewedAt, new Date(Date.now() - PENDING_TTL_MS))),
+      ),
+    );
   const taken = new Set(rows.map((r) => r.amount));
   const start = Number.parseInt(createHash("sha256").update(userId).digest("hex").slice(0, 8), 16) % CODE_SPAN;
   for (let i = 0; i < CODE_SPAN; i++) {
@@ -121,14 +128,27 @@ export async function matchIncoming(found: number[], source: "webhook" | "telegr
     .from(payments)
     .innerJoin(editorProfiles, eq(editorProfiles.id, payments.editorId))
     .where(and(eq(payments.status, "PENDING"), inArray(payments.amountUzs, amounts)));
+  const recentApproved = await db
+    .select({ id: payments.id, amount: payments.amountUzs })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.status, "APPROVED"),
+        inArray(payments.amountUzs, amounts),
+        gt(payments.reviewedAt, new Date(Date.now() - PENDING_TTL_MS)),
+      ),
+    );
   const matched: Matched[] = [];
   for (const amount of amounts) {
     const hits = pending.filter((p) => p.amount === amount);
     // Bir xil summali ikki to'lov bo'lsa (bo'lmasligi kerak) — avtomatik emas, admin hal qiladi
     const hit = hits.length === 1 ? hits[0] : null;
+    // Kutilayotgan to'lov yo'q, lekin shu summa yaqinda tasdiqlangan — bu o'sha pulning takror xabari.
+    // O'sha to'lovga bog'lab qo'yiladi, aks holda keyingi to'lovni "oldindan tushgan pul" deb tasdiqlab yuborardi
+    const duplicateOf = hits.length ? null : (recentApproved.find((r) => r.amount === amount)?.id ?? null);
     const [row] = await db
       .insert(incomingTransfers)
-      .values({ amountUzs: amount, source, raw: raw.slice(0, 1000), paymentId: null })
+      .values({ amountUzs: amount, source, raw: raw.slice(0, 1000), paymentId: duplicateOf })
       .returning({ id: incomingTransfers.id });
     if (!hit) continue;
     const res = await approvePayment(hit.id, { label: `avto:${source}` });

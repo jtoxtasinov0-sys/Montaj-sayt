@@ -8,12 +8,13 @@ import { Empty } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
 import { VideoTile } from "@/components/video-tile";
 import { getCurrentUser } from "@/lib/auth/current";
-import { isOnline } from "@/lib/constants";
+import { isOnline, SITE_NAME } from "@/lib/constants";
 import { getEditorBySlug } from "@/lib/data";
 import { env } from "@/lib/env";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
 import { isTopRated } from "@/lib/ranking-shared";
 import { trackView } from "@/lib/ranking";
+import { jsonLdHtml, pageMeta } from "@/lib/seo";
 import { uploadUrl } from "@/lib/uploads-url";
 import { formatDate } from "@/lib/utils";
 
@@ -21,16 +22,36 @@ type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getEditorBySlug(slug);
-  if (!data || data.profile.isHidden || !data.profile.isPublished) return { title: "404" };
+  const [data, d, locale] = await Promise.all([getEditorBySlug(slug), getDict(), getLocale()]);
+  if (!data || data.profile.isHidden || !data.profile.isPublished) return { title: "404", robots: { index: false } };
   const p = data.profile;
-  const img = uploadUrl(p.avatarKey) ?? data.userImage ?? undefined;
-  return {
-    title: `${p.displayName} — ${p.headline || "Montajor"}`,
-    description: p.bio.slice(0, 160) || p.headline,
-    alternates: { canonical: `/editors/${p.slug}` },
-    openGraph: { title: p.displayName, description: p.headline, images: img ? [img] : undefined },
-  };
+  // Tavsif: "O'zi haqida" bo'lsa — undan, bo'lmasa daraja/shahar/narx/baho'dan yig'iladi
+  const details = [
+    p.headline,
+    d.levels[p.level],
+    p.city,
+    `$${p.priceFrom}+`,
+    p.ratingCount > 0 ? `★ ${p.ratingAvg.toFixed(1)} (${p.ratingCount})` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const bio = p.bio.replace(/\s+/g, " ").trim();
+  const description = bio
+    ? truncate(bio, 158)
+    : truncate(fmt(d.meta.editorDescription, { name: p.displayName, details, site: SITE_NAME }), 158);
+  // Havola rasmi (ism, rasm, narx, baho bilan) — shu papkadagi opengraph-image.tsx chizadi
+  return pageMeta({
+    title: `${p.displayName} — ${p.headline || d.meta.editorFallbackTitle}`,
+    description,
+    path: `/editors/${p.slug}`,
+    locale,
+    type: "profile",
+    image: false,
+  });
+}
+
+function truncate(s: string, max: number) {
+  return s.length <= max ? s : `${s.slice(0, max - 1).replace(/\s+\S*$/, "")}…`;
 }
 
 export default async function EditorProfilePage({ params }: Params) {
@@ -51,14 +72,19 @@ export default async function EditorProfilePage({ params }: Params) {
     p.youtube && { href: p.youtube, label: "YouTube", icon: YoutubeIcon },
   ].filter(Boolean) as { href: string; label: string; icon: typeof TelegramIcon }[];
 
+  const avatarSrc = uploadUrl(p.avatarKey) ?? data.userImage ?? null;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     name: p.displayName,
-    description: p.headline,
+    description: p.headline || p.bio.slice(0, 300),
     url: `${env.appUrl}/editors/${p.slug}`,
+    ...(avatarSrc && { image: avatarSrc.startsWith("/") ? `${env.appUrl}${avatarSrc}` : avatarSrc }),
     areaServed: p.city || "Uzbekistan",
+    address: { "@type": "PostalAddress", addressCountry: "UZ", ...(p.city && { addressLocality: p.city }) },
     priceRange: `$${p.priceFrom}+`,
+    ...(p.categories.length && { knowsAbout: p.categories.map((c) => d.categories[c] ?? c) }),
+    ...(socials.length && { sameAs: socials.map((s) => s.href) }),
     ...(p.ratingCount > 0 && {
       aggregateRating: { "@type": "AggregateRating", ratingValue: p.ratingAvg, reviewCount: p.ratingCount, bestRating: 5 },
     }),
@@ -66,7 +92,7 @@ export default async function EditorProfilePage({ params }: Params) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(jsonLd)} />
       <section className="border-b border-line">
         <div className="container-x grid gap-8 pt-32 pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="fade-up flex flex-col gap-6 sm:flex-row sm:items-end">

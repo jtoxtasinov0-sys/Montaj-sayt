@@ -88,14 +88,14 @@ Demo ma’lumotni o‘chirish: `npm run db:seed-demo -- --reset`. Google kalitla
 4. **Environment** bo‘limiga `.env.example` dagi qiymatlarni yozing (`DATABASE_URL` = 2-qadamdagi URL).
 5. **Volume:** *Advanced → Mounts* → Volume, mount path: `/app/uploads` (avatarlar, muqovalar, cheklar shu yerda saqlanadi — **majburiy**, aks holda har deployda o‘chadi).
 6. **Domen:** *Domains* → domeningiz, port `3000`, HTTPS (Let’s Encrypt) yoqilgan.
-7. **Deploy** tugmasi. Tekshirish: `https://domen/api/health` → `{"ok":true}`.
+7. **Deploy** tugmasi. Tekshirish: `https://montajclub.com/api/health` → `{"ok":true}`.
 
 Muqobil: hammasini bitta `docker-compose.yml` bilan (Dokploy → *Docker Compose* yoki oddiy `docker compose up -d --build`).
 
 ### Google login sozlash
 1. [console.cloud.google.com](https://console.cloud.google.com) → yangi loyiha → *APIs & Services → OAuth consent screen* (External, ilova nomi, email).
 2. *Credentials → Create credentials → OAuth client ID → Web application*.
-3. **Authorized redirect URI:** `https://SIZNING-DOMEN/api/auth/google/callback`
+3. **Authorized redirect URI:** `https://montajclub.com/api/auth/google/callback`
 4. Client ID va Secret ni `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` ga yozing.
 
 ### Telegram bot sozlash
@@ -113,15 +113,30 @@ Sayt `https://` domenda ishlayotgan bo‘lishi kerak (Telegram oddiy `http` yoki
 Shundan keyin har bir yangi to‘lov chek rasmi bilan botga keladi: bankda summani (kodni) ko‘rib **✅ Tasdiqlash** ni bossangiz, TOP darhol yoqiladi.
 
 ### Avtomatik to‘lov
-Har bir to‘lov summasi noyob (narx + 100–999 so‘m kod), shuning uchun bankdagi summa to‘lovchini aniq ko‘rsatadi. Pul tushgani haqidagi xabar ikki yo‘l bilan keladi:
+Har bir to‘lov summasi noyob (narx + 100–999 so‘m kod), shuning uchun bankdagi summa to‘lovchini aniq ko‘rsatadi. So‘nggi 24 soatda tasdiqlangan summa yangi to‘lovga berilmaydi, shu summadagi takror bank xabari esa o‘sha eski to‘lovga bog‘lanadi — bitta pul ikki marta TOP yoqmaydi. Pul tushgani haqidagi xabar ikki yo‘l bilan keladi:
 
-1. **To‘liq avtomatik:** `.env` ga `PAYMENT_WEBHOOK_SECRET` (uzun tasodifiy satr) yozing. Kartaga SMS keladigan Android telefonga “SMS forwarder” (webhook) ilovasini o‘rnatib, bankdan keladigan SMS’larni `POST https://SIZNING-DOMEN/api/payments/incoming?key=<PAYMENT_WEBHOOK_SECRET>` ga yuboring (yoki kalitni `X-Payment-Secret` sarlavhasida). Tana — JSON, forma yoki oddiy matn.
+1. **To‘liq avtomatik:** `.env` ga `PAYMENT_WEBHOOK_SECRET` (uzun tasodifiy satr) yozing. Kartaga SMS keladigan Android telefonga “SMS forwarder” (webhook) ilovasini o‘rnatib, bankdan keladigan SMS’larni `POST https://montajclub.com/api/payments/incoming?key=<PAYMENT_WEBHOOK_SECRET>` ga yuboring (yoki kalitni `X-Payment-Secret` sarlavhasida). Tana — JSON, forma yoki oddiy matn.
 2. **Bir bosishda:** bank bildirishnomasini (CardXabar, HUMO bot va h.k.) admin Telegram botga forward qiling — bot summani topib, to‘lovni tasdiqlaydi.
 
 Balans qatorlari (“Dostupno”, “Остаток”, “💰”) va chiqim xabarlari (“Списание”, “Oplata”) hisobga olinmaydi. Tushgan summalar `incoming_transfers` jadvalida saqlanadi: pul to‘lov yaratilishidan oldin tushsa ham keyin moslanadi.
 
 ### To‘lov kartalari
 Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 9012`). **Admin → Sozlamalar → To‘lov kartalari** dan o‘zingizning haqiqiy kartangizni kiriting.
+
+## SEO va havola ko‘rinishi
+
+- Har bir ochiq sahifada sarlavha, tavsif, kalit so‘zlar, `canonical` va Open Graph / Twitter teglari (`src/lib/seo.ts`, matnlar — `src/lib/i18n/*.ts` → `meta`)
+- Google uchun JSON-LD: bosh sahifada `WebSite` + `Organization` (logo), montajor sahifasida `ProfessionalService` (rasm, shahar, narx, baho, ijtimoiy tarmoqlar)
+- `sitemap.xml` (barcha ochiq montajorlar bilan), `robots.txt`, `manifest.webmanifest`
+- Ikonka: oq-qora “play” belgisi — `src/app/icon.svg` (brauzer qorong‘i rejimida ranglar almashadi), `favicon.ico`, `apple-icon.png`, `public/icon-*.png`
+- **Havola rasmi:** bosh sahifa — `public/images/og-home-v3.jpg`; montajor profili — `src/app/(site)/editors/[slug]/opengraph-image.tsx` har bir profil uchun rasm, ism, narx va baho bilan avtomatik chizadi (shriftlar: `assets/og/`)
+- Telegram havola rasmini bir necha kun saqlaydi. Yangilash: [@WebpageBot](https://t.me/WebpageBot) ga havolani yuboring
+
+**Google’da chiqish uchun (bir marta):**
+1. [search.google.com/search-console](https://search.google.com/search-console) → *Add property* → **Domain** → `montajclub.com`
+2. Google bergan `google-site-verification=...` TXT yozuvini Porkbun → DNS’ga qo‘shing (Type `TXT`, Host bo‘sh) → *Verify*
+3. *Sitemaps* → `sitemap.xml` → *Submit*
+4. Yandex uchun: [webmaster.yandex.ru](https://webmaster.yandex.ru) → saytni qo‘shing → *Meta tag* qiymatini `YANDEX_VERIFICATION` ga yozib qayta deploy qiling → *Sitemap* qo‘shing
 
 ## Ko‘p foydalanuvchiga chidamlilik (1000+ bir vaqtda)
 
