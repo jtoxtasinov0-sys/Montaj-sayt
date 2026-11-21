@@ -85,17 +85,8 @@ export default async function ProfileFormPage() {
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={f.telegram}>
+          <Field label={f.telegram} hint={p ? f.linksMoved : undefined}>
             <input name="telegram" maxLength={60} defaultValue={p?.telegram ?? ""} placeholder={f.telegramPh} className="input" />
-          </Field>
-          <Field label={f.telegramChannel}>
-            <input name="telegramChannel" maxLength={80} defaultValue={p?.telegramChannel ?? ""} placeholder="t.me/kanal" className="input" />
-          </Field>
-          <Field label={f.instagram}>
-            <input name="instagram" maxLength={80} defaultValue={p?.instagram ?? ""} placeholder="username" className="input" />
-          </Field>
-          <Field label={f.youtube}>
-            <input name="youtube" type="url" maxLength={300} defaultValue={p?.youtube ?? ""} placeholder="https://youtube.com/@..." className="input" />
           </Field>
         </div>
       </div>

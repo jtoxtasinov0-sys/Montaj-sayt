@@ -2,11 +2,23 @@
 
 import { ExternalLink, Play, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { uploadUrl } from "@/lib/uploads-url";
+import { uploadUrl, videoUrl } from "@/lib/uploads-url";
 import { cn } from "@/lib/utils";
-import { embedSrc, videoThumb } from "@/lib/video";
+import { embedSrc, formatDuration, isVerticalVideo, videoFormatLabel, videoThumb } from "@/lib/video";
 
-type Item = { id: string; title: string; url: string; provider: string; embedId: string | null; coverKey: string | null };
+type Item = {
+  id: string;
+  title: string;
+  url: string;
+  provider: string;
+  embedId: string | null;
+  coverKey: string | null;
+  // saytga yuklangan video (provider = "upload")
+  videoKey?: string | null;
+  durationSec?: number | null;
+  width?: number | null;
+  height?: number | null;
+};
 
 const PROVIDER_LABEL: Record<string, string> = {
   youtube: "YouTube",
@@ -18,11 +30,32 @@ const PROVIDER_LABEL: Record<string, string> = {
   other: "Link",
 };
 
-/** Portfolio videosi: bosilganda YouTube/Vimeo shu yerda ochiladi, boshqalari — yangi oynada */
-export function VideoTile({ item, categoryLabel, className }: { item: Item; categoryLabel?: string; className?: string }) {
+/**
+ * Portfolio videosi: saytga yuklangan video va YouTube/Vimeo bosilganda shu yerda ochiladi, boshqalari — yangi oynada.
+ * Sahifada faqat muqova rasmi turadi — video baytlari faqat "Play" bosilganda yuklanadi.
+ */
+export function VideoTile({
+  item,
+  categoryLabel,
+  className,
+  uniform,
+}: {
+  item: Item;
+  categoryLabel?: string;
+  className?: string;
+  /** Kabinet uchun: barcha kartochkalar bir xil 16:9, vertikal video ichida to'liq ko'rinadi + format belgisi */
+  uniform?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const cover = uploadUrl(item.coverKey) ?? videoThumb(item.provider, item.embedId);
-  const src = embedSrc(item.provider, item.embedId);
+  const file = item.provider === "upload" ? videoUrl(item.videoKey) : null;
+  const src = file ?? embedSrc(item.provider, item.embedId);
+  const duration = formatDuration(item.durationSec);
+  const ratio = item.width && item.height ? item.width / item.height : 16 / 9;
+  const vertical = isVerticalVideo(item);
+  // Reels (9:16) profilda baland kartochkada, YouTube (16:9) — keng kartochkada
+  const tall = vertical && !uniform;
+  const format = uniform && file ? videoFormatLabel(item.width, item.height) : null;
 
   useEffect(() => {
     if (!open) return;
@@ -37,7 +70,12 @@ export function VideoTile({ item, categoryLabel, className }: { item: Item; cate
 
   const inner = (
     <>
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-card-2">
+      <div className={cn("relative overflow-hidden rounded-2xl bg-card-2", tall ? "aspect-[9/16]" : "aspect-video")}>
+        {cover && vertical && !tall && (
+          // Keng kartochkadagi vertikal video: orqada xiralashgan nusxa, oldinda to'liq kadr
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt="" aria-hidden loading="lazy" decoding="async" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+        )}
         {cover && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -45,13 +83,24 @@ export function VideoTile({ item, categoryLabel, className }: { item: Item; cate
             alt={item.title}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            className={cn(
+              "relative h-full w-full transition duration-700 group-hover:scale-105",
+              vertical && !tall ? "object-contain" : "object-cover",
+            )}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-        <span className="absolute top-3 left-3 chip border-white/20 bg-black/40 text-white backdrop-blur">
-          {PROVIDER_LABEL[item.provider] ?? "Link"}
-        </span>
+        {file ? (
+          (duration || format) && (
+            <span className="absolute top-3 left-3 chip border-white/20 bg-black/40 text-white tabular-nums backdrop-blur">
+              {[duration, format].filter(Boolean).join(" · ")}
+            </span>
+          )
+        ) : (
+          <span className="absolute top-3 left-3 chip border-white/20 bg-black/40 text-white backdrop-blur">
+            {PROVIDER_LABEL[item.provider] ?? "Link"}
+          </span>
+        )}
         <span className="absolute inset-0 m-auto grid h-14 w-14 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/30 backdrop-blur-md transition duration-300 group-hover:scale-110 group-hover:bg-primary">
           {src ? <Play className="ml-0.5 h-6 w-6 fill-white" /> : <ExternalLink className="h-5 w-5" />}
         </span>
@@ -89,16 +138,36 @@ export function VideoTile({ item, categoryLabel, className }: { item: Item; cate
           >
             <X className="h-5 w-5" />
           </button>
-          <div className="aspect-video w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <iframe
-              src={src}
-              title={item.title}
-              className="h-full w-full"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          </div>
+          {file ? (
+            // Vertikal (Reels) va gorizontal videolar ekranga o'z nisbatida sig'adi
+            <div
+              className="overflow-hidden rounded-2xl bg-black shadow-2xl"
+              style={{ width: `min(92vw, calc(85vh * ${ratio.toFixed(4)}), 1100px)`, aspectRatio: String(ratio) }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video
+                src={file}
+                poster={cover ?? undefined}
+                controls
+                autoPlay
+                playsInline
+                preload="auto"
+                controlsList="nodownload"
+                className="h-full w-full bg-black"
+              />
+            </div>
+          ) : (
+            <div className="aspect-video w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <iframe
+                src={src}
+                title={item.title}
+                className="h-full w-full"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            </div>
+          )}
         </div>
       )}
     </>

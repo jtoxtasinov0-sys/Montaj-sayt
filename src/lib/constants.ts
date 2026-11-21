@@ -57,6 +57,27 @@ export const LIMITS = {
   pageSize: 24,
 };
 
+/**
+ * Portfolio videolari (saytning o'ziga yuklanadi va sahifada o'ynaydi).
+ * Yuklangan asl fayl serverda 720p H.264 MP4 ga siqiladi (1 daqiqa ≈ 15–20 MB) va asl nusxa o'chiriladi:
+ * 200 montajor × 5 video ≈ 1000 video ≈ 15–20 GB disk.
+ */
+export const VIDEO = {
+  /** Bitta montajor nechta video yuklay oladi */
+  perEditor: 5,
+  /** Eng uzun video (soniya) */
+  maxSeconds: 60,
+  /** Yuklanadigan asl faylning eng katta hajmi */
+  maxUploadBytes: 200 * 1024 * 1024,
+  /**
+   * Fayl shu hajmdagi bo'laklarda yuboriladi: uzilsa — faqat shu bo'lak qayta yuboriladi.
+   * Har bir bo'lak proksi vaqt chegarasiga (Traefik ~60 s) sig'ishi kerak: 2 MB ≈ 0.3 Mbit/s sekin internetda ham o'tadi.
+   */
+  chunkBytes: 2 * 1024 * 1024,
+  /** Siqilgan videoning uzun tomoni (px): 1280 = 720p (gorizontal 1280×720, vertikal 720×1280) */
+  maxSide: 1280,
+};
+
 /** Test uchun to'lov kartalari — admin paneldan o'zgartiriladi */
 export const DEFAULT_CARDS = [
   { type: "VISA", number: "4000 1234 5678 9010", holder: `${SITE_NAME.toUpperCase()} TEST`, bank: "Test bank" },

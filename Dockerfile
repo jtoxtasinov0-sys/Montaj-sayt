@@ -23,6 +23,8 @@ ENV NODE_ENV=production \
     UPLOAD_DIR=/app/uploads
 
 RUN addgroup -S -g 1001 nodejs && adduser -S -u 1001 -G nodejs nextjs
+# Portfolio videolarini tekshirish va 720p MP4 ga siqish uchun
+RUN apk add --no-cache ffmpeg
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static

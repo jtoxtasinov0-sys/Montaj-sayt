@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Calendar, Clock, Eye, Flame, MapPin, PenLine, Star, Trophy } from "lucide-react";
+import { ArrowRight, BadgeCheck, Calendar, Clock, Eye, Flame, FolderOpen, MapPin, PenLine, Star, Trophy } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -17,6 +17,7 @@ import { trackView } from "@/lib/ranking";
 import { jsonLdHtml, pageMeta } from "@/lib/seo";
 import { uploadUrl } from "@/lib/uploads-url";
 import { formatDate } from "@/lib/utils";
+import { isTelegramInvite, isVerticalVideo } from "@/lib/video";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -65,12 +66,28 @@ export default async function EditorProfilePage({ params }: Params) {
 
   const boosted = p.boostWeight > 0 && p.boostUntil && p.boostUntil > new Date();
   const onTimePct = p.completedOrders ? Math.round((p.onTimeOrders / p.completedOrders) * 100) : null;
-  const socials = [
-    p.telegram && { href: `https://t.me/${p.telegram}`, label: `@${p.telegram}`, icon: TelegramIcon },
-    p.telegramChannel && { href: `https://t.me/${p.telegramChannel}`, label: `t.me/${p.telegramChannel}`, icon: TelegramIcon },
+  type LinkItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
+  // Bog'lanish (yon panel) va boshqa ishlar havolalari (Portfolio bo'limi ostida)
+  const contacts = [p.telegram && { href: `https://t.me/${p.telegram}`, label: `@${p.telegram}`, icon: TelegramIcon }].filter(
+    Boolean,
+  ) as LinkItem[];
+  const workLinks = [
+    p.driveUrl && { href: p.driveUrl, label: d.profile.googleDrive, icon: FolderOpen },
+    p.telegramChannel && {
+      href: `https://t.me/${p.telegramChannel}`,
+      label: isTelegramInvite(p.telegramChannel) ? d.profile.telegramGroup : `t.me/${p.telegramChannel}`,
+      icon: TelegramIcon,
+    },
     p.instagram && { href: `https://instagram.com/${p.instagram}`, label: `@${p.instagram}`, icon: InstagramIcon },
     p.youtube && { href: p.youtube, label: "YouTube", icon: YoutubeIcon },
-  ].filter(Boolean) as { href: string; label: string; icon: typeof TelegramIcon }[];
+  ].filter(Boolean) as LinkItem[];
+  const socials = [...contacts, ...workLinks];
+  // Reels (vertikal 9:16) — baland kartochkalarda, YouTube (gorizontal 16:9) va havolalar — keng kartochkalarda
+  const reels = data.portfolio.filter((it) => isVerticalVideo(it));
+  const wide = [
+    ...data.portfolio.filter((it) => it.provider === "upload" && !isVerticalVideo(it)),
+    ...data.portfolio.filter((it) => it.provider !== "upload"),
+  ];
 
   const avatarSrc = uploadUrl(p.avatarKey) ?? data.userImage ?? null;
   const jsonLd = {
@@ -195,13 +212,48 @@ export default async function EditorProfilePage({ params }: Params) {
 
           <section>
             <h2 className="h-section mb-5 text-3xl">{d.profile.portfolio}</h2>
-            {data.portfolio.length === 0 ? (
+            {data.portfolio.length === 0 && workLinks.length === 0 ? (
               <Empty>{d.profile.noPortfolio}</Empty>
             ) : (
-              <div className="grid gap-5 sm:grid-cols-2">
-                {data.portfolio.map((it) => (
-                  <VideoTile key={it.id} item={it} categoryLabel={d.categories[it.category]} />
-                ))}
+              <div className="space-y-8">
+                {reels.length > 0 && (
+                  <div>
+                    {wide.length > 0 && <p className="mb-3 text-sm text-muted">{d.profile.formatVertical}</p>}
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                      {reels.map((it) => (
+                        <VideoTile key={it.id} item={it} categoryLabel={d.categories[it.category]} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {wide.length > 0 && (
+                  <div>
+                    {reels.length > 0 && <p className="mb-3 text-sm text-muted">{d.profile.formatHorizontal}</p>}
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      {wide.map((it) => (
+                        <VideoTile key={it.id} item={it} categoryLabel={d.categories[it.category]} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {workLinks.length > 0 && (
+                  <div>
+                    <p className="mb-3 text-sm text-muted">{d.profile.moreWorks}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {workLinks.map((s) => (
+                        <a
+                          key={s.href}
+                          href={s.href}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow ugc"
+                          className="inline-flex max-w-full items-center gap-2 rounded-full border border-line px-4 py-2 text-sm transition hover:border-fg"
+                        >
+                          <s.icon className="h-4 w-4 shrink-0" /> <span className="truncate">{s.label}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>
@@ -264,11 +316,11 @@ export default async function EditorProfilePage({ params }: Params) {
             )}
           </div>
 
-          {socials.length > 0 && (
+          {contacts.length > 0 && (
             <div className="card p-5">
-              <h3 className="mb-3 text-lg font-medium">{d.profile.socials}</h3>
+              <h3 className="mb-3 text-lg font-medium">{d.profile.contact}</h3>
               <div className="flex flex-col gap-2">
-                {socials.map((s) => (
+                {contacts.map((s) => (
                   <a
                     key={s.href}
                     href={s.href}

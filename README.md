@@ -9,7 +9,8 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Di
 - Gmail (Google) orqali kirish — parol yo‘q
 - Profil: ism, daraja (boshlang‘ich / o‘rta / professional), tajriba, shahar, boshlang‘ich narx, dasturlar, yo‘nalishlar
 - Telegram, Telegram kanal, Instagram, YouTube havolalari
-- Portfolio (YouTube/Vimeo sahifaning o‘zida ochiladi; Instagram, Telegram, Drive — havola) + muqova rasmi
+- **Portfolio videolari:** eng zo‘r **5 ta ish** saytning o‘ziga yuklanadi (har biri **60 soniyagacha**, **200 MB gacha**) va profilda shu yerning o‘zida o‘ynaydi (pastda “Portfolio videolari”)
+- Portfolio havolalari: **Google Drive** papka, **Telegram kanal yoki guruh** (yopiq guruh taklif havolasi `t.me/+…` ham), Instagram, YouTube; uzunroq ishlar — YouTube/Vimeo havola orqali (sahifaning o‘zida ochiladi) + muqova rasmi
 - Xizmatlar va narxlar (narxni montajor o‘zi belgilaydi)
 - Narx bo‘limlaridagi ($20–30, $30–40, $40–50, $50+) ochiq buyurtmalarga taklif yuborish
 - **TOP ga chiqish**: bitta tarif — **50 000 so‘m / 7 kun**, **20 ta joy** (admin paneldan o‘zgaradi). TOP montajorlarning hammasi bosh sahifada ko‘rinadi, tartib **har 30 daqiqada** navbat bilan almashadi
@@ -86,7 +87,7 @@ Demo ma’lumotni o‘chirish: `npm run db:seed-demo -- --reset`. Google kalitla
 2. **Ma’lumotlar bazasi:** Dokploy → *Create Service → Database → PostgreSQL 16*. “Internal Connection URL” ni nusxalang. Dokploy’da **avtomatik backup** (S3) ni yoqing.
 3. **Ilova:** *Create Service → Application* → GitHub repo → **Build Type: Dockerfile**.
 4. **Environment** bo‘limiga `.env.example` dagi qiymatlarni yozing (`DATABASE_URL` = 2-qadamdagi URL).
-5. **Volume:** *Advanced → Mounts* → Volume, mount path: `/app/uploads` (avatarlar, muqovalar, cheklar shu yerda saqlanadi — **majburiy**, aks holda har deployda o‘chadi).
+5. **Volume:** *Advanced → Mounts* → Volume, mount path: `/app/uploads` (avatarlar, muqovalar, cheklar va **portfolio videolari** shu yerda saqlanadi — **majburiy**, aks holda har deployda o‘chadi).
 6. **Domen:** *Domains* → domeningiz, port `3000`, HTTPS (Let’s Encrypt) yoqilgan.
 7. **Deploy** tugmasi. Tekshirish: `https://montajclub.com/api/health` → `{"ok":true}`.
 
@@ -158,6 +159,33 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 
 **Qo‘shimcha tavsiya:** domenni **Cloudflare** (bepul) orqali ulang — statik fayllar CDN’dan beriladi, DDoS himoyasi qo‘shiladi.
 
+## Portfolio videolari
+
+Montajor kabinetda **Portfolio** bo‘limiga eng zo‘r 5 ta ishini yuklaydi. Videolar YouTube’siz, saytning o‘zida o‘ynaydi.
+
+**Qanday ishlaydi**
+1. Brauzer videoning davomiyligini va hajmini darhol tekshiradi (60 s, 200 MB) — mos kelmasa yuklashni boshlamaydi.
+2. Fayl **2 MB bo‘laklarda** yuboriladi va to‘g‘ridan-to‘g‘ri diskka yoziladi (server xotirasi to‘lmaydi). Internet uzilsa — faqat o‘sha bo‘lak qayta yuboriladi, butun video emas.
+3. Server `ffmpeg` bilan videoni tekshiradi va **720p MP4 (H.264, 30 fps, 3 Mbit/s gacha)** ga siqadi: telefon videolari to‘g‘ri burib qo‘yiladi, metadata (GPS va h.k.) o‘chiriladi, muqova kadri avtomatik olinadi. Asl fayl o‘chiriladi.
+4. Siqish **navbat** bilan, birma-bir va past ustuvorlikda ishlaydi (faqat bitta ishchi jarayonda) — 50 kishi bir vaqtda yuklasa ham sayt sekinlashmaydi, videolar navbatda turadi. Navbat bazada: server qayta ishga tushsa ham yo‘qolmaydi.
+5. Profil sahifasida faqat muqova rasmlari yuklanadi; video baytlari **faqat “Play” bosilganda** keladi, `Range` so‘rovlari bilan (oldinga o‘tkazish darhol ishlaydi), brauzer bir yil keshlaydi.
+
+**200 montajor × 5 video — hisob-kitob**
+
+| | Qiymat |
+|---|---|
+| 1 daqiqalik video siqilgandan keyin | odatda 8–15 MB, eng ko‘pi ~23 MB |
+| 1000 ta video (diskda) | ~10–20 GB (KVM 2 da 100 GB NVMe) |
+| Bitta videoni siqish | 1080p 1 daqiqa ≈ 12–30 soniya CPU (2 oqim) |
+| Bir marta to‘liq ko‘rish | ~10–20 MB trafik (KVM 2 da oyiga 8 TB ≈ 400 000+ ko‘rish) |
+
+- Disk to‘lib qolmasligi uchun: bo‘sh joy (yuklanayotgan fayl × 1.5 + 2 GB) dan kam bo‘lsa, yangi yuklash qabul qilinmaydi.
+- Tashlab ketilgan yuklashlar 6 soatdan keyin, egasiz vaqtinchalik fayllar 1 kundan keyin avtomatik o‘chiriladi.
+- Limitlar `src/lib/constants.ts` → `VIDEO` da (videolar soni, soniya, MB, sifat). 1080p kerak bo‘lsa — `maxSide: 1920` (fayllar ~2 barobar kattalashadi).
+- `VIDEO_WORKER=off` — shu serverda video siqishni o‘chirish (masalan bir nechta konteyner bo‘lsa, faqat bittasida qoldirish uchun).
+
+**Qachon Cloudflare R2 ga o‘tish kerak:** montajorlar 1000+ bo‘lsa yoki oyiga yuz minglab ko‘rish bo‘lsa — videolarni R2 ga (10 GB bepul, keyin ~$0.015/GB, **trafik bepul**) ko‘chirish oson: faqat saqlash va berish qismi o‘zgaradi, siqish shu serverda qoladi. Cloudflare qoidalariga ko‘ra videoni oddiy (bepul) CDN orqali emas, R2 yoki Stream orqali tarqatish kerak — domen Cloudflare’ga ulansa ham videolar uchun R2 ishlatiladi.
+
 ## Xavfsizlik
 
 - Google OAuth + PKCE + `state` tekshiruvi; sessiya tokeni faqat `HttpOnly`, `Secure`, `SameSite=Lax`, `__Host-` cookie’da, bazada esa faqat SHA-256 xeshi
@@ -176,7 +204,7 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 
 1. **Avtomatik to‘lov:** Payme / Click merchant API — TOP to‘lovi va montajor–mijoz o‘rtasida xavfsiz (escrow) to‘lov
 2. **Platforma ichida chat** (buyurtma bo‘yicha xabarlar) va Telegram orqali montajorga bildirishnoma
-3. **Video yuklash** — Cloudflare R2 / Stream (VPS diskini band qilmaslik uchun)
+3. **Videolarni Cloudflare R2 ga ko‘chirish** — montajorlar 1000+ bo‘lib, VPS diski yoki trafigi yetmay qolganda (pastda “Portfolio videolari”)
 4. Mijozlar uchun shikoyat/nizolar bo‘limi, montajor sertifikatlari
 5. Redis — bir nechta serverga kengayganda rate-limit va kesh uchun
 
