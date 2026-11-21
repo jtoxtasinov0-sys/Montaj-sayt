@@ -32,7 +32,7 @@ export async function SiteFooter() {
           <p className="mb-4 text-xs tracking-widest text-muted uppercase">{d.footer.company}</p>
           <ul className="space-y-2.5 text-sm">
             <li><Link className="text-muted transition hover:text-fg" href="/#how">{d.nav.how}</Link></li>
-            <li><Link className="text-muted transition hover:text-fg" href="/#top">{d.nav.top}</Link></li>
+            <li><Link className="text-muted transition hover:text-fg" href="/dashboard/promote">{d.nav.top}</Link></li>
             <li><Link className="text-muted transition hover:text-fg" href="/terms">{d.footer.terms}</Link></li>
             <li><Link className="text-muted transition hover:text-fg" href="/privacy">{d.footer.privacy}</Link></li>
           </ul>

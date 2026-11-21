@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, ne } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,17 +13,26 @@ import { deleteUpload, saveImage } from "@/lib/uploads";
 import { keyFromUploadUrl, uploadUrl } from "@/lib/uploads-url";
 import { cleanHandle } from "@/lib/video";
 import { computeScore } from "@/lib/ranking";
+import { slugify } from "@/lib/utils";
 import { fail, file, guarded, ok, str } from "./_helpers";
 
-const RESERVED = new Set(["new", "admin", "api", "edit", "dashboard", "login", "me", "top"]);
+/**
+ * Profil havolasi (/editors/<slug>) — montajor o'zi yozmaydi, profil yaratilganda ismdan avtomatik olinadi:
+ * "Aziz Karimov" → "aziz-karimov-3f9a". Keyin ism o'zgarsa ham havola o'zgarmaydi (ulashilgan havolalar buzilmasin).
+ */
+async function newSlug(name: string, userId: string) {
+  const base = (slugify(name) || "editor").slice(0, 30).replace(/-+$/, "") || "editor";
+  const hex = userId.replace(/-/g, "");
+  for (const n of [4, 8, 12]) {
+    const slug = `${base}-${hex.slice(0, n)}`;
+    const [taken] = await db.select({ id: editorProfiles.id }).from(editorProfiles).where(eq(editorProfiles.slug, slug)).limit(1);
+    if (!taken) return slug;
+  }
+  return `${base}-${hex}`.slice(0, 40);
+}
 
 const profileSchema = z.object({
   displayName: z.string().min(2).max(60),
-  slug: z
-    .string()
-    .min(3)
-    .max(40)
-    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
   headline: z.string().max(140),
   bio: z.string().max(3000),
   city: z.string().max(60),
@@ -37,7 +46,6 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
   const res = await guarded({ key: "profile", limit: 15 }, async ({ user, d }) => {
     const parsed = profileSchema.safeParse({
       displayName: str(fd, "displayName"),
-      slug: str(fd, "slug").toLowerCase(),
       headline: str(fd, "headline"),
       bio: str(fd, "bio"),
       city: str(fd, "city"),
@@ -47,20 +55,12 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
     });
     if (!parsed.success) return fail(d.errors.validation);
     const v = parsed.data;
-    if (RESERVED.has(v.slug)) return fail(d.errors.slugTaken);
 
     const skills = fd.getAll("skills").filter((s): s is string => typeof s === "string" && (SOFTWARE as readonly string[]).includes(s));
     const categories = fd
       .getAll("categories")
       .filter((s): s is string => typeof s === "string" && (CATEGORY_KEYS as readonly string[]).includes(s))
       .slice(0, 6);
-
-    const taken = await db
-      .select({ id: editorProfiles.id })
-      .from(editorProfiles)
-      .where(and(eq(editorProfiles.slug, v.slug), ne(editorProfiles.userId, user.id)))
-      .limit(1);
-    if (taken.length) return fail(d.errors.slugTaken);
 
     const existing = (await db.select().from(editorProfiles).where(eq(editorProfiles.userId, user.id)).limit(1))[0];
 
@@ -80,6 +80,7 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
     } else {
       await db.insert(editorProfiles).values({
         ...values,
+        slug: await newSlug(v.displayName, user.id),
         userId: user.id,
         score: computeScore({ ratingAvg: 0, ratingCount: 0, completed: 0, onTime: 0 }),
       });

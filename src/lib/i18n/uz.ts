@@ -385,8 +385,6 @@ export const uz = {
   },
   profileForm: {
     displayName: "Ism yoki taxallus",
-    slug: "Profil havolasi (nik)",
-    slugHint: "Bu yashash manzilingiz emas — profilingiz ochiladigan internet havola. Faqat lotin harflari, raqam va “-”. Masalan: aziz-edits",
     headline: "Qisqa tavsif",
     headlinePh: "Masalan: Reels va YouTube montaji, 4 yillik tajriba",
     bio: "Batafsil",
@@ -532,7 +530,6 @@ export const uz = {
     uploadType: "Faqat JPG, PNG yoki WEBP rasm yuklash mumkin.",
     uploadSize: "Fayl hajmi 5MB dan oshmasligi kerak.",
     uploadRequired: "Chek rasmini yuklang.",
-    slugTaken: "Bu nik band. Boshqasini tanlang.",
     selfOrder: "O’zingizga buyurtma bera olmaysiz.",
     notEditor: "Avval montajor profilini yarating.",
     limit: "Limitga yetdingiz.",

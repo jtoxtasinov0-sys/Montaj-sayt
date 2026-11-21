@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { PillTrack } from "./pill-track";
 
 type NavItem = { href: string; label: string };
 
@@ -32,24 +33,23 @@ export function HeaderShell({ children }: { children: React.ReactNode }) {
 export function NavPills({ items }: { items: NavItem[] }) {
   const path = usePathname();
   return (
-    <nav className="hidden items-center gap-1 lg:flex">
+    <PillTrack className="hidden items-center gap-1 lg:flex">
       {items.map((it, i) => {
         const active = it.href !== "/" && path.startsWith(it.href.split("#")[0]) && !it.href.includes("#");
         return (
           <Link
             key={it.href}
             href={it.href}
+            data-pill
+            aria-current={active ? "page" : undefined}
             style={{ "--n": i } as React.CSSProperties}
-            className={cn(
-              "rounded-full px-4 py-1.5 text-[0.84rem] transition",
-              active ? "bg-fg text-bg" : "text-muted hover:text-fg",
-            )}
+            className="pill-item rounded-full px-4 py-1.5 text-[0.84rem]"
           >
             {it.label}
           </Link>
         );
       })}
-    </nav>
+    </PillTrack>
   );
 }
 
