@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { deletePortfolioItem, startVideoUpload } from "@/actions/portfolio";
 import { Field } from "@/components/page-bits";
 import { LIMITS, VIDEO } from "@/lib/constants";
+import { isStaleDeployError, reloadForNewVersion } from "@/lib/stale-deploy";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video";
 
@@ -237,6 +238,8 @@ export function VideoUploadForm({
       setMessage({ ok: true, text: labels.uploaded });
       router.refresh();
     } catch (err) {
+      // Sahifa ochiq turganda saytga yangi versiya chiqqan — sahifani yangilaymiz (video hali yuklanmagan)
+      if (!id && isStaleDeployError(err) && reloadForNewVersion()) return;
       const cancelled = abortRef.current?.signal.aborted;
       // Chala qolgan yozuvni o'chiramiz — limitdan joy egallab turmasin
       if (id) await deletePortfolioItem(id, null, new FormData()).catch(() => {});
