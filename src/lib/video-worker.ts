@@ -115,7 +115,7 @@ async function processJob(job: Job) {
     await mkdir(path.dirname(uploadPath(videoKey)), { recursive: true });
     await rename(out, uploadPath(videoKey));
 
-    // Montajor muqova yuklamagan bo'lsa — videoning o'zidan kadr olamiz
+    // Montajor muqova yuklamagan bo'lsa (yuklashda yoki keyin "Muqovani almashtirish" orqali) — videoning o'zidan kadr olamiz
     if (!job.cover_key) {
       const png = await grabPoster(uploadPath(videoKey), res.duration).catch(() => null);
       if (png) posterKey = await saveImageBuffer(png, "covers").catch(() => null);
@@ -130,12 +130,13 @@ async function processJob(job: Job) {
         durationSec: Math.round(res.duration * 10) / 10,
         width: res.width,
         height: res.height,
-        ...(posterKey && { coverKey: posterKey }),
+        // Siqish paytida montajor o'zi muqova qo'ygan bo'lsa — uniki qoladi, avtomatik kadr kerak emas
+        ...(posterKey && { coverKey: sql`coalesce(${portfolioItems.coverKey}, ${posterKey})` }),
         videoError: null,
         processingAt: null,
       })
       .where(and(eq(portfolioItems.id, id), eq(portfolioItems.videoStatus, "processing")))
-      .returning({ id: portfolioItems.id });
+      .returning({ id: portfolioItems.id, coverKey: portfolioItems.coverKey });
 
     await deleteTmp(id);
     if (!row) {
@@ -144,6 +145,7 @@ async function processJob(job: Job) {
       await deleteUpload(posterKey);
       return;
     }
+    if (posterKey && row.coverKey !== posterKey) await deleteUpload(posterKey);
     invalidate("editors:");
     const mb = ((await stat(uploadPath(videoKey)).catch(() => ({ size: 0 }))).size / 1048576).toFixed(1);
     console.log(`[video] ${id} ready: ${res.width}x${res.height}, ${res.duration.toFixed(1)}s, ${mb} MB, ${Date.now() - started}ms`);

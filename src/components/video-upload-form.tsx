@@ -1,11 +1,11 @@
 "use client";
 
-import { Loader2, Upload, X } from "lucide-react";
+import { ImagePlus, Loader2, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { deletePortfolioItem, startVideoUpload } from "@/actions/portfolio";
 import { Field } from "@/components/page-bits";
-import { VIDEO } from "@/lib/constants";
+import { LIMITS, VIDEO } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video";
 
@@ -14,6 +14,12 @@ type Labels = {
   category: string;
   file: string;
   fileHint: string;
+  cover: string;
+  coverHint: string;
+  coverPick: string;
+  coverRemove: string;
+  errCoverType: string;
+  errCoverSize: string;
   formatVertical: string;
   formatHorizontal: string;
   upload: string;
@@ -32,6 +38,7 @@ type Labels = {
 type Phase = "idle" | "checking" | "uploading";
 
 const VIDEO_EXT = /\.(mp4|m4v|mov|webm|mkv)$/i;
+const COVER_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 type Meta = { duration: number | null; width: number; height: number };
 
@@ -61,6 +68,17 @@ function readMeta(file: File): Promise<Meta | null> {
     v.onerror = () => done(null);
     v.src = url;
   });
+}
+
+/** startVideoUpload uchun FormData (muqova fayli bilan birga yuboriladi) */
+function startForm(x: { title: string; category: string; size: number; duration: number | null; cover: File | null }) {
+  const fd = new FormData();
+  fd.set("title", x.title);
+  fd.set("category", x.category);
+  fd.set("size", String(x.size));
+  if (x.duration !== null) fd.set("duration", String(x.duration));
+  if (x.cover) fd.set("cover", x.cover);
+  return fd;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -127,6 +145,31 @@ export function VideoUploadForm({
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [meta, setMeta] = useState<Meta | null>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
+  const coverRef = useRef<HTMLInputElement>(null);
+  const [cover, setCover] = useState<{ file: File; url: string } | null>(null);
+
+  // Muqova oldindan ko'rinishi uchun vaqtinchalik manzil — almashtirilganda/yopilganda xotiradan bo'shatiladi
+  useEffect(() => () => void (cover && URL.revokeObjectURL(cover.url)), [cover]);
+
+  function clearCover() {
+    setCover(null);
+    if (coverRef.current) coverRef.current.value = "";
+  }
+
+  function onCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setMessage(null);
+    const f = e.target.files?.[0];
+    if (!f) return clearCover();
+    if (f.type && !COVER_TYPES.includes(f.type)) {
+      clearCover();
+      return setMessage({ ok: false, text: labels.errCoverType });
+    }
+    if (f.size > LIMITS.uploadBytes) {
+      clearCover();
+      return setMessage({ ok: false, text: labels.errCoverSize });
+    }
+    setCover({ file: f, url: URL.createObjectURL(f) });
+  }
 
   /** Fayl tanlanganda: formatni (vertikal/gorizontal) ko'rsatish, yo'nalishni moslash, uzunlikni darhol tekshirish */
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -175,7 +218,9 @@ export function VideoUploadForm({
 
     let id: string | null = null;
     try {
-      const start = await startVideoUpload({ title, category, size: file.size, duration });
+      const start = await startVideoUpload(
+        startForm({ title, category, size: file.size, duration, cover: cover?.file ?? null }),
+      );
       if (!start.ok) {
         setPhase("idle");
         return setMessage({ ok: false, text: start.message || labels.errFailed });
@@ -187,6 +232,7 @@ export function VideoUploadForm({
       abortRef.current = ctrl;
       await uploadChunks(id, file, ctrl.signal, (sent) => setProgress(Math.round((sent / file.size) * 100)), setRetrying);
       formRef.current?.reset();
+      clearCover();
       setMeta(null);
       setMessage({ ok: true, text: labels.uploaded });
       router.refresh();
@@ -204,6 +250,7 @@ export function VideoUploadForm({
   }
 
   const busy = phase !== "idle";
+  const vertical = !!meta && meta.width > 0 && meta.height > meta.width * 1.1;
 
   return (
     <form ref={formRef} onSubmit={onSubmit} className="space-y-4">
@@ -240,6 +287,52 @@ export function VideoUploadForm({
           {meta.duration !== null && <span className="text-muted tabular-nums">· {formatDuration(meta.duration)}</span>}
         </p>
       )}
+
+      <Field label={labels.cover} hint={labels.coverHint}>
+        {cover ? (
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cover.url}
+              alt=""
+              className={cn(
+                "shrink-0 rounded-xl bg-card-2 object-cover ring-1 ring-line",
+                vertical ? "aspect-[9/16] w-20" : "aspect-video w-36",
+              )}
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm">{cover.file.name}</p>
+              <button type="button" onClick={clearCover} disabled={busy} className="btn btn-ghost btn-sm mt-2">
+                <X className="h-4 w-4" /> {labels.coverRemove}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => coverRef.current?.click()}
+            disabled={busy}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong bg-card-2/50 text-sm text-muted transition hover:border-fg hover:text-fg disabled:opacity-50",
+              vertical ? "h-28" : "h-20",
+            )}
+          >
+            <ImagePlus className="h-5 w-5" />
+            {labels.coverPick}
+          </button>
+        )}
+        <input
+          ref={coverRef}
+          name="cover"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          disabled={busy}
+          onChange={onCoverChange}
+          tabIndex={-1}
+          aria-hidden
+          className="sr-only"
+        />
+      </Field>
 
       {phase === "uploading" ? (
         <div className="space-y-3" role="status" aria-live="polite">

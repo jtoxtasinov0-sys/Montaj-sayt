@@ -2,8 +2,9 @@ import { stat } from "node:fs/promises";
 import { asc, desc, eq } from "drizzle-orm";
 import { AlertTriangle, Film, Loader2, Trash2, Upload } from "lucide-react";
 import { redirect } from "next/navigation";
-import { addPortfolioItem, deletePortfolioItem, savePortfolioLinks } from "@/actions/portfolio";
+import { addPortfolioItem, deletePortfolioItem, savePortfolioLinks, setPortfolioCover } from "@/actions/portfolio";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { CoverButton } from "@/components/cover-button";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { VideoTile } from "@/components/video-tile";
@@ -14,6 +15,7 @@ import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
 import { CATEGORY_KEYS, LIMITS, VIDEO } from "@/lib/constants";
 import { fmt, getDict, type Dict } from "@/lib/i18n";
 import { tmpPath } from "@/lib/uploads";
+import { uploadUrl } from "@/lib/uploads-url";
 import { isTelegramInvite } from "@/lib/video";
 
 export default async function PortfolioPage() {
@@ -56,6 +58,12 @@ export default async function PortfolioPage() {
                 category: f.category,
                 file: f.videoFile,
                 fileHint: f.videoFileHint,
+                cover: `${f.cover} (${d.common.optional})`,
+                coverHint: f.videoCoverHint,
+                coverPick: f.coverPick,
+                coverRemove: f.coverRemove,
+                errCoverType: d.errors.uploadType,
+                errCoverSize: d.errors.uploadSize,
                 formatVertical: f.formatVertical,
                 formatHorizontal: f.formatHorizontal,
                 upload: f.upload,
@@ -85,6 +93,7 @@ export default async function PortfolioPage() {
               ) : (
                 <StatusTile item={it} d={d} progress={progress.get(it.id)} />
               )}
+              {it.videoStatus !== "failed" && <ChangeCover id={it.id} d={d} />}
               <DeleteButton id={it.id} d={d} />
             </div>
           ))}
@@ -174,12 +183,23 @@ export default async function PortfolioPage() {
           {links.map((it) => (
             <div key={it.id} className="relative">
               <VideoTile item={it} categoryLabel={d.categories[it.category]} />
+              <ChangeCover id={it.id} d={d} />
               <DeleteButton id={it.id} d={d} />
             </div>
           ))}
         </section>
       )}
     </div>
+  );
+}
+
+function ChangeCover({ id, d }: { id: string; d: Dict }) {
+  return (
+    <CoverButton
+      action={setPortfolioCover.bind(null, id)}
+      labels={{ change: d.portfolioForm.coverChange, errType: d.errors.uploadType, errSize: d.errors.uploadSize }}
+      className="absolute top-3 right-[3.25rem]"
+    />
   );
 }
 
@@ -234,13 +254,24 @@ function StatusTile({ item, d, progress }: { item: PortfolioItem; d: Dict; progr
           ? f.failInvalid
           : f.failTranscode;
   }
+  const cover = danger ? null : uploadUrl(item.coverKey);
   return (
     <div>
       <div
-        className={`flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border border-dashed bg-card-2 p-5 text-center text-sm ${danger ? "border-danger/50 text-danger" : "border-line-strong"}`}
+        className={`relative flex aspect-video flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-dashed bg-card-2 p-5 text-center text-sm ${danger ? "border-danger/50 text-danger" : "border-line-strong"}`}
       >
-        {icon}
-        <p className="max-w-[26ch]">{text}</p>
+        {cover && (
+          // Montajor yuklagan muqova — video tayyorlanguncha ham ko'rinib tursin
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <span className="absolute inset-0 bg-black/60" aria-hidden />
+          </>
+        )}
+        <span className={cover ? "relative grid place-items-center gap-2 text-white" : "contents"}>
+          {icon}
+          <p className="max-w-[26ch]">{text}</p>
+        </span>
       </div>
       <p className="mt-3 truncate px-1 text-sm font-medium">{item.title}</p>
     </div>

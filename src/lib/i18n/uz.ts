@@ -217,6 +217,13 @@ export const uz = {
       },
     ],
   },
+  pwa: {
+    title: `${SITE_NAME} ilovasi`,
+    text: "Telefoningizga o’rnating — bosh ekrandan bir bosishda ochiladi va tezroq ishlaydi.",
+    install: "O’rnatish",
+    iosText: "Safari’da «Ulashish» tugmasini bosing, so’ng «Bosh ekranga qo’shish»ni tanlang.",
+    footerInstall: "Ilovani o’rnatish",
+  },
   footer: {
     about: "Videomontajorlar va mijozlarni bog’laydigan platforma. Toshkentda ishlab chiqilgan.",
     platform: "Platforma",
@@ -447,6 +454,11 @@ export const uz = {
     saveLinks: "Havolalarni saqlash",
     byLinkTitle: "Havola orqali qo’shish",
     byLinkHint: "1 daqiqadan uzun ishlar uchun: YouTube va Vimeo sahifaning o’zida ochiladi, qolganlari — havola.",
+    videoCoverHint: "Bo’sh qoldirsangiz, videodan kadr avtomatik olinadi. Video bilan bir xil format (9:16 yoki 16:9) yaxshi chiqadi.",
+    coverPick: "Muqova tanlash",
+    coverRemove: "Muqovani olib tashlash",
+    coverChange: "Muqovani almashtirish",
+    coverChanged: "Muqova yangilandi",
   },
   servicesForm: {
     title: "Xizmat nomi",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SITE_NAME } from "@/lib/constants";
 import { getDict } from "@/lib/i18n";
 import { LogoMark } from "./logo";
+import { InstallAppButton } from "./pwa";
 
 export async function SiteFooter() {
   const d = await getDict();
@@ -52,7 +53,13 @@ export async function SiteFooter() {
           <span>
             © {year} {SITE_NAME}. {d.footer.rights}
           </span>
-          <span>uz · ru · en</span>
+          <span className="flex items-center gap-4">
+            <InstallAppButton
+              label={d.pwa.footerInstall}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-fg transition hover:border-fg"
+            />
+            <span>uz · ru · en</span>
+          </span>
         </div>
       </div>
     </footer>

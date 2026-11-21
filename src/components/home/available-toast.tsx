@@ -43,6 +43,7 @@ export function AvailableToast({
   };
   return (
     <div
+      data-toast
       className="fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md items-center gap-3 rounded-2xl border border-line bg-bg p-3 pr-10 text-fg shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)]"
       style={{ animation: "toast-in .6s cubic-bezier(.2,.8,.2,1) both", transform: "translateX(-50%)" }}
       role="status"
