@@ -57,7 +57,8 @@
   --line: rgba(255, 255, 255, 0.1);
   --line-strong: rgba(255, 255, 255, 0.22);
   --card: #000000;
-  --card-2: #101010;
+  /* Ikkinchi darajali yuzalar (portfolio plitkalari, avatar doirasi va h.k.) qora fondan ajralib tursin */
+  --card-2: #1a1a1a;
   --primary: #f5f5f5;
   --primary-2: #f5f5f5;
   --primary-fg: #000000;
@@ -80,7 +81,7 @@
   --stack-on: #13142b;
   --stack-on-2: #1d1f44;
   --stack-on-fg: #f4f4f8;
-  --stack-off: #16161b;
+  --stack-off: #1c1c22;
   --stack-off-fg: #8a8a95;
   color-scheme: dark;
 }
@@ -239,9 +240,10 @@
   }
   /* Qorong'i mavzuda sahifa o'zi qora — karta biroz ochroq, shunda u ham ajralib turadi */
   .dark .card-solid {
-    --bg: #161616;
-    --card: #161616;
-    --card-2: #262626;
+    --bg: #1a1a1a;
+    --card: #1a1a1a;
+    --card-2: #2b2b2b;
+    --line: rgba(255, 255, 255, 0.14);
   }
   .glass {
     background: color-mix(in oklab, var(--bg) 92%, transparent);

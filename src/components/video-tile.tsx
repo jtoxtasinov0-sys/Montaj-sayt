@@ -70,7 +70,7 @@ export function VideoTile({
 
   const inner = (
     <>
-      <div className={cn("relative overflow-hidden rounded-2xl bg-card-2", tall ? "aspect-[9/16]" : "aspect-video")}>
+      <div className={cn("relative overflow-hidden rounded-2xl bg-card-2 ring-1 ring-line ring-inset", tall ? "aspect-[9/16]" : "aspect-video")}>
         {cover && vertical && !tall && (
           // Keng kartochkadagi vertikal video: orqada xiralashgan nusxa, oldinda to'liq kadr
           // eslint-disable-next-line @next/next/no-img-element
