@@ -27,6 +27,7 @@ export function AdminStat({
   icon,
   href,
   alert,
+  whiteInDark,
 }: {
   label: string;
   value: React.ReactNode;
@@ -35,6 +36,8 @@ export function AdminStat({
   href?: string;
   /** Qizil nuqta — e'tibor talab qiladi */
   alert?: boolean;
+  /** Qorong'i mavzuda oq karta bo'lib chiqadi (globals.css → .card-white-dark) */
+  whiteInDark?: boolean;
 }) {
   const body = (
     <>
@@ -51,7 +54,7 @@ export function AdminStat({
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </>
   );
-  const cls = "card card-solid block p-5";
+  const cls = cn("card card-solid block p-5", whiteInDark && "card-white-dark");
   return href ? (
     <Link href={href} className={cn(cls, "transition duration-300 hover:-translate-y-0.5")}>
       {body}

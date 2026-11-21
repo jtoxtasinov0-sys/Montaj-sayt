@@ -90,6 +90,7 @@ export default async function AdminHome() {
         <p className="eyebrow mb-3">Pul va TOP</p>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <AdminStat
+            whiteInDark
             label="Tasdiq kutayotgan to'lovlar"
             value={p.pending}
             icon={<CreditCard />}
@@ -97,6 +98,7 @@ export default async function AdminHome() {
             href="/admin/payments?status=PENDING"
           />
           <AdminStat
+            whiteInDark
             label="Shu oydagi tushum"
             value={`${formatUzs(p.month)}`}
             hint={`so'm · jami ${formatUzs(Number(p.total))} so'm`}
@@ -104,13 +106,14 @@ export default async function AdminHome() {
             href="/admin/payments?status=APPROVED"
           />
           <AdminStat
+            whiteInDark
             label="Hozir TOP'da"
             value={plan?.slots ? `${e.boosted} / ${plan.slots}` : e.boosted}
             hint={plan ? `${formatUzs(plan.priceUzs)} so'm · ${plan.days} kun` : "Tarif sozlanmagan"}
             icon={<Flame />}
             href="/admin/plans"
           />
-          <AdminStat label="Montajorlar" value={e.n} hint="Profil ochganlar" icon={<Clapperboard />} href="/admin/editors" />
+          <AdminStat whiteInDark label="Montajorlar" value={e.n} hint="Profil ochganlar" icon={<Clapperboard />} href="/admin/editors" />
         </div>
       </section>
 
