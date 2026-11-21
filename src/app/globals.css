@@ -245,6 +245,26 @@
     --card-2: #2b2b2b;
     --line: rgba(255, 255, 255, 0.14);
   }
+  /* Qorong'i mavzuda OQ karta (admin "Pul va TOP"): qora fonda eng muhim raqamlar darhol ko'zga tashlansin.
+     Oq mavzuda bu kartalar boshqalari kabi qora qoladi */
+  .dark .card-solid.card-white-dark {
+    --bg: #ffffff;
+    --card: #ffffff;
+    --card-2: #f5f5f4;
+    --fg: #0a0a0a;
+    --muted: #6e6e6e;
+    --line: rgba(10, 10, 10, 0.1);
+    --line-strong: rgba(10, 10, 10, 0.22);
+    --primary: #0a0a0a;
+    --primary-2: #0a0a0a;
+    --primary-fg: #ffffff;
+    --accent: #0a0a0a;
+    --accent-2: #0a0a0a;
+    --success: #0a0a0a;
+    --warn: #0a0a0a;
+    --danger: #d92d20;
+    color-scheme: light;
+  }
   .glass {
     background: color-mix(in oklab, var(--bg) 92%, transparent);
     border: 1px solid var(--line);
