@@ -129,7 +129,7 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 - Google uchun JSON-LD: bosh sahifada `WebSite` + `Organization` (logo), montajor sahifasida `ProfessionalService` (rasm, shahar, narx, baho, ijtimoiy tarmoqlar)
 - `sitemap.xml` (barcha ochiq montajorlar bilan), `robots.txt`, `manifest.webmanifest`
 - Ikonka: oq-qora “play” belgisi — `src/app/icon.svg` (brauzer qorong‘i rejimida ranglar almashadi), `favicon.ico`, `apple-icon.png`, `public/icon-*.png`
-- **Havola rasmi:** bosh sahifa — `public/images/og-home-v3.jpg`; montajor profili — `src/app/(site)/editors/[slug]/opengraph-image.tsx` har bir profil uchun rasm, ism, narx va baho bilan avtomatik chizadi (shriftlar: `assets/og/`)
+- **Havola rasmi:** bosh sahifa — `public/images/og-home-v4.jpg`; montajor profili — `src/app/(site)/editors/[slug]/opengraph-image.tsx` har bir profil uchun rasm, ism, narx va baho bilan avtomatik chizadi (shriftlar: `assets/og/`)
 - Telegram havola rasmini bir necha kun saqlaydi. Yangilash: [@WebpageBot](https://t.me/WebpageBot) ga havolani yuboring
 
 **Google’da chiqish uchun (bir marta):**
