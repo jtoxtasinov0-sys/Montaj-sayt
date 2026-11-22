@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
         {children}
         <MotionRoot />
-        <PwaInstall labels={{ ...d.pwa, close: d.common.close }} />
+        <PwaInstall labels={{ ...d.pwa, close: d.common.close, copy: d.common.copy, copied: d.common.copied }} />
       </body>
     </html>
   );

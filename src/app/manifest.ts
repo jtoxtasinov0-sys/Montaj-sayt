@@ -24,6 +24,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#ffffff",
     categories: ["business", "productivity", "photo"],
     prefer_related_applications: false,
+    // Sayt o'zini "o'rnatilganmi?" deb tekshira olishi uchun (navigator.getInstalledRelatedApps, components/pwa.tsx)
+    // (manifest build paytida tayyorlanadi — manzil nisbiy, brauzer uni manifest manzili bo'yicha to'ldiradi)
+    related_applications: [{ platform: "webapp", url: "/manifest.webmanifest" }],
     // Ilova ikonkasi bosilganda — yangi oyna emas, ochiq turgan oynaga qaytadi
     launch_handler: { client_mode: ["navigate-existing", "auto"] },
     icons: [
