@@ -164,19 +164,24 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 
 1000 ta bir vaqtdagi tashrif buyuruvchi odatda sekundiga 50–150 sahifa so‘rovi degani — bu zaxira bilan qoplanadi.
 
-**Real foydalanuvchilar testi** (2 ishchi; sayt, proksi va PostgreSQL **2 yadroga** qisilgan — KVM 2 VPS dagidek; test generatori alohida yadrolarda). 70% mehmon, 30% kirgan; har kim ~15 soniyada bir sahifa ochadi, kirganlarning 30% i chatda (har 5 s so‘rov), onlayn signal har 60 s:
+**Real foydalanuvchilar testi.** Bazada 200 montajor × 5 video. Sayt, proksi, PostgreSQL va ffmpeg **2 yadroga** qisilgan (KVM 2 VPS dagidek), test generatori alohida yadrolarda. 70% mehmon, 30% kirgan; har kim ~15 soniyada bir sahifa ochadi, kirganlarning 30% i chatda (har 5 s so‘rov), onlayn signal har 60 s; har bir holat 60 soniya. Video ko‘ruvchi — 3 Mbit/s, yuklovchi — 43 MB 1080p video ~5 Mbit/s internet bilan; orqada ffmpeg navbatdagi videolarni siqib turadi:
 
-| Bir vaqtdagi odam | Kirgan sahifalar, p99 | Chat, p99 | Xatolar |
+| Holat | Kirgan sahifalar, p99 | Chat, p99 | Xatolar |
 |---|---|---|---|
-| 2 000 | 0,7 s | 0,7 s | 0 |
-| 3 000 | 1,0 s | 1,3 s | 0 |
-| 4 000 | 1,5 s | 1,8 s | 0 |
-| 5 000 | 2,6 s — server ulgurmaydi (navbat o‘sadi) | 2,6 s | 0 |
+| 3 000 odam | 1,5 s | 1,6 s | 0 |
+| 3 000 odam + 50 kishi video ko‘radi + 30 montajor video yuklaydi | 1,8 s | 2,4 s | 0 |
+| 2 000 odam + 200 kishi video ko‘radi (600 Mbit/s) + 30 yuklaydi | 2,0 s | 1,9 s | 0 |
+| 4 000 odam + 50 video + 30 yuklash | 3,2 s — server ulgurmaydi (navbat o‘sadi) | 3,7 s | 0 |
 
-Ya’ni 2 vCPU serverda **~4 000 kishigacha** xatosiz va tez. Undan ko‘pi kutilsa — 4 vCPU ga o‘ting va `WEB_CONCURRENCY=4` qo‘ying (sig‘im taxminan 2 barobar oshadi). Eng og‘ir sahifa — kirgan foydalanuvchi uchun bosh sahifa (~30 ms CPU, keshsiz).
+Ya’ni 2 vCPU serverda **~3 000 kishigacha** (video yuklash va ko‘rish bilan birga) tez va xatosiz; 4 000 da xato yo‘q, lekin kirganlar uchun sahifalar 1–3 soniyagacha sekinlashadi. Undan ko‘pi kutilsa — 4 vCPU ga o‘ting va `WEB_CONCURRENCY=4` qo‘ying (sig‘im taxminan 2 barobar oshadi). Ko‘p odam bir vaqtda video ko‘rsa, cheklov — serverning internet kanali (200 tomoshabin ≈ 600 Mbit/s): bunda videolarni Cloudflare R2 ga ko‘chiring (pastga qarang). Hamma testlarda 30 ta yuklash ham xatosiz, qayta urinishsiz tugadi; sayt band paytda videolarni siqish sekinlashadi (navbatda turadi), sayt bo‘shaganda tezlashadi.
 
 - **Ishchilar orasida kesh:** admin tarif, karta yoki sozlamani o‘zgartirsa — barcha ishchilarning keshi darhol tozalanadi (`src/lib/cache.ts` → primary orqali IPC), eski qiymat ko‘rinib qolmaydi.
 - **502 himoyasi:** ishchilarning keep-alive muddati 75 s (Next standarti 5 s yuklama ostida ulanishni so‘rov ketayotganda yopib, 502 berardi); bunday holatda GET/HEAD bir marta avtomatik qayta yuboriladi.
+- **Sekin internetli mijozlar:** proksi javobni mijoz qabul qilish tezligida uzatadi. Avval sekin yuklab olinayotgan 1 GB fayl proksi xotirasiga ~850 MB yig‘ardi (5 GB lik buyurtma fayli serverni qulatishi mumkin edi); endi deyarli 0.
+- **Videolar to‘g‘ridan-to‘g‘ri diskdan:** `/api/files/videos/*.mp4` ni proksi o‘zi beradi (Range, ETag, 304) — baytlar Next ishchisidan o‘tmaydi, sahifalar uchun CPU qoladi.
+- **Video uzilsa:** tomoshabin videoni yarim yo‘lda yopganda Next’da `uncaughtException` chiqardi (`Readable.toWeb`); endi `src/lib/file-stream.ts` (video va buyurtma fayllari).
+- **Baho yulduzlari:** har bir baho 10 ta SVG o‘rniga 2 ta (ko‘rinish o‘zgarmagan) — bosh sahifa 49 → 31 ms, katalog 39 → 22 ms.
+- **ffmpeg** eng past ustuvorlikda (nice 19): sayt band bo‘lsa CPU ni deyarli olmaydi.
 
 **Qo‘shimcha tavsiya:** domenni **Cloudflare** (bepul) orqali ulang — statik fayllar CDN’dan beriladi, DDoS himoyasi qo‘shiladi.
 

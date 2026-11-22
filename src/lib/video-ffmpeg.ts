@@ -35,7 +35,8 @@ function run(cmd: string, args: string[], timeoutMs: number, maxStdout = 16 * 10
     const child = spawn(cmd, args, { stdio: ["ignore", "pipe", "pipe"] });
     if (child.pid) {
       try {
-        setPriority(child.pid, 15);
+        // 19 — eng past: sayt band bo'lganda ffmpeg CPU ni deyarli olmaydi (15 da ~15% olardi), bo'sh paytda to'liq ishlaydi
+        setPriority(child.pid, 19);
       } catch {}
     }
     const out: Buffer[] = [];

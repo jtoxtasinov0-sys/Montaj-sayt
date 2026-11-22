@@ -6,13 +6,17 @@
  *  - Mikro-kesh: tizimga KIRMAGAN foydalanuvchilarning ochiq sahifalari (/, /editors, /jobs ...)
  *    MICROCACHE_TTL_MS (standart 10 soniya) davomida xotirada saqlanadi. Bir xil sahifaga bir vaqtda
  *    kelgan 1000 so'rov uchun Next faqat 1 marta render qiladi. Kirgan foydalanuvchilar, POST, API — keshlanmaydi.
+ *  - Portfolio videolari (/api/files/videos/*.mp4) shu jarayonda to'g'ridan-to'g'ri diskdan beriladi (Range bilan).
+ *  - Sekin mijozlarga javob ular qabul qilish tezligida uzatiladi (backpressure) — katta fayl xotirada to'planmaydi.
  *  - Ishchi qulasa — avtomatik qayta ishga tushiriladi.
  *
  * Sozlamalar: WEB_CONCURRENCY (ishchilar soni, standart = CPU soni), MICROCACHE_TTL_MS (0 = o'chirilgan).
  */
 const cluster = require("node:cluster");
+const fs = require("node:fs");
 const http = require("node:http");
 const os = require("node:os");
+const path = require("node:path");
 
 const PORT = Number(process.env.PORT || 3000);
 const LISTEN_HOST = process.env.LISTEN_HOST || "0.0.0.0";
@@ -105,6 +109,12 @@ function sweep() {
 setInterval(sweep, 30_000).unref();
 
 const agent = new http.Agent({ keepAlive: true, maxSockets: 512, keepAliveMsecs: 10_000 });
+// Video va buyurtma fayllari — tomoshabin tezligida minutlab davom etadigan oqimlar. Alohida agent: yuzlab tomoshabin
+// sahifa so'rovlari uchun ajratilgan 512 ta ulanishni band qilib qo'ymasin
+const streamAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 10_000 });
+const STREAM_PATH = /^\/api\/(?:files\/videos|order-files)\//;
+// Tomoshabin videoni pauza qilsa oqim to'xtab turadi; shuncha jim tursa — yopamiz (davom ettirsa brauzer Range bilan qayta so'raydi)
+const STREAM_IDLE_MS = 10 * 60_000;
 
 function badGateway(res) {
   if (res.headersSent) return res.destroy();
@@ -129,7 +139,8 @@ function forward(req, res, key, attempt = 0) {
   if (!headers["x-real-ip"] && !headers["x-forwarded-for"]) headers["x-real-ip"] = req.socket.remoteAddress || "";
 
   let clientGone = false;
-  const preq = http.request({ host: "127.0.0.1", port, method: req.method, path: req.url, headers, agent }, (pres) => {
+  const stream = STREAM_PATH.test(req.url);
+  const preq = http.request({ host: "127.0.0.1", port, method: req.method, path: req.url, headers, agent: stream ? streamAgent : agent }, (pres) => {
     const storable = key && pres.statusCode === 200 && !pres.headers["set-cookie"];
     const outHeaders = {};
     for (const [k, v] of Object.entries(pres.headers)) if (!HOP.has(k)) outHeaders[k] = v;
@@ -141,8 +152,13 @@ function forward(req, res, key, attempt = 0) {
         chunks.push(c);
         size += c.length;
       }
-      if (!res.destroyed) res.write(c);
+      if (res.destroyed) return;
+      // Sekin mijoz (video, katta fayl, sekin internet): u qabul qilib ulgurguncha ishchidan o'qishni to'xtatamiz.
+      // Aks holda butun fayl shu jarayon xotirasida to'planardi (sekin yuklanayotgan 1 GB fayl ≈ 1 GB RAM → server qulaydi).
+      // Keshlanadigan sahifalar kichik va ularni boshqalar kutayotgan bo'lishi mumkin — ular to'xtatilmaydi.
+      if (!res.write(c) && !key) pres.pause();
     });
+    if (!key) res.on("drain", () => pres.resume());
     pres.on("end", () => {
       res.end();
       if (storable && size <= MAX_BODY) {
@@ -156,14 +172,15 @@ function forward(req, res, key, attempt = 0) {
       releaseWaiters(key, null);
     });
   });
-  preq.setTimeout(60_000, () => preq.destroy(new Error("upstream timeout")));
+  preq.setTimeout(stream ? STREAM_IDLE_MS : 60_000, () => preq.destroy(new Error("upstream timeout")));
   preq.on("error", (e) => {
     // Qayta ishlatilgan ulanishni ishchi yopib qo'ygan — GET/HEAD ni boshqa ulanish orqali bir marta qayta yuboramiz
     // (javob hali boshlanmagan, so'rov tanasi yo'q, takrorlash xavfsiz). Foydalanuvchi buni sezmaydi.
     if (!clientGone && attempt === 0 && preq.reusedSocket && e.code === "ECONNRESET" && !res.headersSent && bodyless(req)) {
       return forward(req, res, key, 1);
     }
-    if (!clientGone) console.error(`[cluster] upstream ${e.code || e.message}: ${req.method} ${req.url.split("?")[0]}`);
+    // Boshlangan video oqimining uzilishi (uzoq pauza) — odatiy holat, log'ni to'ldirmaymiz
+    if (!clientGone && !(stream && res.headersSent)) console.error(`[cluster] upstream ${e.code || e.message}: ${req.method} ${req.url.split("?")[0]}`);
     badGateway(res);
     releaseWaiters(key, null);
   });
@@ -180,6 +197,67 @@ function forward(req, res, key, attempt = 0) {
   } else req.pipe(preq);
 }
 
+// ---------------- portfolio videolari to'g'ridan-to'g'ri diskdan ----------------
+// Video — ochiq, o'zgarmas fayl (tasodifiy nom). Uni ishchi (Next) orqali o'tkazish har bir baytni ikki marta
+// jarayondan o'tkazadi va yuzlab tomoshabin bo'lganda sahifalar uchun CPU qolmaydi. Shu yerda diskdan beramiz;
+// mantiq src/app/api/files/[...path]/route.ts → serveVideo bilan bir xil (u `next start` va dev uchun qoladi).
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+const VIDEO_PATH = /^\/api\/files\/videos\/([a-f0-9-]{36})\.mp4$/;
+const VIDEO_HEADERS = {
+  "content-type": "video/mp4",
+  "accept-ranges": "bytes",
+  "cache-control": "public, max-age=31536000, immutable",
+  "content-disposition": "inline",
+  "x-content-type-options": "nosniff",
+  "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+  "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+  "x-frame-options": "DENY",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "cross-origin-opener-policy": "same-origin",
+};
+
+/** true — so'rov shu yerda xizmat qilindi (yoki ishchiga uzatildi) */
+function serveVideo(req, res) {
+  const m = VIDEO_PATH.exec(req.url.split("?")[0]);
+  if (!m) return false;
+  const file = path.join(UPLOAD_DIR, "videos", `${m[1]}.mp4`);
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) return forward(req, res, null); // 404 sahifasini Next beradi
+    const size = st.size;
+    const etag = `"${size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`;
+    const headers = { ...VIDEO_HEADERS, etag };
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, headers);
+      return res.end();
+    }
+    let start = 0;
+    let end = size - 1;
+    let status = 200;
+    const r = /^bytes=(\d*)-(\d*)$/.exec((req.headers.range || "").trim());
+    if (r && (r[1] || r[2])) {
+      if (r[1]) {
+        start = Number(r[1]);
+        end = r[2] ? Math.min(Number(r[2]), size - 1) : size - 1;
+      } else start = Math.max(0, size - Number(r[2]));
+      if (start > end || start >= size) {
+        res.writeHead(416, { ...headers, "content-range": `bytes */${size}` });
+        return res.end();
+      }
+      status = 206;
+      headers["content-range"] = `bytes ${start}-${end}/${size}`;
+    }
+    headers["content-length"] = end - start + 1;
+    res.writeHead(status, headers);
+    if (req.method === "HEAD" || size === 0) return res.end();
+    // pipe — sekin tomoshabinda diskdan o'qish to'xtab turadi (xotira to'lmaydi); uzilsa fayl yopiladi
+    const s = fs.createReadStream(file, { start, end, highWaterMark: 256 * 1024 });
+    s.on("error", () => res.destroy());
+    res.on("close", () => s.destroy());
+    s.pipe(res);
+  });
+  return true;
+}
+
 function releaseWaiters(key, entry) {
   if (!key) return;
   const waiters = inflight.get(key);
@@ -192,6 +270,7 @@ function releaseWaiters(key, entry) {
 }
 
 const server = http.createServer((req, res) => {
+  if ((req.method === "GET" || req.method === "HEAD") && serveVideo(req, res)) return;
   const key = cacheKey(req);
   if (key) {
     const hit = cache.get(key);

@@ -1,11 +1,10 @@
-import { createReadStream } from "node:fs";
 import { mkdir, open, rename, stat } from "node:fs/promises";
-import { Readable } from "node:stream";
 import { and, eq } from "drizzle-orm";
 import { after } from "next/server";
 import { db } from "@/db";
 import { orderFiles, orderMessages, orders } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current";
+import { fileStream } from "@/lib/file-stream";
 import { ORDER_FILES } from "@/lib/constants";
 import { env } from "@/lib/env";
 import { getDict } from "@/lib/i18n";
@@ -183,6 +182,5 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     headers["Content-Range"] = `bytes ${start}-${end}/${size}`;
   }
   headers["Content-Length"] = String(end - start + 1);
-  const stream = createReadStream(file, { start, end, highWaterMark: 256 * 1024 });
-  return new Response(Readable.toWeb(stream) as ReadableStream<Uint8Array>, { status, headers });
+  return new Response(fileStream(file, start, end), { status, headers });
 }

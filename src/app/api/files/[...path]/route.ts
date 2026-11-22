@@ -1,10 +1,9 @@
-import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
-import { Readable } from "node:stream";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { payments } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/current";
+import { fileStream } from "@/lib/file-stream";
 import { isValidKey, readUpload, uploadPath } from "@/lib/uploads";
 
 const IMMUTABLE = "public, max-age=31536000, immutable";
@@ -87,6 +86,5 @@ async function serveVideo(req: Request, key: string) {
   }
   headers["Content-Length"] = String(end - start + 1);
 
-  const stream = createReadStream(file, { start, end, highWaterMark: 256 * 1024 });
-  return new Response(Readable.toWeb(stream) as ReadableStream<Uint8Array>, { status, headers });
+  return new Response(fileStream(file, start, end), { status, headers });
 }
