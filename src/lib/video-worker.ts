@@ -6,6 +6,7 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { portfolioItems } from "@/db/schema";
 import { invalidate } from "@/lib/cache";
+import { cleanupOrderFiles } from "@/lib/order-room";
 import { VIDEO } from "@/lib/constants";
 import { deleteTmp, deleteUpload, saveImageBuffer, tmpDir, tmpPath, uploadPath } from "@/lib/uploads";
 import { grabPoster, probeVideo, sniffVideo, transcodeVideo } from "@/lib/video-ffmpeg";
@@ -49,6 +50,8 @@ export function startVideoWorker() {
         if (Date.now() - lastCleanup > CLEANUP_MS) {
           lastCleanup = Date.now();
           await cleanup();
+          // Loyiha xonasi fayllari: yopilgan/tashlab ketilgan buyurtmalar va yarim yo'lda qolgan yuklashlar
+          await cleanupOrderFiles().catch((e) => console.error("[order-files] cleanup error:", e));
         }
       } while (again);
     } catch (e) {

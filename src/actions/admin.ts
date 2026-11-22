@@ -248,6 +248,22 @@ export async function adminTestIncoming(_p: ActionState, fd: FormData): Promise<
 }
 
 // ---------------- Telegram ----------------
+/** Shaxsiy kontaktlarni yashirish (profil, buyurtma, chat) — yoqish/o'chirish */
+export async function adminSetContactsHidden(_p: ActionState, fd: FormData): Promise<ActionState> {
+  return guarded({ key: "adm-contacts", ...A }, async ({ user, ip }) => {
+    const hidden = fd.get("hidden") === "on";
+    await db
+      .insert(settings)
+      .values({ key: "contacts_hidden", value: hidden })
+      .onConflictDoUpdate({ target: settings.key, set: { value: hidden, updatedAt: new Date() } });
+    invalidate("settings:");
+    invalidate("editors:");
+    await audit({ actorId: user.id, actorLabel: user.email, action: "settings.contacts", meta: { hidden }, ip });
+    revalidatePath("/", "layout");
+    return ok(hidden ? "Kontaktlar yashirildi — muloqot faqat sayt ichida" : "Kontaktlar ochiq ko'rsatiladi");
+  });
+}
+
 export async function adminTelegramSetup(_p: ActionState, _fd: FormData): Promise<ActionState> {
   return guarded({ key: "adm-tg", ...A }, async ({ user, ip }) => {
     if (!env.telegram.token || !env.telegram.webhookSecret) return fail("TELEGRAM_BOT_TOKEN va TELEGRAM_WEBHOOK_SECRET kerak");

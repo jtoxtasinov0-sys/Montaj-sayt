@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/auth/current";
 import { asc } from "drizzle-orm";
-import { adminSaveCards, adminSaveTier, adminTelegramSetup, adminTelegramTest, adminTestIncoming } from "@/actions/admin";
+import { adminSaveCards, adminSaveTier, adminSetContactsHidden, adminTelegramSetup, adminTelegramTest, adminTestIncoming } from "@/actions/admin";
 import { AdminHead } from "@/components/admin-bits";
 import { PaymentCardFields } from "@/components/admin-cards";
 import { ActionForm, SubmitButton } from "@/components/form";
@@ -8,7 +8,7 @@ import { Field } from "@/components/page-bits";
 import { db } from "@/db";
 import { priceTiers, type PriceTier } from "@/db/schema";
 import { MAX_PAYMENT_CARDS, PAYMENT_METHODS } from "@/lib/constants";
-import { getPaymentCards } from "@/lib/data";
+import { getContactsHidden, getPaymentCards } from "@/lib/data";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +37,11 @@ function TierForm({ t }: { t?: PriceTier }) {
 
 export default async function AdminSettings() {
   await requireAdmin(); // har bir sahifada alohida tekshiruv (faqat layout'ga ishonmaymiz)
-  const [cards, tiers] = await Promise.all([getPaymentCards(), db.select().from(priceTiers).orderBy(asc(priceTiers.sort))]);
+  const [cards, tiers, contactsHidden] = await Promise.all([
+    getPaymentCards(),
+    db.select().from(priceTiers).orderBy(asc(priceTiers.sort)),
+    getContactsHidden(),
+  ]);
   const tg = env.telegram;
   const check = (v: boolean) => (v ? "✅" : "❌");
 
@@ -49,6 +53,21 @@ export default async function AdminSettings() {
       />
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="space-y-4">
+          <ActionForm action={adminSetContactsHidden} className="card card-solid space-y-4 p-6">
+            <div>
+              <h2 className="text-lg font-medium">Kontaktlarni yashirish</h2>
+              <p className="text-sm text-muted">
+                Yoqilgan bo&apos;lsa: montajor/videografning shaxsiy Telegrami profilda va buyurtmada ko&apos;rinmaydi, chatda yozilgan telefon
+                raqam, @username, t.me havolalar &quot;•••&quot; bo&apos;ladi. Mijoz va mutaxassis faqat sayt ichida (yoki bot orqali) gaplashadi —
+                saytni chetlab o&apos;tib ishlab ketmaydi. Portfolio havolalari (kanal, Instagram, YouTube) ko&apos;rinishda qoladi.
+              </p>
+            </div>
+            <label className="check w-full">
+              <input type="checkbox" name="hidden" defaultChecked={contactsHidden} /> Kontaktlar yashirilsin (tavsiya etiladi)
+            </label>
+            <SubmitButton size="sm">Saqlash</SubmitButton>
+          </ActionForm>
+
           <ActionForm action={adminSaveCards} className="card card-solid space-y-4 p-6">
             <div>
               <h2 className="text-lg font-medium">To&apos;lov kartalari</h2>

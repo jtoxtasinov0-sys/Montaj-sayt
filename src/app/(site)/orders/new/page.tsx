@@ -4,18 +4,28 @@ import { Avatar } from "@/components/avatar";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Field, PageHero } from "@/components/page-bits";
 import { requireUser } from "@/lib/auth/current";
-import { CATEGORY_KEYS } from "@/lib/constants";
+import { CATEGORY_KEYS, SERVICES } from "@/lib/constants";
 import { getEditorBySlug } from "@/lib/data";
 import { fmt, getDict } from "@/lib/i18n";
 
 export const metadata: Metadata = { robots: { index: false } };
 
-export default async function NewOrderPage({ searchParams }: { searchParams: Promise<{ editor?: string }> }) {
+export default async function NewOrderPage({ searchParams }: { searchParams: Promise<{ editor?: string; service?: string }> }) {
   const sp = await searchParams;
   const slug = (sp.editor ?? "").slice(0, 40);
   await requireUser(`/orders/new${slug ? `?editor=${encodeURIComponent(slug)}` : ""}`);
   const [d, editor] = await Promise.all([getDict(), slug ? getEditorBySlug(slug) : null]);
   const p = editor?.profile && !editor.profile.isHidden && editor.profile.isPublished ? editor.profile : null;
+
+  // Kim kerak: tanlangan mutaxassis faqat videograf bo'lsa — syomka, ikkalasi bo'lsa — syomka + montaj
+  const roles = p?.roles ?? [];
+  const defaultService = (SERVICES as readonly string[]).includes(sp.service ?? "")
+    ? sp.service
+    : roles.includes("videographer")
+      ? roles.includes("editor")
+        ? "both"
+        : "shoot"
+      : "edit";
 
   const tomorrow = new Date(Date.now() + 86_400_000 + 5 * 3_600_000).toISOString().slice(0, 10);
   const inWeek = new Date(Date.now() + 7 * 86_400_000 + 5 * 3_600_000).toISOString().slice(0, 10);
@@ -26,6 +36,16 @@ export default async function NewOrderPage({ searchParams }: { searchParams: Pro
       <div className="container-x mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
         <ActionForm action={createOrder} className="card space-y-5 p-6 sm:p-8">
           {p && <input type="hidden" name="editor" value={p.slug} />}
+          <Field label={d.order.service}>
+            <div className="flex flex-wrap gap-2">
+              {SERVICES.map((s) => (
+                <label key={s} className="check">
+                  <input type="radio" name="service" value={s} defaultChecked={s === defaultService} required />
+                  {d.services[s]}
+                </label>
+              ))}
+            </div>
+          </Field>
           <Field label={d.order.title}>
             <input name="title" required minLength={5} maxLength={120} placeholder={d.order.titlePh} className="input" />
           </Field>

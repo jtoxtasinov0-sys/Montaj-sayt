@@ -24,6 +24,7 @@ export async function SiteFooter() {
           <p className="mb-4 text-xs tracking-widest text-muted uppercase">{d.footer.platform}</p>
           <ul className="space-y-2.5 text-sm">
             <li><Link className="text-muted transition hover:text-fg" href="/editors">{d.nav.editors}</Link></li>
+            <li><Link className="text-muted transition hover:text-fg" href="/videographers">{d.nav.videographers}</Link></li>
             <li><Link className="text-muted transition hover:text-fg" href="/jobs">{d.nav.jobs}</Link></li>
             <li><Link className="text-muted transition hover:text-fg" href="/orders/new">{d.nav.postJob}</Link></li>
             <li><Link className="text-muted transition hover:text-fg" href="/dashboard/profile">{d.nav.becomeEditor}</Link></li>

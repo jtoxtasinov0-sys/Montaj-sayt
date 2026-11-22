@@ -114,6 +114,8 @@ async function main() {
         experienceYears: e.exp,
         priceFrom: e.price,
         categories: [...e.cats],
+        // Har uchinchi demo mutaxassis — videograf ham (syomka + montaj), biri — faqat videograf
+        roles: i === 4 ? ["videographer"] : i % 3 === 0 ? ["editor", "videographer"] : ["editor"],
         skills: SKILLS.filter((_, k) => (k + i) % 3 !== 0).slice(0, 4),
         telegram: `${slug.replace(/-/g, "_")}`,
         telegramChannel: i % 2 === 0 ? `${slug.replace(/-/g, "_")}_works` : null,

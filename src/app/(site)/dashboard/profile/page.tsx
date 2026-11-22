@@ -5,12 +5,13 @@ import { ActionForm, SubmitButton } from "@/components/form";
 import { Field } from "@/components/page-bits";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { getEditorProfileByUser, requireUser } from "@/lib/auth/current";
-import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
+import { CATEGORY_KEYS, LEVELS, ROLES, SOFTWARE } from "@/lib/constants";
+import { getContactsHidden } from "@/lib/data";
 import { getDict } from "@/lib/i18n";
 
 export default async function ProfileFormPage() {
   const user = await requireUser("/dashboard/profile");
-  const [d, p] = await Promise.all([getDict(), getEditorProfileByUser(user.id)]);
+  const [d, p, contactsHidden] = await Promise.all([getDict(), getEditorProfileByUser(user.id), getContactsHidden()]);
   const f = d.profileForm;
 
   return (
@@ -22,6 +23,16 @@ export default async function ProfileFormPage() {
             <p className="mt-1 text-muted">{d.dashboard.becomeText}</p>
           </div>
         )}
+        <Field label={f.roles} hint={f.rolesHint}>
+          <div className="flex flex-wrap gap-2">
+            {ROLES.map((r) => (
+              <label key={r} className="check">
+                <input type="checkbox" name="roles" value={r} defaultChecked={p ? p.roles.includes(r) : r === "editor"} />
+                {d.roles[r]}
+              </label>
+            ))}
+          </div>
+        </Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={f.displayName}>
             <input name="displayName" required minLength={2} maxLength={60} defaultValue={p?.displayName ?? user.name} className="input" />
@@ -77,7 +88,7 @@ export default async function ProfileFormPage() {
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={f.telegram} hint={p ? f.linksMoved : undefined}>
+          <Field label={f.telegram} hint={contactsHidden ? f.telegramPrivate : p ? f.linksMoved : undefined}>
             <input name="telegram" maxLength={60} defaultValue={p?.telegram ?? ""} placeholder={f.telegramPh} className="input" />
           </Field>
         </div>

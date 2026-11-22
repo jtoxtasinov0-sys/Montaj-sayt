@@ -3,13 +3,16 @@
 import { and, eq, ne, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 import { db } from "@/db";
-import { editorProfiles, orders, proposals, reviews } from "@/db/schema";
+import { editorProfiles, orderFiles, orders, proposals, reviews } from "@/db/schema";
 import type { ActionState } from "@/lib/action-types";
 import { audit } from "@/lib/audit";
 import { invalidate } from "@/lib/cache";
-import { CATEGORY_KEYS } from "@/lib/constants";
+import { CATEGORY_KEYS, SERVICES } from "@/lib/constants";
+import { notifyOrder, type OrderEvent } from "@/lib/notify";
+import { postSystemMessage } from "@/lib/order-room";
 import { recomputeEditorStats } from "@/lib/ranking";
 import { endOfDayInDays, endOfDayTashkent, fail, guarded, isHttpsUrl, ok, str } from "./_helpers";
 
@@ -17,6 +20,12 @@ const uuid = z.uuid();
 
 async function myEditor(userId: string) {
   return (await db.select().from(editorProfiles).where(eq(editorProfiles.userId, userId)).limit(1))[0] ?? null;
+}
+
+/** Holat o'zgarishi: loyiha xonasiga tizim xabari + ikkinchi tomonga Telegram bildirishnomasi (javobdan keyin) */
+async function event(orderId: string, actorId: string, sys: string | null, notify: OrderEvent | null) {
+  if (sys) await postSystemMessage(orderId, sys).catch((e) => console.error("[room] sys message", e));
+  if (notify) after(() => notifyOrder(orderId, notify, actorId));
 }
 
 function refresh(orderId: string) {
@@ -30,6 +39,7 @@ const orderSchema = z.object({
   title: z.string().min(5).max(120),
   description: z.string().min(20).max(4000),
   category: z.enum(CATEGORY_KEYS),
+  service: z.enum(SERVICES),
   budgetUsd: z.coerce.number().int().min(5).max(10000),
 });
 
@@ -40,6 +50,7 @@ export async function createOrder(_prev: ActionState, fd: FormData): Promise<Act
       title: str(fd, "title"),
       description: str(fd, "description"),
       category: str(fd, "category"),
+      service: str(fd, "service") || "edit",
       budgetUsd: str(fd, "budgetUsd"),
     });
     if (!parsed.success) return fail(d.errors.validation);
@@ -69,6 +80,8 @@ export async function createOrder(_prev: ActionState, fd: FormData): Promise<Act
       })
       .returning({ id: orders.id });
     newId = o.id;
+    // To'g'ridan-to'g'ri buyurtma: loyiha xonasi darhol ochiladi, mutaxassisga bot orqali xabar
+    if (editorId) await event(o.id, user.id, "created", "order_new");
     invalidate("jobs:");
     return ok(d.common.saved);
   });
@@ -110,11 +123,13 @@ export async function sendProposal(orderId: string, _prev: ActionState, fd: Form
           .update(orders)
           .set({ proposalCount: sql`${orders.proposalCount} + 1` })
           .where(eq(orders.id, orderId));
+        return "new";
       }
       return "ok";
     });
     if (done === "state") return fail(d.errors.badState);
     if (done === "self") return fail(d.errors.selfOrder);
+    if (done === "new") await event(orderId, user.id, null, "proposal");
     refresh(orderId);
     return ok(d.common.saved);
   });
@@ -148,6 +163,7 @@ export async function acceptProposal(proposalId: string, _prev: ActionState, _fd
       return o.id;
     });
     if (!result) return fail(d.errors.badState);
+    await event(result, user.id, "accepted", "chosen");
     refresh(result);
     return ok(d.common.saved);
   });
@@ -169,6 +185,7 @@ export async function respondToOrder(orderId: string, accept: boolean, _prev: Ac
       .where(and(eq(orders.id, orderId), eq(orders.editorId, editor.id), eq(orders.status, "PENDING")))
       .returning({ id: orders.id });
     if (!rows.length) return fail(d.errors.badState);
+    await event(orderId, user.id, accept ? "accepted" : "declined", accept ? "accepted" : "declined");
     refresh(orderId);
     return ok(d.common.saved);
   });
@@ -181,13 +198,22 @@ export async function deliverOrder(orderId: string, _prev: ActionState, fd: Form
     if (!editor) return fail(d.errors.notEditor);
     const url = str(fd, "deliveryUrl");
     const note = str(fd, "deliveryNote").slice(0, 1000);
-    if (!isHttpsUrl(url)) return fail(d.errors.badUrl);
+    if (url && !isHttpsUrl(url)) return fail(d.errors.badUrl);
+    // Tayyor ish — loyiha xonasiga yuklangan fayl(lar) yoki havola
+    if (!url) {
+      const [hasFile] = await db
+        .select({ id: orderFiles.id })
+        .from(orderFiles)
+        .where(and(eq(orderFiles.orderId, orderId), eq(orderFiles.purpose, "result"), eq(orderFiles.status, "ready")))
+        .limit(1);
+      if (!hasFile) return fail(d.errors.deliverNeedResult);
+    }
     const now = new Date();
     const rows = await db
       .update(orders)
       .set({
         status: "DELIVERED",
-        deliveryUrl: url,
+        deliveryUrl: url || null,
         deliveryNote: note || null,
         deliveredAt: now,
         firstDeliveredAt: sql`coalesce(${orders.firstDeliveredAt}, now())`,
@@ -196,6 +222,7 @@ export async function deliverOrder(orderId: string, _prev: ActionState, fd: Form
       .where(and(eq(orders.id, orderId), eq(orders.editorId, editor.id), eq(orders.status, "IN_PROGRESS")))
       .returning({ id: orders.id });
     if (!rows.length) return fail(d.errors.badState);
+    await event(orderId, user.id, "delivered", "delivered");
     refresh(orderId);
     return ok(d.common.saved);
   });
@@ -217,6 +244,7 @@ export async function requestRevision(orderId: string, _prev: ActionState, fd: F
       .where(and(eq(orders.id, orderId), eq(orders.clientId, user.id), eq(orders.status, "DELIVERED")))
       .returning({ id: orders.id });
     if (!rows.length) return fail(d.errors.badState);
+    await event(orderId, user.id, "revision", "revision");
     refresh(orderId);
     return ok(d.common.saved);
   });
@@ -232,6 +260,7 @@ export async function completeOrder(orderId: string, _prev: ActionState, _fd: Fo
       .returning({ id: orders.id, editorId: orders.editorId });
     if (!rows.length) return fail(d.errors.badState);
     if (rows[0].editorId) await recomputeEditorStats(rows[0].editorId);
+    await event(orderId, user.id, "completed", "completed");
     refresh(orderId);
     return ok(d.common.saved);
   });
@@ -246,8 +275,10 @@ export async function cancelOrder(orderId: string, _prev: ActionState, _fd: Form
       .where(
         and(eq(orders.id, orderId), eq(orders.clientId, user.id), sql`${orders.status} in ('OPEN','PENDING')`),
       )
-      .returning({ id: orders.id });
+      .returning({ id: orders.id, editorId: orders.editorId });
     if (!rows.length) return fail(d.errors.badState);
+    // To'g'ridan-to'g'ri buyurtma (mutaxassis bor) bekor qilinsa — xonaga yozamiz va mutaxassisga xabar beramiz
+    if (rows[0].editorId) await event(orderId, user.id, "cancelled", "cancelled");
     refresh(orderId);
     return ok(d.common.saved);
   });

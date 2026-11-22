@@ -50,6 +50,12 @@ export const users = pgTable(
     lastLoginAt: ts("last_login_at"),
     // Saytdagi oxirgi faollik (sahifa ochish yoki ochiq tabdan har daqiqadagi signal) — "onlayn" belgisi uchun
     lastSeenAt: ts("last_seen_at"),
+    // Telegram bildirishnomalari: bot shu chatga "yangi xabar / fayl / buyurtma" deb yozadi (javob — saytda)
+    tgChatId: bigint("tg_chat_id", { mode: "number" }),
+    // Botni ulash uchun bir martalik kod: t.me/<bot>?start=u_<kod>
+    tgLinkCode: text("tg_link_code").unique(),
+    // Botga yuborilgan fayl/xabar qaysi buyurtmaga borishi (buyurtma sahifasidagi "Telegram orqali yuborish" tanlaydi)
+    tgOrderId: uuid("tg_order_id"),
   },
   (t) => [index("users_created_idx").on(t.createdAt)],
 );
@@ -88,6 +94,8 @@ export const editorProfiles = pgTable(
     priceFrom: integer("price_from").notNull().default(10), // USD
     skills: text("skills").array().notNull().default(sql`'{}'::text[]`),
     categories: text("categories").array().notNull().default(sql`'{}'::text[]`),
+    // Kim: "editor" (montajor), "videographer" (videograf) — bittasi yoki ikkalasi
+    roles: text("roles").array().notNull().default(sql`'{editor}'::text[]`),
     telegram: text("telegram"),
     telegramChannel: text("telegram_channel"),
     instagram: text("instagram"),
@@ -116,6 +124,7 @@ export const editorProfiles = pgTable(
     index("editors_rank_idx").on(t.isPublished, t.isHidden, t.boostWeight.desc(), t.score.desc()),
     index("editors_price_idx").on(t.priceFrom),
     index("editors_categories_idx").using("gin", t.categories),
+    index("editors_roles_idx").using("gin", t.roles),
   ],
 );
 
@@ -185,6 +194,8 @@ export const orders = pgTable(
     title: text("title").notNull(),
     description: text("description").notNull(),
     category: text("category").notNull().default("other"),
+    // Kim kerak: "edit" (montaj), "shoot" (syomka — videograf), "both" (syomka + montaj)
+    service: text("service").notNull().default("edit"),
     budgetUsd: integer("budget_usd").notNull(),
     agreedPriceUsd: integer("agreed_price_usd"),
     deadline: ts("deadline").notNull(),
@@ -200,6 +211,10 @@ export const orders = pgTable(
     firstDeliveredAt: ts("first_delivered_at"),
     deliveredAt: ts("delivered_at"),
     completedAt: ts("completed_at"),
+    // Loyiha xonasi (chat): oxirgi xabar va har bir tomon qachon o'qigani — "yangi xabar" belgisi uchun
+    lastMessageAt: ts("last_message_at"),
+    clientReadAt: ts("client_read_at"),
+    editorReadAt: ts("editor_read_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
     updatedAt: ts("updated_at").notNull().defaultNow(),
   },
@@ -252,6 +267,60 @@ export const reviews = pgTable(
     createdAt: ts("created_at").notNull().defaultNow(),
   },
   (t) => [index("reviews_editor_idx").on(t.editorId, t.createdAt.desc())],
+);
+
+/**
+ * Loyiha xonasi: buyurtma ichidagi fayllar (mijozning xom materiallari va montajorning tayyor ishi).
+ * Fayl diskda: uploads/order-files/<id> (asl nom faqat bazada). Buyurtma yakunlangach ORDER_FILES.keepDaysAfterClose
+ * kundan keyin fayl o'chiriladi, yozuv esa "deleted" holatida tarix uchun qoladi.
+ */
+export const orderFiles = pgTable(
+  "order_files",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    uploaderId: uuid("uploader_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    size: bigint("size", { mode: "number" }).notNull(),
+    mime: text("mime").notNull().default("application/octet-stream"),
+    // material — mijozning xom fayllari, result — montajorning tayyor ishi
+    purpose: text("purpose").notNull().default("material"),
+    // uploading → ready → deleted
+    status: text("status").notNull().default("uploading"),
+    // disk — saytga yuklangan (uploads/order-files/<id>); telegram — botga tashlangan, Telegram serverida turadi
+    // (diskimizni egallamaydi, bot ikkinchi tomonga file_id orqali yetkazadi)
+    storage: text("storage").notNull().default("disk"),
+    tgFileId: text("tg_file_id"),
+    // video | document | photo | audio | voice | animation | video_note — qaysi send* metodi bilan qayta yuborish
+    tgKind: text("tg_kind"),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    readyAt: ts("ready_at"),
+    deletedAt: ts("deleted_at"),
+  },
+  (t) => [index("order_files_order_idx").on(t.orderId, t.createdAt), index("order_files_status_idx").on(t.status, t.createdAt)],
+);
+
+/** Loyiha xonasi: mijoz va montajor o'rtasidagi yozishma (faqat sayt ichida, kontaktlar yashiriladi) */
+export const orderMessages = pgTable(
+  "order_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    // null — tizim xabari (holat o'zgardi va h.k.)
+    authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull().default(""),
+    fileId: uuid("file_id").references(() => orderFiles.id, { onDelete: "set null" }),
+    // Matndan telefon/@username/havola yashirilganmi
+    masked: boolean("masked").notNull().default(false),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("order_messages_order_idx").on(t.orderId, t.createdAt)],
 );
 
 export const promotionPlans = pgTable("promotion_plans", {
@@ -384,6 +453,19 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   editor: one(editorProfiles, { fields: [orders.editorId], references: [editorProfiles.id] }),
   proposals: many(proposals),
   review: one(reviews, { fields: [orders.id], references: [reviews.orderId] }),
+  files: many(orderFiles),
+  messages: many(orderMessages),
+}));
+
+export const orderFilesRelations = relations(orderFiles, ({ one }) => ({
+  order: one(orders, { fields: [orderFiles.orderId], references: [orders.id] }),
+  uploader: one(users, { fields: [orderFiles.uploaderId], references: [users.id] }),
+}));
+
+export const orderMessagesRelations = relations(orderMessages, ({ one }) => ({
+  order: one(orders, { fields: [orderMessages.orderId], references: [orders.id] }),
+  author: one(users, { fields: [orderMessages.authorId], references: [users.id] }),
+  file: one(orderFiles, { fields: [orderMessages.fileId], references: [orderFiles.id] }),
 }));
 
 export const proposalsRelations = relations(proposals, ({ one }) => ({
@@ -413,3 +495,5 @@ export type PromotionPlan = typeof promotionPlans.$inferSelect;
 export type PriceTier = typeof priceTiers.$inferSelect;
 export type PortfolioItem = typeof portfolioItems.$inferSelect;
 export type Service = typeof services.$inferSelect;
+export type OrderFile = typeof orderFiles.$inferSelect;
+export type OrderMessage = typeof orderMessages.$inferSelect;

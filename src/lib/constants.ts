@@ -45,6 +45,17 @@ export const SOFTWARE = [
   "VN",
 ] as const;
 
+/**
+ * Mutaxassis turi: montajor va/yoki videograf. Bitta profil — bittasi yoki ikkalasi.
+ * Katalogda "Kim kerak" filtri, profilda belgi.
+ */
+export const ROLES = ["editor", "videographer"] as const;
+export type RoleKey = (typeof ROLES)[number];
+
+/** Buyurtmada kim kerak: montaj, syomka (videograf) yoki ikkalasi */
+export const SERVICES = ["edit", "shoot", "both"] as const;
+export type ServiceKey = (typeof SERVICES)[number];
+
 export const LEVELS = ["BEGINNER", "MIDDLE", "PRO"] as const;
 export type Level = (typeof LEVELS)[number];
 
@@ -78,6 +89,38 @@ export const VIDEO = {
   chunkBytes: 2 * 1024 * 1024,
   /** Siqilgan videoning uzun tomoni (px): 1280 = 720p (gorizontal 1280×720, vertikal 720×1280) */
   maxSide: 1280,
+};
+
+/**
+ * Loyiha xonasi fayllari (Telegramsiz material almashish): mijozning xom videolari va montajorning tayyor ishi.
+ * Fayllar siqilmaydi (asl sifat), bo'laklab yuklanadi va buyurtma yopilgach avtomatik o'chiriladi — disk to'lmaydi.
+ * Hisob: 200 GB disk, bitta buyurtma 5 GB gacha, yopilgandan 7 kun keyin o'chadi → bir vaqtda ~25–30 ta "to'la" buyurtma.
+ * Kattaroq loyihalar uchun chatga Google Drive / Yandex Disk havolasi tashlanadi.
+ */
+export const ORDER_FILES = {
+  /** Bitta faylning eng katta hajmi */
+  maxFileBytes: 5 * 1024 ** 3,
+  /** Bitta buyurtmadagi barcha fayllar yig'indisi */
+  maxOrderBytes: 5 * 1024 ** 3,
+  /** Bitta buyurtmadagi fayllar soni */
+  maxFiles: 40,
+  /** Bo'lak hajmi: 4 MB ≈ 0.6 Mbit/s sekin internetda ham proksi vaqt chegarasiga (≈60 s) sig'adi */
+  chunkBytes: 4 * 1024 * 1024,
+  /** Buyurtma yakunlangan/bekor qilingandan keyin fayllar necha kun saqlanadi */
+  keepDaysAfterClose: 7,
+  /** Hech qanday harakat bo'lmagan (tashlab ketilgan) buyurtma fayllari necha kundan keyin o'chadi */
+  keepDaysIdle: 30,
+  /** Yarim yo'lda qolgan yuklash necha soatdan keyin o'chiriladi */
+  abandonedUploadHours: 24,
+};
+
+/** Loyiha xonasi chati */
+export const CHAT = {
+  maxLength: 2000,
+  /** Sahifada ko'rsatiladigan so'nggi xabarlar soni */
+  history: 300,
+  /** Ochiq sahifa yangi xabarlarni shu oraliqda so'raydi (yashirin tabda kutadi) */
+  pollMs: 5_000,
 };
 
 /** Test uchun to'lov kartalari — admin paneldan o'zgartiriladi */
