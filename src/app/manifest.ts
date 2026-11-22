@@ -10,7 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
   const icon = [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }];
   return {
     id: "/",
-    name: uz.meta.title,
+    // O'rnatilgan ilova nomi (ish stoli / bosh ekran ikonkasi ostida) — faqat sayt nomi, uzun SEO sarlavhasi emas
+    name: SITE_NAME,
     short_name: SITE_NAME,
     description: uz.meta.description,
     lang: "uz",
