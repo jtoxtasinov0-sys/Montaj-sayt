@@ -231,6 +231,19 @@ export const uz = {
     install: "O’rnatish",
     iosText: "Safari’da «Ulashish» tugmasini bosing, so’ng «Bosh ekranga qo’shish»ni tanlang.",
     footerInstall: "Ilovani o’rnatish",
+    helpTitle: "Ilovani o’rnatish",
+    steps: {
+      desktop:
+        "Manzil satrining o’ng chetidagi o’rnatish belgisini bosing. Belgi ko’rinmasa: brauzer menyusi (⋮ yoki ⋯) → «Ilova sifatida o’rnatish» bandini tanlang.",
+      android: "Brauzer menyusini (⋮) oching va «Ilovani o’rnatish» yoki «Bosh ekranga qo’shish» ni tanlang.",
+      ios: "«Ulashish» tugmasini bosing (kvadrat va yuqoriga strelka), so’ng «Bosh ekranga qo’shish» ni tanlang.",
+      inapp: "Sayt ilova ichidagi brauzerda ochilgan, u yerdan o’rnatib bo’lmaydi. Menyu (⋮ yoki ⋯) → «Brauzerda ochish», keyin shu tugmani yana bosing.",
+      unsupported: "Bu brauzer saytni ilova qilib o’rnata olmaydi. Saytni Chrome, Edge yoki Yandex brauzerida oching.",
+    },
+    installedTitle: "Ilova allaqachon o’rnatilgan",
+    installedText: `${SITE_NAME} ni ish stolidagi yoki Start menyusidagi ikonkadan oching. Brauzerda manzil satridagi «Ilovada ochish» belgisi ham bor.`,
+    reinstallTitle: "Oldin o’rnatgan edingizmi?",
+    reinstallText: `Ish stolidagi ikonkani o’chirish ilovani o’chirmaydi: u brauzerda o’rnatilgan bo’lib qoladi va o’rnatish taklifi chiqmaydi. To’liq o’chirish uchun manzil satriga {url} yozing → ${SITE_NAME} ustida sichqonchaning o’ng tugmasi → «O’chirish». Keyin bu sahifani yangilab, qaytadan o’rnating.`,
   },
   footer: {
     about: "Montajorlar, videograflar va mijozlarni bog’laydigan platforma. Toshkentda ishlab chiqilgan.",
