@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SplitText } from "@/components/motion";
+import { InstallAppButton } from "@/components/pwa";
 import type { Dict } from "@/lib/i18n";
 import { HeroArt } from "./hero-art";
 
@@ -67,9 +68,15 @@ export function Hero({ d }: { d: Dict }) {
       <HeroTimeline />
 
       <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
-        <p className="fade-up max-w-md text-base leading-relaxed text-muted sm:text-lg lg:col-span-6" style={{ animationDelay: "0.45s" }}>
-          {d.hero.subtitle}
-        </p>
+        <div className="fade-up lg:col-span-6" style={{ animationDelay: "0.45s" }}>
+          <p className="max-w-md text-base leading-relaxed text-muted sm:text-lg">{d.hero.subtitle}</p>
+          {/* Ilovani o'rnatish — ko'rinadigan, lekin asosiy tugmalardan kichik (sayt ilova sifatida ochilganda yashirinadi) */}
+          <InstallAppButton
+            label={d.pwa.footerInstall}
+            iconClassName="h-4 w-4"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-medium text-fg transition hover:border-fg hover:bg-fg hover:text-bg"
+          />
+        </div>
         <div className="fade-up flex flex-wrap gap-3 lg:col-span-6 lg:justify-end" style={{ animationDelay: "0.55s" }}>
           <Link href="/editors" className="btn btn-primary btn-lg pr-2.5">
             {d.hero.ctaFind}

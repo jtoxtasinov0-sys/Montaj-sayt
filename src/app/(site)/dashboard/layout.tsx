@@ -2,6 +2,7 @@ import { LogOut, Shield } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DashNav } from "@/components/dash-nav";
+import { InstallAppButton } from "@/components/pwa";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { getCurrentUser, getEditorProfileByUser } from "@/lib/auth/current";
 import { unreadOrdersCount } from "@/lib/dashboard-data";
@@ -42,6 +43,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-2">
+              <InstallAppButton
+                label={d.pwa.footerInstall}
+                title={d.pwa.footerInstall}
+                iconClassName="h-4 w-4"
+                labelClassName="hidden sm:inline"
+                className="btn btn-ghost btn-sm max-sm:w-9 max-sm:px-0"
+              />
               {user.role === "ADMIN" && (
                 <Link href="/admin" className="btn btn-primary btn-sm" title={d.common.admin} aria-label={d.common.admin}>
                   <Shield className="h-4 w-4" /> <span className="hidden sm:inline">{d.common.admin}</span>

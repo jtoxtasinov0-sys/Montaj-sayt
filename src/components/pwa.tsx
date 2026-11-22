@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Download, Share, X } from "lucide-react";
+import { Check, ChevronDown, Copy, Download, EllipsisVertical, Lock, MonitorDown, Share, Star, X } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useScrollLock } from "@/lib/scroll-lock";
 
@@ -13,7 +13,7 @@ import { useScrollLock } from "@/lib/scroll-lock";
  *  - Ilova allaqachon o'rnatilgan (standalone rejim) bo'lsa — hech narsa ko'rsatilmaydi.
  *  - Yopilsa — 14 kun qayta chiqmaydi.
  *
- * Header, mobil menyu va footer'dagi "O'rnatish" tugmasi (InstallAppButton) doim ko'rinadi (ilova ichida ochilganidan
+ * Bosh sahifa, kabinet, mobil menyu va footer'dagi "O'rnatish" tugmasi (InstallAppButton) doim ko'rinadi (ilova ichida ochilganidan
  * tashqari). Brauzer o'rnatishni taklif qilgan bo'lsa — rasmiy oyna; aks holda shu brauzer uchun qo'lda o'rnatish
  * yo'riqnomasi. Brauzer taklif qilmasligining eng ko'p sababi: ilova oldin o'rnatilgan, faqat ish stolidagi ikonkasi
  * o'chirilgan — buni yo'riqnoma alohida tushuntiradi.
@@ -32,11 +32,13 @@ export type PwaLabels = {
   copy: string;
   copied: string;
   helpTitle: string;
-  steps: Record<Guide, string>;
+  guide: Record<Guide, string[]>;
+  noIcon: string;
+  noIconText: string;
+  reinstallLead: string;
+  reinstall: string[];
   installedTitle: string;
   installedText: string;
-  reinstallTitle: string;
-  reinstallText: string;
 };
 
 const SNOOZE_KEY = "pwa-install-snoozed";
@@ -289,7 +291,41 @@ function InstallToast({ labels, current, onClose: close }: { labels: PwaLabels; 
 
 const closeHelp = () => setHelp(false);
 
-/** Brauzer o'zi taklif qilmaganda: shu brauzerda qanday o'rnatish (yoki ilova allaqachon o'rnatilgani) */
+/** Raqamli qadamlar ro'yxati (1, 2, 3 …) */
+function Steps({ items, children }: { items: string[]; children?: (i: number) => React.ReactNode }) {
+  return (
+    <ol className="space-y-3">
+      {items.map((t, i) => (
+        <li key={i} className="flex gap-3 text-sm leading-snug">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-fg text-[0.75rem] font-semibold text-bg">{i + 1}</span>
+          <span className="min-w-0 flex-1 pt-0.5">
+            {t}
+            {children?.(i)}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Kompyuter brauzerining manzil satri — o'rnatish belgisi qayerda ekanini ko'rsatish uchun kichik rasm */
+function AddressBar() {
+  const [host] = useState(() => location.host);
+  return (
+    <div aria-hidden className="mt-3 flex items-center gap-2 rounded-full border border-line bg-fg/[0.04] py-1.5 pr-1.5 pl-3 text-[0.8rem] text-muted">
+      <Lock className="h-3.5 w-3.5 shrink-0" />
+      <span className="min-w-0 flex-1 truncate">{host}</span>
+      <span className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-fg text-bg">
+        <span className="absolute inset-0 animate-ping rounded-full bg-fg/40" />
+        <MonitorDown className="relative h-4 w-4" />
+      </span>
+      <Star className="h-4 w-4 shrink-0" />
+      <EllipsisVertical className="h-4 w-4 shrink-0" />
+    </div>
+  );
+}
+
+/** Brauzer o'zi taklif qilmaganda: shu brauzerda qanday o'rnatish — qisqa raqamli qadamlar */
 function InstallHelp({ labels }: { labels: PwaLabels }) {
   const isInstalled = useSyncExternalStore(subscribe, () => installed, () => false);
   // Oyna faqat tugma bosilganda (brauzerda) ochiladi — navigator shu yerda bor
@@ -308,7 +344,6 @@ function InstallHelp({ labels }: { labels: PwaLabels }) {
 
   const desktop = guide === "desktop";
   const showInstalled = desktop && isInstalled;
-  const [before, after = ""] = labels.reinstallText.split("{url}");
 
   const copy = async () => {
     try {
@@ -318,6 +353,23 @@ function InstallHelp({ labels }: { labels: PwaLabels }) {
     } catch {}
   };
 
+  // Kompyuterda: ilovani butunlay o'chirib, qayta o'rnatish (ish stolidagi ikonkani o'chirish ilovani o'chirmaydi)
+  const reinstall = (
+    <Steps items={labels.reinstall}>
+      {(i) =>
+        i === 0 && (
+          <span className="mt-2 flex items-center gap-2">
+            <code className="rounded-lg bg-fg/[0.06] px-2.5 py-1.5 font-mono text-[0.85rem]">{apps}</code>
+            <button type="button" onClick={copy} className="btn btn-ghost btn-sm !h-8 !px-3">
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? labels.copied : labels.copy}
+            </button>
+          </span>
+        )
+      }
+    </Steps>
+  );
+
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-4 sm:items-center" onClick={closeHelp}>
       <div
@@ -325,42 +377,44 @@ function InstallHelp({ labels }: { labels: PwaLabels }) {
         aria-modal="true"
         aria-labelledby="pwa-help-title"
         onClick={(e) => e.stopPropagation()}
-        className="fade-up relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-line bg-bg p-5 text-fg shadow-[0_12px_40px_-12px_rgba(0,0,0,0.3)]"
+        className="fade-up relative max-h-full w-full max-w-sm overflow-y-auto rounded-2xl border border-line bg-bg p-5 text-fg shadow-[0_12px_40px_-12px_rgba(0,0,0,0.3)]"
         style={{ animationDuration: ".45s" }}
       >
         <div className="flex items-center gap-3 pr-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icon-192.png" alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-xl ring-1 ring-line" />
+          <img src="/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl ring-1 ring-line" />
           <h2 id="pwa-help-title" className="text-base leading-snug font-semibold">
             {showInstalled ? labels.installedTitle : labels.helpTitle}
           </h2>
         </div>
-        <p className="mt-4 text-sm leading-relaxed">
-          {guide === "ios" && <Share className="mr-1 inline h-4 w-4 -translate-y-px" aria-hidden />}
-          {showInstalled ? labels.installedText : labels.steps[guide]}
-        </p>
-        {desktop && (
-          <div className="mt-4 rounded-xl border border-line p-3">
-            <p className="text-sm font-medium">{labels.reinstallTitle}</p>
-            <p className="mt-1 text-[0.8rem] leading-relaxed text-muted">
-              {before}
-              <span className="inline-flex items-center gap-1 align-baseline whitespace-nowrap">
-                <code className="rounded bg-fg/[0.06] px-1.5 py-0.5 font-mono text-[0.78rem] text-fg">{apps}</code>
-                <button
-                  type="button"
-                  onClick={copy}
-                  aria-label={copied ? labels.copied : labels.copy}
-                  title={copied ? labels.copied : labels.copy}
-                  className="grid h-6 w-6 place-items-center rounded-full text-muted hover:text-fg"
-                >
-                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                </button>
-              </span>
-              {after}
-            </p>
-          </div>
-        )}
-        <button type="button" onClick={closeHelp} className="btn btn-primary mt-5 w-full">
+
+        <div className="mt-5">
+          {showInstalled ? (
+            <>
+              <p className="text-sm leading-snug">{labels.installedText}</p>
+              <p className="mt-5 mb-3 text-sm font-medium">{labels.reinstallLead}</p>
+              {reinstall}
+            </>
+          ) : (
+            <>
+              <Steps items={labels.guide[guide]}>{(i) => desktop && i === 0 && <AddressBar />}</Steps>
+              {desktop && (
+                <details className="group mt-5 rounded-xl border border-line">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-sm font-medium [&::-webkit-details-marker]:hidden">
+                    {labels.noIcon}
+                    <ChevronDown className="h-4 w-4 text-muted transition group-open:rotate-180" />
+                  </summary>
+                  <div className="border-t border-line px-3 pt-3 pb-3.5">
+                    <p className="mb-3 text-[0.8rem] leading-snug text-muted">{labels.noIconText}</p>
+                    {reinstall}
+                  </div>
+                </details>
+              )}
+            </>
+          )}
+        </div>
+
+        <button type="button" onClick={closeHelp} className="btn btn-primary mt-6 w-full">
           {labels.close}
         </button>
         <button
@@ -378,7 +432,7 @@ function InstallHelp({ labels }: { labels: PwaLabels }) {
 }
 
 /**
- * "O'rnatish" tugmasi (header, mobil menyu, footer). Doim ko'rinadi — faqat sayt ilova sifatida ochilganda yashirinadi.
+ * "O'rnatish" tugmasi (bosh sahifa, kabinet, mobil menyu, footer). Doim ko'rinadi — faqat sayt ilova sifatida ochilganda yashirinadi.
  * `title` berilsa — tugmaning to'liq nomi (matn tor ekranda yashirilganda ham ekran o'qigichlarga aytiladi).
  */
 export function InstallAppButton({
