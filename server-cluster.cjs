@@ -30,7 +30,15 @@ if (!cluster.isPrimary) {
 // ---------------- ishchilar ----------------
 const ready = new Set();
 function fork(i) {
-  const w = cluster.fork({ PORT: String(BASE + i), HOSTNAME: "127.0.0.1", WORKER_INDEX: String(i) });
+  const w = cluster.fork({
+    PORT: String(BASE + i),
+    HOSTNAME: "127.0.0.1",
+    WORKER_INDEX: String(i),
+    // Next standart 5 s dan keyin bo'sh ulanishni yopadi. Yuklama ostida u biz shu ulanishga yangi so'rov
+    // yuborayotgan paytda yopilib qolishi mumkin (ECONNRESET → foydalanuvchiga 502). Uzunroq muddat bu poygani yo'qotadi;
+    // agent esa "Keep-Alive: timeout=75" ni ko'rib, ulanishni ishchidan 1 s oldin o'zi yopadi.
+    KEEP_ALIVE_TIMEOUT: process.env.KEEP_ALIVE_TIMEOUT || "75000",
+  });
   w.idx = i;
 }
 for (let i = 0; i < WORKERS; i++) fork(i);
@@ -44,6 +52,15 @@ cluster.on("exit", (w, code, signal) => {
   if (shuttingDown) return;
   console.error(`[cluster] worker ${w.idx} exited (${signal || code}) — restarting`);
   setTimeout(() => fork(w.idx), 1000);
+});
+
+// Bir ishchida kesh tozalansa (src/lib/cache.ts → invalidate) — qolgan ishchilarga ham yetkazamiz
+cluster.on("message", (from, msg) => {
+  if (!msg || msg.type !== "mc:cache-invalidate" || typeof msg.prefix !== "string") return;
+  for (const id in cluster.workers) {
+    const w = cluster.workers[id];
+    if (w && w !== from && w.isConnected()) w.send(msg, (err) => err && console.error("[cluster] invalidate relay:", err.message));
+  }
 });
 
 let rr = 0;
@@ -95,7 +112,12 @@ function badGateway(res) {
   res.end("Server qayta ishga tushmoqda, birozdan so'ng urinib ko'ring.");
 }
 
-function forward(req, res, key) {
+const IDEMPOTENT = new Set(["GET", "HEAD"]);
+/** Tanasiz GET/HEAD — xavfsiz qayta yuboriladi va pipe'siz yakunlanadi */
+const bodyless = (req) =>
+  IDEMPOTENT.has(req.method) && !req.headers["transfer-encoding"] && (!req.headers["content-length"] || req.headers["content-length"] === "0");
+
+function forward(req, res, key, attempt = 0) {
   const port = pickPort();
   if (!port) {
     badGateway(res);
@@ -106,6 +128,7 @@ function forward(req, res, key) {
   // Traefik X-Real-IP qo'yadi; to'g'ridan-to'g'ri ulanishda — socket manzili
   if (!headers["x-real-ip"] && !headers["x-forwarded-for"]) headers["x-real-ip"] = req.socket.remoteAddress || "";
 
+  let clientGone = false;
   const preq = http.request({ host: "127.0.0.1", port, method: req.method, path: req.url, headers, agent }, (pres) => {
     const storable = key && pres.statusCode === 200 && !pres.headers["set-cookie"];
     const outHeaders = {};
@@ -134,15 +157,27 @@ function forward(req, res, key) {
     });
   });
   preq.setTimeout(60_000, () => preq.destroy(new Error("upstream timeout")));
-  preq.on("error", () => {
+  preq.on("error", (e) => {
+    // Qayta ishlatilgan ulanishni ishchi yopib qo'ygan — GET/HEAD ni boshqa ulanish orqali bir marta qayta yuboramiz
+    // (javob hali boshlanmagan, so'rov tanasi yo'q, takrorlash xavfsiz). Foydalanuvchi buni sezmaydi.
+    if (!clientGone && attempt === 0 && preq.reusedSocket && e.code === "ECONNRESET" && !res.headersSent && bodyless(req)) {
+      return forward(req, res, key, 1);
+    }
+    if (!clientGone) console.error(`[cluster] upstream ${e.code || e.message}: ${req.method} ${req.url.split("?")[0]}`);
     badGateway(res);
     releaseWaiters(key, null);
   });
   // mijoz uzilsa: keshlanadigan so'rovni oxirigacha o'qiymiz (boshqalar kutayotgan bo'lishi mumkin)
   res.on("close", () => {
-    if (!res.writableFinished && !key) preq.destroy();
+    if (res.writableFinished) return;
+    clientGone = true;
+    if (!key) preq.destroy();
   });
-  req.pipe(preq);
+  if (bodyless(req)) {
+    // tanasiz so'rov: pipe o'rniga darhol yakunlaymiz — qayta yuborishda ham ishlaydi (req allaqachon o'qilgan bo'ladi)
+    preq.end();
+    req.resume();
+  } else req.pipe(preq);
 }
 
 function releaseWaiters(key, entry) {

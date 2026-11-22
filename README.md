@@ -164,6 +164,20 @@ Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 
 
 1000 ta bir vaqtdagi tashrif buyuruvchi odatda sekundiga 50–150 sahifa so‘rovi degani — bu zaxira bilan qoplanadi.
 
+**Real foydalanuvchilar testi** (2 ishchi; sayt, proksi va PostgreSQL **2 yadroga** qisilgan — KVM 2 VPS dagidek; test generatori alohida yadrolarda). 70% mehmon, 30% kirgan; har kim ~15 soniyada bir sahifa ochadi, kirganlarning 30% i chatda (har 5 s so‘rov), onlayn signal har 60 s:
+
+| Bir vaqtdagi odam | Kirgan sahifalar, p99 | Chat, p99 | Xatolar |
+|---|---|---|---|
+| 2 000 | 0,7 s | 0,7 s | 0 |
+| 3 000 | 1,0 s | 1,3 s | 0 |
+| 4 000 | 1,5 s | 1,8 s | 0 |
+| 5 000 | 2,6 s — server ulgurmaydi (navbat o‘sadi) | 2,6 s | 0 |
+
+Ya’ni 2 vCPU serverda **~4 000 kishigacha** xatosiz va tez. Undan ko‘pi kutilsa — 4 vCPU ga o‘ting va `WEB_CONCURRENCY=4` qo‘ying (sig‘im taxminan 2 barobar oshadi). Eng og‘ir sahifa — kirgan foydalanuvchi uchun bosh sahifa (~30 ms CPU, keshsiz).
+
+- **Ishchilar orasida kesh:** admin tarif, karta yoki sozlamani o‘zgartirsa — barcha ishchilarning keshi darhol tozalanadi (`src/lib/cache.ts` → primary orqali IPC), eski qiymat ko‘rinib qolmaydi.
+- **502 himoyasi:** ishchilarning keep-alive muddati 75 s (Next standarti 5 s yuklama ostida ulanishni so‘rov ketayotganda yopib, 502 berardi); bunday holatda GET/HEAD bir marta avtomatik qayta yuboriladi.
+
 **Qo‘shimcha tavsiya:** domenni **Cloudflare** (bepul) orqali ulang — statik fayllar CDN’dan beriladi, DDoS himoyasi qo‘shiladi.
 
 ## Portfolio videolari
