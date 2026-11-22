@@ -119,7 +119,7 @@ Har bir to‘lov summasi noyob (narx + 100–999 so‘m kod), shuning uchun bank
 1. **To‘liq avtomatik:** `.env` ga `PAYMENT_WEBHOOK_SECRET` (uzun tasodifiy satr) yozing. Kartaga SMS keladigan Android telefonga “SMS forwarder” (webhook) ilovasini o‘rnatib, bankdan keladigan SMS’larni `POST https://montajclub.com/api/payments/incoming?key=<PAYMENT_WEBHOOK_SECRET>` ga yuboring (yoki kalitni `X-Payment-Secret` sarlavhasida). Tana — JSON, forma yoki oddiy matn.
 2. **Bir bosishda:** bank bildirishnomasini (CardXabar, HUMO bot va h.k.) admin Telegram botga forward qiling — bot summani topib, to‘lovni tasdiqlaydi.
 
-Balans qatorlari (“Dostupno”, “Остаток”, “💰”) va chiqim xabarlari (“Списание”, “Oplata”) hisobga olinmaydi. Tushgan summalar `incoming_transfers` jadvalida saqlanadi: pul to‘lov yaratilishidan oldin tushsa ham keyin moslanadi.
+Balans qatorlari (“Dostupno”, “Остаток”, “💰”, “잔액”) va chiqim xabarlari (“Списание”, “Oplata”, “출금”, “승인”, “결제”) hisobga olinmaydi; Koreya banklarining “입금” xabarlari kirim deb o‘qiladi. Tushgan summalar `incoming_transfers` jadvalida saqlanadi: pul to‘lov yaratilishidan oldin tushsa ham keyin moslanadi.
 
 ### To‘lov kartalari
 Hozir test kartalar turibdi (VISA `4000 1234 5678 9010`, UZCARD `8600 1234 5678 9012`). **Admin → Sozlamalar → To‘lov kartalari** dan o‘zingizning haqiqiy kartangizni kiriting.
