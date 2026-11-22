@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/avatar";
+import { BackButton } from "@/components/back-button";
 import { InstagramIcon, TelegramIcon, YoutubeIcon } from "@/components/icons";
 import { Empty } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
@@ -118,9 +119,15 @@ export default async function EditorProfilePage({ params }: Params) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(jsonLd)} />
       <section className="border-b border-line">
-        <div className="container-x grid gap-8 pt-32 pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="container-x grid gap-8 pt-24 pb-12 sm:pt-28 lg:grid-cols-[1fr_auto] lg:items-end">
+          {/* To'g'ridan-to'g'ri havola bilan ochilsa — katalogga (faqat videograf bo'lsa — videograflar ro'yxatiga) */}
+          <BackButton
+            fallback={p.roles.includes("videographer") && !p.roles.includes("editor") ? "/videographers" : "/editors"}
+            label={d.common.back}
+            className="fade-up -mb-2 justify-self-start sm:mb-0 lg:col-span-2"
+          />
           <div className="fade-up flex flex-col gap-6 sm:flex-row sm:items-end">
-            <div className="relative">
+            <div className="relative w-fit">
               <Avatar name={p.displayName} avatarKey={p.avatarKey} image={data.userImage} size={120} className="ring-1 ring-line" />
               <span
                 className={`absolute right-1 bottom-1 h-5 w-5 rounded-full border-4 border-bg ${isOnline(data.lastSeenAt) ? "bg-online" : "bg-offline"}`}

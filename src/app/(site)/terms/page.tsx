@@ -14,7 +14,7 @@ export default async function TermsPage() {
   const d = await getDict();
   return (
     <>
-      <PageHero title={d.footer.terms} />
+      <PageHero title={d.footer.terms} back={{ href: "/", label: d.common.back }} />
       <article className="container-x mt-10 max-w-3xl space-y-5 leading-relaxed text-muted">
         <p>
           {SITE_NAME} — videomontajorlar va mijozlarni bog&apos;laydigan platforma. Platforma montajor va mijoz o&apos;rtasidagi kelishuvning
