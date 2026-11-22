@@ -2,13 +2,13 @@ import { CalendarClock, MessageSquare, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Empty, PageHero, Pagination } from "@/components/page-bits";
-import { CATEGORY_KEYS } from "@/lib/constants";
+import { CATEGORY_KEYS, SERVICES } from "@/lib/constants";
 import { getTiers, listOpenJobs, tierLabel } from "@/lib/data";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { clampInt, cn, formatDate } from "@/lib/utils";
 
-type SP = { tier?: string; category?: string; page?: string };
+type SP = { tier?: string; category?: string; service?: string; page?: string };
 
 export async function generateMetadata(): Promise<Metadata> {
   const [d, locale] = await Promise.all([getDict(), getLocale()]);
@@ -20,6 +20,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const f = {
     tier: sp.tier ? clampInt(sp.tier, 1, 1_000_000, 0) || undefined : undefined,
     category: (CATEGORY_KEYS as readonly string[]).includes(sp.category ?? "") ? sp.category : undefined,
+    service: (SERVICES as readonly string[]).includes(sp.service ?? "") ? sp.service : undefined,
     page: clampInt(sp.page, 1, 500, 1),
   };
   const [d, locale, tiers, res] = await Promise.all([getDict(), getLocale(), getTiers(), listOpenJobs(f)]);
@@ -28,6 +29,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
     const p = new URLSearchParams();
     if (m.tier) p.set("tier", String(m.tier));
     if (m.category) p.set("category", m.category);
+    if (m.service) p.set("service", m.service);
     if (m.page && m.page > 1) p.set("page", String(m.page));
     const s = p.toString();
     return `/jobs${s ? `?${s}` : ""}`;
@@ -52,6 +54,16 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
       </PageHero>
 
       <div className="container-x mt-8">
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          <Link href={qs({ service: undefined, page: 1 })} className={cn("chip", !f.service && "chip-primary")}>
+            {d.common.all}
+          </Link>
+          {SERVICES.map((s) => (
+            <Link key={s} href={qs({ service: s, page: 1 })} className={cn("chip", f.service === s && "chip-primary")}>
+              {d.services[s]}
+            </Link>
+          ))}
+        </div>
         <div className="mb-6 flex flex-wrap gap-1.5">
           <Link href={qs({ category: undefined, page: 1 })} className={cn("chip", !f.category && "chip-primary")}>
             {d.common.all}
@@ -76,7 +88,10 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
               <Link key={j.id} href={`/orders/${j.id}`} className="card group flex flex-col gap-4 p-6 transition hover:-translate-y-0.5 hover:border-fg sm:p-7">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <span className="chip mb-2">{d.categories[j.category] ?? j.category}</span>
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      <span className="chip">{d.services[j.service] ?? j.service}</span>
+                      <span className="chip">{d.categories[j.category] ?? j.category}</span>
+                    </div>
                     <h3 className="text-xl font-medium tracking-tight group-hover:underline group-hover:underline-offset-4 sm:text-2xl">{j.title}</h3>
                   </div>
                   <div className="shrink-0 text-right">

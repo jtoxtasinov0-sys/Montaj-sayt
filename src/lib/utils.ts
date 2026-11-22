@@ -71,3 +71,23 @@ export function clampInt(v: unknown, min: number, max: number, fallback: number)
   if (Number.isNaN(n)) return fallback;
   return Math.min(max, Math.max(min, n));
 }
+
+/** 1536 → "1.5 KB", 5368709120 → "5 GB" */
+export function formatBytes(n: number) {
+  if (!Number.isFinite(n) || n <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(n) / Math.log(1024)));
+  const v = n / 1024 ** i;
+  return `${v >= 100 || i === 0 ? Math.round(v) : Math.round(v * 10) / 10} ${units[i]}`;
+}
+
+/**
+ * Server va brauzerda bir xil chiqadigan sana (Toshkent vaqti, UTC+5, yozgi vaqt yo'q): "22.11.2026" / "22.11, 06:02".
+ * Intl brauzerga qarab har xil yozadi ("22-noy" / "M11 22") — client komponentlarda hydration xatosi bermasligi uchun.
+ */
+export function stableDate(d: Date | string, withTime = false) {
+  const t = new Date(new Date(d).getTime() + 5 * 3_600_000);
+  const p2 = (n: number) => String(n).padStart(2, "0");
+  const date = `${p2(t.getUTCDate())}.${p2(t.getUTCMonth() + 1)}`;
+  return withTime ? `${date}, ${p2(t.getUTCHours())}:${p2(t.getUTCMinutes())}` : `${date}.${t.getUTCFullYear()}`;
+}

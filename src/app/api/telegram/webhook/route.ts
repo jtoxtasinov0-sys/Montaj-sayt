@@ -6,12 +6,28 @@ import { editorProfiles, orders, payments, users } from "@/db/schema";
 import { SITE_NAME } from "@/lib/constants";
 import { env } from "@/lib/env";
 import { approvePayment, expireStalePayments, matchIncoming, parseAmounts, rejectPayment } from "@/lib/payments";
+import { afterLinked, linkedText, linkTelegramChat, relayFromTelegram, type TgIncoming, type TgKind } from "@/lib/notify";
 import { escapeHtml, tgCall } from "@/lib/telegram";
 import { formatUzs } from "@/lib/utils";
 
 type TgUser = { id: number; username?: string; first_name?: string };
+type TgFile = { file_id: string; file_size?: number; file_name?: string; mime_type?: string };
+type TgMessage = {
+  message_id: number;
+  chat: { id: number; type?: string };
+  from?: TgUser;
+  text?: string;
+  caption?: string;
+  video?: TgFile;
+  document?: TgFile;
+  photo?: TgFile[];
+  audio?: TgFile;
+  voice?: TgFile;
+  animation?: TgFile;
+  video_note?: TgFile;
+};
 type Update = {
-  message?: { chat: { id: number }; from?: TgUser; text?: string; caption?: string };
+  message?: TgMessage;
   callback_query?: { id: string; from: TgUser; data?: string; message?: { chat: { id: number } } };
 };
 
@@ -37,15 +53,41 @@ export async function POST(req: Request) {
   if (!update) return NextResponse.json({ ok: true });
 
   try {
+    const m = update.message;
     if (update.callback_query) await handleCallback(update.callback_query);
-    else if (update.message?.text || update.message?.caption) {
-      const m = update.message;
-      await handleMessage({ ...m, text: m.text ?? m.caption });
+    else if (m) {
+      const file = extractFile(m);
+      const isCommand = (m.text ?? "").trim().startsWith("/");
+      // Shaxsiy chatda fayl yoki oddiy matn — buyurtma bo'yicha mijoz ↔ mutaxassis o'rtasida yetkazamiz
+      // (adminlarning matnlari — bank xabari bo'lishi mumkin, ular avvalgidek to'lov tekshiruviga ketadi)
+      if (m.chat.type === "private" && !isCommand && (file || (m.text && !isAdmin(m.from)))) {
+        const reply = await relayFromTelegram(m.chat.id, { messageId: m.message_id, text: m.text, caption: m.caption, file });
+        if (reply) await tgCall("sendMessage", { chat_id: m.chat.id, text: reply, reply_to_message_id: m.message_id });
+      } else if (m.text || m.caption) {
+        await handleMessage({ ...m, text: m.text ?? m.caption });
+      }
     }
   } catch (e) {
     console.error("[telegram] webhook error", e);
   }
   return NextResponse.json({ ok: true });
+}
+
+/** Xabardagi fayl (video, hujjat, rasm — eng kattasi, audio, ovozli xabar, GIF, dumaloq video) */
+function extractFile(m: TgMessage): TgIncoming["file"] {
+  const pick = (kind: TgKind, f: TgFile | undefined, fallbackName: string, fallbackMime: string) =>
+    f && { kind, fileId: f.file_id, size: f.file_size ?? 0, name: f.file_name || fallbackName, mime: f.mime_type || fallbackMime };
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+  return (
+    pick("video", m.video, `video_${stamp}.mp4`, "video/mp4") ||
+    pick("document", m.document, `file_${stamp}`, "application/octet-stream") ||
+    pick("photo", m.photo?.at(-1), `photo_${stamp}.jpg`, "image/jpeg") ||
+    pick("audio", m.audio, `audio_${stamp}.mp3`, "audio/mpeg") ||
+    pick("voice", m.voice, `voice_${stamp}.ogg`, "audio/ogg") ||
+    pick("animation", m.animation, `gif_${stamp}.mp4`, "video/mp4") ||
+    pick("video_note", m.video_note, `video_note_${stamp}.mp4`, "video/mp4") ||
+    undefined
+  );
 }
 
 async function handleCallback(cq: NonNullable<Update["callback_query"]>) {
@@ -64,13 +106,34 @@ async function handleCallback(cq: NonNullable<Update["callback_query"]>) {
   });
 }
 
-async function handleMessage(msg: { chat: { id: number }; from?: TgUser; text?: string }) {
+async function handleMessage(msg: { chat: { id: number; type?: string }; from?: TgUser; text?: string }) {
   const text = (msg.text ?? "").trim();
   const cmd = text.split(/[\s@]/)[0].toLowerCase();
   const reply = (t: string, extra: Record<string, unknown> = {}) =>
     tgCall("sendMessage", { chat_id: msg.chat.id, text: t, parse_mode: "HTML", ...extra });
 
+  // Foydalanuvchi bildirishnomalarini ulash: kabinetdagi tugma t.me/<bot>?start=u_<kod> ni ochadi
+  const payload = text.split(/\s+/)[1] ?? "";
+  if (cmd === "/start" && payload.startsWith("u_")) {
+    const linked = await linkTelegramChat(payload.slice(2), msg.chat.id);
+    await reply(linked ? linkedText(linked.locale) : "⚠️ Havola eskirgan. Saytdagi «Telegram botni ulash» tugmasini qayta bosing.");
+    // Buyurtma sahifasidan kelgan bo'lsa: shu buyurtma tanlanadi va ikkinchi tomonning kutib turgan fayllari yetkaziladi
+    if (linked) await afterLinked(linked);
+    return;
+  }
+
   if (cmd === "/start" || cmd === "/id") {
+    // Oddiy foydalanuvchi (admin emas, adminlar allaqachon sozlangan) — faqat bildirishnomalar haqida
+    if (env.telegram.adminIds.length && !isAdmin(msg.from)) {
+      await reply(
+        [
+          `<b>${escapeHtml(SITE_NAME)}</b>`,
+          "Bu bot yangi buyurtma, xabar va fayllar haqida xabar beradi. Ulash uchun saytda: Kabinet → Sozlamalar → «Telegram botni ulash».",
+          `${escapeHtml(env.appUrl)}/dashboard/settings`,
+        ].join("\n"),
+      );
+      return;
+    }
     await reply(
       [
         `<b>${escapeHtml(SITE_NAME)} admin bot</b>`,

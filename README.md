@@ -1,12 +1,13 @@
-# Montaj Club — videomontajorlar platformasi
+# Montaj Club — montajorlar va videograflar platformasi
 
-Boshlang‘ich montajordan professionalgacha: portfolio, narx, halol reyting va buyurtmalar bitta joyda.
+Montajorlar va videograflar — boshlang‘ichdan professionalgacha: portfolio, narx, halol reyting, buyurtmalar va **loyiha xonasi** (chat + fayl almashish) bitta joyda.
 Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Dizayn — minimal oq-qora: asosiy mavzu **oq**, bitta tugma bilan **qora**ga almashadi.
 
 ## Imkoniyatlar
 
-**Montajorlar uchun**
+**Montajorlar va videograflar uchun**
 - Gmail (Google) orqali kirish — parol yo‘q
+- Profil turi: **Montajor**, **Videograf** yoki ikkalasi. Videograflar alohida sahifada: `/videographers` (menyuda “Videograflar”)
 - Profil: ism, daraja (boshlang‘ich / o‘rta / professional), tajriba, shahar, boshlang‘ich narx, dasturlar, yo‘nalishlar
 - Telegram, Telegram kanal, Instagram, YouTube havolalari
 - **Portfolio videolari:** eng zo‘r **5 ta ish** saytning o‘ziga yuklanadi (har biri **60 soniyagacha**, **200 MB gacha**) va profilda shu yerning o‘zida o‘ynaydi (pastda “Portfolio videolari”)
@@ -20,8 +21,10 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Di
 
 **Mijozlar uchun**
 - Montajor katalogi: narx bo‘limi, yo‘nalish, daraja, qidiruv, saralash
-- To‘g‘ridan-to‘g‘ri buyurtma yoki ochiq e’lon (takliflar keladi, eng yaxshisini tanlaysiz)
-- Natijani qabul qilish yoki qayta ishlashga yuborish
+- Katalogda “Kim kerak”: hammasi / montajorlar / videograflar
+- To‘g‘ridan-to‘g‘ri buyurtma yoki ochiq e’lon (takliflar keladi, eng yaxshisini tanlaysiz). Buyurtmada “Kim kerak”: **Montaj**, **Syomka**, **Syomka + montaj**
+- **Loyiha xonasi** — buyurtma ichida chat va fayl almashish (Telegramsiz yoki bot orqali), pastda batafsil
+- Natijani qabul qilish yoki qayta ishlashga yuborish; “Yana buyurtma berish” — o‘sha mutaxassisga bir bosishda
 - Ish tugagach **baho**: sifat (1–5) va muloqot (1–5). “O‘z vaqtida” avtomatik hisoblanadi
 
 **Reyting** (0–100 ball) — pul bilan emas, ish bilan:
@@ -38,6 +41,10 @@ Asosiy til — **o‘zbekcha**, qo‘shimcha — **ruscha** va **inglizcha**. Di
 - Foydalanuvchilar: bloklash (barcha sessiyalari o‘chadi), admin qilish
 - Buyurtmalar, baholar (yashirish → reytingdan chiqadi), TOP rejalar, to‘lov kartalari, narx bo‘limlari
 - Audit log — kim, qachon, nima qildi
+
+**Telegram bot** (foydalanuvchilar uchun — pastda “Loyiha xonasi”)
+- Yangi buyurtma, xabar, fayl, holat o‘zgarishi haqida bildirishnoma (Kabinet → Sozlamalar → “Telegram botni ulash”)
+- Botga yozilgan matn va tashlangan video/fayl (2 GB gacha) ikkinchi tomonga **bot nomidan** yetkaziladi va saytdagi loyiha xonasiga yoziladi
 
 **Telegram bot** (admin uchun)
 - Yangi to‘lov → admin chatga chek rasmi bilan xabar + **✅ Tasdiqlash / ❌ Rad etish** tugmalari
@@ -186,6 +193,34 @@ Montajor kabinetda **Portfolio** bo‘limiga eng zo‘r 5 ta ishini yuklaydi. Vi
 
 **Qachon Cloudflare R2 ga o‘tish kerak:** montajorlar 1000+ bo‘lsa yoki oyiga yuz minglab ko‘rish bo‘lsa — videolarni R2 ga (10 GB bepul, keyin ~$0.015/GB, **trafik bepul**) ko‘chirish oson: faqat saqlash va berish qismi o‘zgaradi, siqish shu serverda qoladi. Cloudflare qoidalariga ko‘ra videoni oddiy (bepul) CDN orqali emas, R2 yoki Stream orqali tarqatish kerak — domen Cloudflare’ga ulansa ham videolar uchun R2 ishlatiladi.
 
+## Loyiha xonasi: mijoz va mutaxassis sayt ichida
+
+**Muammo:** mijoz saytdan montajor topadi, Telegramini oladi va keyingi ishlarni saytsiz qiladi — sayt kerak bo‘lmay qoladi.
+**Yechim:** muloqot, fayllar va baholar sayt ichida turadi, shaxsiy kontaktlar yashiriladi.
+
+1. **Kontaktlar yashirin** (standart; Admin → Sozlamalar → “Kontaktlarni yashirish”):
+   - profilda va buyurtmada montajor/mijozning shaxsiy Telegrami ko‘rinmaydi — o‘rniga “Buyurtma berish va yozish”;
+   - chatdagi telefon raqam (9+ raqam), @username, email, t.me / wa.me havolalar, Instagram/TikTok **profil** havolalari `•••` bo‘ladi (`src/lib/contacts.ts`). YouTube, Google Drive, Yandex Disk va aniq Reels/TikTok video havolalari (misol uchun) qoladi.
+2. **Chat** — mutaxassis aniqlangach (to‘g‘ridan-to‘g‘ri buyurtma — darhol, ochiq e’lon — taklif tanlangach). Ochiq sahifa har 5 soniyada yangi xabarlarni oladi. Holat o‘zgarishlari (qabul qilindi, topshirildi…) chatda tizim xabari bo‘lib chiqadi. Admin istalgan buyurtma chatini ko‘radi (nizolar uchun).
+3. **Fayllar saytga** — bo‘laklab (4 MB), uzilsa to‘xtagan joyidan davom etadi; asl sifatda, siqilmaydi. Mijozniki — “Materiallar”, mutaxassisniki — “Tayyor ish”. Montajor ishni havolasiz ham topshira oladi — tayyor faylni yuklasa kifoya. Yuklab olish — faqat ishtirokchilar va admin (`/api/order-files/<id>`).
+4. **Fayllar Telegram bot orqali** — katta videolar uchun: buyurtma sahifasida “Telegram orqali yuborish” → bot ochiladi → videoni botga tashlaysiz (2 GB gacha, Premium — 4 GB). Bot faylni ikkinchi tomonga **o‘z nomidan** yuboradi (asl yuboruvchi ko‘rinmaydi), saytda “Telegram orqali” yozuvi qoladi. Fayl Telegram serverida turadi — **diskimiz egallanmaydi**. Ikkinchi tomon botni hali ulamagan bo‘lsa, ulanishi bilan fayllar o‘zi yetkaziladi. Saytdagi “Telegramga olish” — faylni qayta yuboradi. Botga yozilgan matn ham ikkinchi tomonga va saytdagi chatga boradi (kontaktlar yashiriladi).
+5. **Nega saytda qolishadi:** reyting, baho va “N ta ish” faqat sayt orqali bajarilgan buyurtmalardan o‘sadi (katalog va TOPdagi o‘rin shunga bog‘liq); yozishma va fayllar saqlanadi; nizoda admin yozishmani ko‘radi; “Yana buyurtma berish” — bir bosishda.
+
+**Limitlar** (`src/lib/constants.ts` → `ORDER_FILES`, `CHAT`):
+
+| | Qiymat |
+|---|---|
+| Bitta fayl (saytga) | 5 GB |
+| Bitta buyurtmadagi saytga yuklangan fayllar | 5 GB, 40 ta |
+| Yopilgan (yakunlangan/bekor) buyurtma fayllari | 7 kundan keyin avtomatik o‘chadi |
+| Tashlab ketilgan buyurtma (30 kun harakatsiz) | fayllari o‘chadi |
+| Yarim yo‘lda qolgan yuklash | 24 soatdan keyin o‘chadi |
+| Telegram orqali | 2 GB / fayl, diskni egallamaydi, o‘chirilmaydi |
+
+Disk to‘lmasligi uchun bo‘sh joy (fayl × 1.2 + 3 GB) dan kam bo‘lsa, yangi yuklash qabul qilinmaydi. **Disk hisobi:** 200 GB VPS diskida ~20 GB tizim + baza, ~20 GB portfolio videolari, qolgan ~150 GB buyurtma fayllari uchun — bir vaqtda ~30 ta to‘la (5 GB) buyurtma. Katta videolarni bot orqali yuborish tavsiya qilinadi — ular diskni umuman egallamaydi. Disk yetmay qolsa: Cloudflare R2 (~$0.015/GB oyiga, trafik bepul).
+
+**Telegram botni foydalanuvchilar uchun sozlash:** admin bot bilan bir xil (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, Admin → Sozlamalar → “Webhookni ulash”). Qo‘shimcha sozlama shart emas; bot username `getMe` orqali o‘zi olinadi (xohlasangiz `TELEGRAM_BOT_USERNAME` bering). Eslatma: `TELEGRAM_ADMIN_IDS` dagi adminlarning botga yozgan **matnlari** bank xabari sifatida tekshiriladi (fayllari esa buyurtmaga yetkaziladi).
+
 ## Xavfsizlik
 
 - Google OAuth + PKCE + `state` tekshiruvi; sessiya tokeni faqat `HttpOnly`, `Secure`, `SameSite=Lax`, `__Host-` cookie’da, bazada esa faqat SHA-256 xeshi
@@ -197,13 +232,14 @@ Montajor kabinetda **Portfolio** bo‘limiga eng zo‘r 5 ta ishini yuklaydi. Vi
 - Holat o‘tishlari (qabul, topshirish, yakunlash) — bitta atomar SQL `UPDATE ... WHERE status=...`; to‘lov tasdiqlash — `SELECT ... FOR UPDATE` tranzaksiyasi (ikki marta tasdiqlanmaydi)
 - Qattiq HTTP sarlavhalar: CSP, HSTS, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy
 - Telegram webhook — maxfiy token bilan; tugmalar faqat ruxsat etilgan ID larga
+- Buyurtma fayllari: faqat ishtirokchilar va admin yuklab oladi; diskda tasodifiy nom (asl nom faqat bazada), `Content-Disposition: attachment`, `CSP: sandbox` — yuklangan fayl sayt nomidan skript ishga tushira olmaydi
 - Docker: root bo‘lmagan foydalanuvchi, ma’lumotlar bazasi tashqariga ochilmagan
 - Audit log: barcha admin va to‘lov amallari
 
 ## Keyingi bosqich uchun tavsiyalar
 
 1. **Avtomatik to‘lov:** Payme / Click merchant API — TOP to‘lovi va montajor–mijoz o‘rtasida xavfsiz (escrow) to‘lov
-2. **Platforma ichida chat** (buyurtma bo‘yicha xabarlar) va Telegram orqali montajorga bildirishnoma
+2. **Suv belgili (watermark) preview**: tayyor ishni mijoz avval suv belgisi bilan ko‘radi, asl faylni “Qabul qilish”dan keyin oladi — escrow bilan birga montajorni “ish oldin, pul keyin” xavfidan himoya qiladi
 3. **Videolarni Cloudflare R2 ga ko‘chirish** — montajorlar 1000+ bo‘lib, VPS diski yoki trafigi yetmay qolganda (pastda “Portfolio videolari”)
 4. Mijozlar uchun shikoyat/nizolar bo‘limi, montajor sertifikatlari
 5. Redis — bir nechta serverga kengayganda rate-limit va kesh uchun

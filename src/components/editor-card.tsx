@@ -1,4 +1,4 @@
-import { BadgeCheck, Clock, Flame, MapPin } from "lucide-react";
+import { BadgeCheck, Camera, Clock, Flame, MapPin } from "lucide-react";
 import Link from "next/link";
 import { isOnline } from "@/lib/constants";
 import type { EditorCardData } from "@/lib/data";
@@ -50,6 +50,11 @@ export function EditorCard({ e, d, className }: { e: EditorCardData; d: Dict; cl
         {boosted && (
           <span className="chip chip-accent">
             <Flame className="h-3 w-3" /> {d.editors.topBadge}
+          </span>
+        )}
+        {e.roles.includes("videographer") && (
+          <span className="chip">
+            <Camera className="h-3 w-3" /> {d.roles.videographer}
           </span>
         )}
         <span className="chip">{d.levels[e.level]}</span>

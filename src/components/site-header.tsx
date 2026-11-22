@@ -13,6 +13,7 @@ export async function SiteHeader() {
   const [d, locale, user] = await Promise.all([getDict(), getLocale(), getCurrentUser()]);
   const items = [
     { href: "/editors", label: d.nav.editors },
+    { href: "/videographers", label: d.nav.videographers },
     { href: "/jobs", label: d.nav.jobs },
     { href: "/#how", label: d.nav.how },
     { href: "/dashboard/promote", label: d.nav.top },

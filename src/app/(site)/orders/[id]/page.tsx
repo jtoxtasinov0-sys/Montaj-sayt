@@ -1,5 +1,5 @@
 import { and, asc, eq } from "drizzle-orm";
-import { CalendarClock, ExternalLink, Lock, Star } from "lucide-react";
+import { CalendarClock, ExternalLink, Lock, Repeat, Star } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,12 +16,17 @@ import {
 import { Avatar } from "@/components/avatar";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { TelegramIcon } from "@/components/icons";
+import { OrderRoom } from "@/components/order-room";
 import { Field, StatusBadge } from "@/components/page-bits";
 import { RatingStars } from "@/components/rating-stars";
 import { db } from "@/db";
 import { editorProfiles, orders, proposals, reviews, users } from "@/db/schema";
 import { getCurrentUser, getEditorProfileByUser } from "@/lib/auth/current";
+import { CHAT, ORDER_FILES } from "@/lib/constants";
+import { getContactsHidden } from "@/lib/data";
 import { fmt, getDict, getLocale, type Dict } from "@/lib/i18n";
+import { userNotifyEnabled } from "@/lib/notify";
+import { canUpload, canWrite, filesExpireAt, listFiles, listMessages, markRead, roomVisible } from "@/lib/order-room";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -41,7 +46,7 @@ async function loadOrder(id: string) {
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!UUID.test(id)) notFound();
-  const [row, me, d, locale] = await Promise.all([loadOrder(id), getCurrentUser(), getDict(), getLocale()]);
+  const [row, me, d, locale, contactsHidden] = await Promise.all([loadOrder(id), getCurrentUser(), getDict(), getLocale(), getContactsHidden()]);
   if (!row) notFound();
   const o = row.o;
   const myEditor = me ? await getEditorProfileByUser(me.id) : null;
@@ -84,12 +89,20 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
   const price = o.agreedPriceUsd ?? o.budgetUsd;
 
+  // Loyiha xonasi: mutaxassis aniqlangach — chat va fayllar (ishtirokchilar va admin)
+  const roomRole = isClient ? "client" : isEditor ? "editor" : isAdmin ? "admin" : null;
+  const showRoom = !!roomRole && !!me && roomVisible(o);
+  const [roomMessages, roomFiles] = showRoom ? await Promise.all([listMessages(o.id), listFiles(o.id)]) : [[], []];
+  if (showRoom) await markRead(o.id, roomRole);
+  const expiresAt = filesExpireAt(o);
+
   return (
     <>
       <section className="border-b border-line">
         <div className="container-x pt-32 pb-12">
           <div className="fade-up flex flex-wrap items-center gap-2">
             <StatusBadge status={o.status} label={d.orderStatus[o.status]} />
+            <span className="chip">{d.services[o.service] ?? o.service}</span>
             <span className="chip">{d.categories[o.category] ?? o.category}</span>
             {!o.isPublic && (
               <span className="chip">
@@ -127,6 +140,32 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <p className="text-sm font-medium text-accent">{d.order.revisionRequested}</p>
               <p className="mt-2 text-sm whitespace-pre-line text-muted">{o.revisionNote}</p>
             </div>
+          )}
+
+          {showRoom && me && roomRole && (
+            <OrderRoom
+              orderId={o.id}
+              meId={me.id}
+              role={roomRole}
+              clientId={o.clientId}
+              status={o.status}
+              messages={roomMessages}
+              files={roomFiles}
+              canWrite={canWrite(o)}
+              canUpload={canUpload(o)}
+              expiresAt={expiresAt?.toISOString() ?? null}
+              keepDays={ORDER_FILES.keepDaysAfterClose}
+              limits={{
+                maxFile: ORDER_FILES.maxFileBytes,
+                maxOrder: ORDER_FILES.maxOrderBytes,
+                chunk: ORDER_FILES.chunkBytes,
+                maxLength: CHAT.maxLength,
+                pollMs: CHAT.pollMs,
+              }}
+              locale={locale}
+              telegram={userNotifyEnabled()}
+              labels={{ ...d.room, errFileTooBig: d.errors.fileTooBig, errFailed: d.errors.uploadFailed }}
+            />
           )}
 
           {o.deliveryUrl && (isClient || isEditor || isAdmin) && (
@@ -227,8 +266,9 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           {isEditor && o.status === "IN_PROGRESS" && (
             <ActionForm action={deliverOrder.bind(null, o.id)} className="card space-y-4 p-6">
               <h2 className="text-lg font-medium">{d.order.deliverTitle}</h2>
+              <p className="text-sm text-muted">{d.order.deliverHint}</p>
               <Field label={d.order.deliveryUrl}>
-                <input name="deliveryUrl" type="url" required placeholder={d.order.deliveryUrlPh} pattern="https://.*" className="input" />
+                <input name="deliveryUrl" type="url" placeholder={d.order.deliveryUrlPh} pattern="https://.*" className="input" />
               </Field>
               <Field label={`${d.order.deliveryNote} (${d.common.optional})`}>
                 <textarea name="deliveryNote" maxLength={1000} rows={3} className="input" />
@@ -288,7 +328,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 <p className="text-xs text-muted">{d.order.client}</p>
                 <p className="truncate font-medium">{row.clientName}</p>
               </div>
-              {isEditor && row.clientTelegram && (
+              {isEditor && row.clientTelegram && !contactsHidden && (
                 <a href={`https://t.me/${row.clientTelegram}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm ml-auto">
                   <TelegramIcon className="h-4 w-4" />
                 </a>
@@ -298,12 +338,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <div className="flex items-center gap-3 border-t border-line pt-4">
                 <Avatar name={editor.p.displayName} avatarKey={editor.p.avatarKey} image={editor.image} size={40} />
                 <div className="min-w-0">
-                  <p className="text-xs text-muted">{d.order.editor}</p>
+                  <p className="text-xs text-muted">{d.room.specialist}</p>
                   <Link href={`/editors/${editor.p.slug}`} className="truncate font-medium hover:underline hover:underline-offset-4">
                     {editor.p.displayName}
                   </Link>
                 </div>
-                {(isClient || isAdmin) && editor.p.telegram && (
+                {(isAdmin || (isClient && !contactsHidden)) && editor.p.telegram && (
                   <a href={`https://t.me/${editor.p.telegram}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm ml-auto">
                     <TelegramIcon className="h-4 w-4" />
                   </a>
@@ -311,6 +351,13 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               </div>
             )}
           </div>
+
+          {/* Takroriy buyurtma ham sayt orqali: shu mutaxassisga bir bosishda yangi buyurtma */}
+          {isClient && editor && (o.status === "COMPLETED" || o.status === "DELIVERED") && (
+            <Link href={`/orders/new?editor=${editor.p.slug}`} className="btn btn-ghost w-full">
+              <Repeat className="h-4 w-4" /> {d.order.orderAgain}
+            </Link>
+          )}
 
           {isClient && (o.status === "OPEN" || o.status === "PENDING") && (
             <ActionForm

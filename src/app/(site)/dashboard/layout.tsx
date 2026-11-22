@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DashNav } from "@/components/dash-nav";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { getCurrentUser, getEditorProfileByUser } from "@/lib/auth/current";
+import { unreadOrdersCount } from "@/lib/dashboard-data";
 import { fmt, getDict } from "@/lib/i18n";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -14,9 +15,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const user = await getCurrentUser();
   if (!user) return children;
   const [d, editor] = await Promise.all([getDict(), getEditorProfileByUser(user.id)]);
+  const unread = await unreadOrdersCount(user.id, editor?.id ?? null);
   const items = [
     { href: "/dashboard", label: d.dashboard.overview },
-    { href: "/dashboard/orders", label: d.dashboard.orders },
+    { href: "/dashboard/orders", label: d.dashboard.orders, badge: unread },
     { href: "/dashboard/profile", label: d.dashboard.profile },
     ...(editor
       ? [

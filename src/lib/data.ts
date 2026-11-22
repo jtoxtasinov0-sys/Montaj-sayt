@@ -29,6 +29,18 @@ export function getPaymentCards() {
   });
 }
 
+/**
+ * Shaxsiy kontaktlarni yashirish (standart — yoqilgan): profilda va buyurtmada montajorning/mijozning Telegrami
+ * ko'rinmaydi, chatdagi telefon/@username/t.me "•••" bo'ladi. Shunda mijoz va mutaxassis saytni chetlab o'tmaydi.
+ * Admin → Sozlamalar dan o'chiriladi.
+ */
+export function getContactsHidden() {
+  return cached("settings:contacts", 30_000, async () => {
+    const rows = await db.select().from(settings).where(eq(settings.key, "contacts_hidden")).limit(1);
+    return rows[0] ? rows[0].value !== false : true;
+  });
+}
+
 export function getTiers() {
   return cached("tiers", 300_000, () =>
     db.select().from(priceTiers).where(eq(priceTiers.isActive, true)).orderBy(asc(priceTiers.sort), asc(priceTiers.minUsd)),
@@ -60,6 +72,7 @@ const cardColumns = {
   level: editorProfiles.level,
   priceFrom: editorProfiles.priceFrom,
   categories: editorProfiles.categories,
+  roles: editorProfiles.roles,
   avatarKey: editorProfiles.avatarKey,
   userImage: users.image,
   lastSeenAt: users.lastSeenAt,
@@ -83,6 +96,7 @@ export type EditorCardData = {
   level: "BEGINNER" | "MIDDLE" | "PRO";
   priceFrom: number;
   categories: string[];
+  roles: string[];
   avatarKey: string | null;
   userImage: string | null;
   lastSeenAt: Date | null;
@@ -102,6 +116,7 @@ export type EditorFilters = {
   tier?: number;
   category?: string;
   level?: string;
+  role?: string;
   sort?: string;
   page?: number;
 };
@@ -136,6 +151,7 @@ export async function listEditors(f: EditorFilters) {
       if (tier) conds.push(tierRange(editorProfiles.priceFrom, tier));
     }
     if (f.category) conds.push(sql`${editorProfiles.categories} @> ARRAY[${f.category}]::text[]`);
+    if (f.role) conds.push(sql`${editorProfiles.roles} @> ARRAY[${f.role}]::text[]`);
     if (f.level === "BEGINNER" || f.level === "MIDDLE" || f.level === "PRO") conds.push(eq(editorProfiles.level, f.level));
 
     const order =
@@ -224,7 +240,7 @@ export async function getEditorBySlug(slug: string) {
 }
 
 // ---------------- buyurtmalar ----------------
-export async function listOpenJobs(f: { tier?: number; category?: string; page?: number }) {
+export async function listOpenJobs(f: { tier?: number; category?: string; service?: string; page?: number }) {
   return cached(`jobs:list:${JSON.stringify(f)}`, 15_000, async () => {
     const conds: SQL[] = [eq(orders.status, "OPEN"), eq(orders.isPublic, true)];
     if (f.tier) {
@@ -232,12 +248,14 @@ export async function listOpenJobs(f: { tier?: number; category?: string; page?:
       if (tier) conds.push(tierRange(orders.budgetUsd, tier));
     }
     if (f.category) conds.push(eq(orders.category, f.category));
+    if (f.service) conds.push(eq(orders.service, f.service));
     const page = Math.max(1, f.page ?? 1);
     const where = and(...conds);
     const [items, [{ total }]] = await Promise.all([
       db
         .select({
           id: orders.id,
+          service: orders.service,
           title: orders.title,
           description: orders.description,
           category: orders.category,

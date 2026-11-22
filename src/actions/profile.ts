@@ -8,7 +8,7 @@ import { db } from "@/db";
 import { editorProfiles, users } from "@/db/schema";
 import type { ActionState } from "@/lib/action-types";
 import { invalidate } from "@/lib/cache";
-import { CATEGORY_KEYS, LEVELS, SOFTWARE } from "@/lib/constants";
+import { CATEGORY_KEYS, LEVELS, ROLES, SOFTWARE } from "@/lib/constants";
 import { deleteUpload, saveImage } from "@/lib/uploads";
 import { keyFromUploadUrl, uploadUrl } from "@/lib/uploads-url";
 import { cleanHandle } from "@/lib/video";
@@ -62,12 +62,17 @@ export async function saveEditorProfile(_prev: ActionState, fd: FormData): Promi
       .filter((s): s is string => typeof s === "string" && (CATEGORY_KEYS as readonly string[]).includes(s))
       .slice(0, 6);
 
+    // Montajor va/yoki videograf — kamida bittasi
+    const roles = ROLES.filter((r) => fd.getAll("roles").includes(r));
+    if (!roles.length) roles.push("editor");
+
     const existing = (await db.select().from(editorProfiles).where(eq(editorProfiles.userId, user.id)).limit(1))[0];
 
     const values = {
       ...v,
       skills,
       categories,
+      roles,
       telegram: cleanHandle(str(fd, "telegram")),
       // Telegram kanal/guruh, Instagram, YouTube va Google Drive — Portfolio bo'limida (savePortfolioLinks)
       isAvailable: fd.get("isAvailable") === "on",

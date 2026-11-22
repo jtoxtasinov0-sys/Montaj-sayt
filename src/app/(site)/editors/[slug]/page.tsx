@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Calendar, Clock, Eye, Flame, FolderOpen, MapPin, PenLine, Star, Trophy } from "lucide-react";
+import { ArrowRight, BadgeCheck, Calendar, Camera, Check, Clock, Eye, Flame, FolderOpen, Lock, MapPin, PenLine, Scissors, Star, Trophy } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,7 +9,7 @@ import { RatingStars } from "@/components/rating-stars";
 import { VideoTile } from "@/components/video-tile";
 import { getCurrentUser } from "@/lib/auth/current";
 import { isOnline, SITE_NAME } from "@/lib/constants";
-import { getEditorBySlug } from "@/lib/data";
+import { getContactsHidden, getEditorBySlug } from "@/lib/data";
 import { env } from "@/lib/env";
 import { fmt, getDict, getLocale } from "@/lib/i18n";
 import { isTopRated } from "@/lib/ranking-shared";
@@ -57,7 +57,13 @@ function truncate(s: string, max: number) {
 
 export default async function EditorProfilePage({ params }: Params) {
   const { slug } = await params;
-  const [data, d, locale, me] = await Promise.all([getEditorBySlug(slug), getDict(), getLocale(), getCurrentUser()]);
+  const [data, d, locale, me, contactsHidden] = await Promise.all([
+    getEditorBySlug(slug),
+    getDict(),
+    getLocale(),
+    getCurrentUser(),
+    getContactsHidden(),
+  ]);
   if (!data) notFound();
   const p = data.profile;
   const isOwner = me?.id === p.userId;
@@ -67,10 +73,11 @@ export default async function EditorProfilePage({ params }: Params) {
   const boosted = p.boostWeight > 0 && p.boostUntil && p.boostUntil > new Date();
   const onTimePct = p.completedOrders ? Math.round((p.onTimeOrders / p.completedOrders) * 100) : null;
   type LinkItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
-  // Bog'lanish (yon panel) va boshqa ishlar havolalari (Portfolio bo'limi ostida)
-  const contacts = [p.telegram && { href: `https://t.me/${p.telegram}`, label: `@${p.telegram}`, icon: TelegramIcon }].filter(
-    Boolean,
-  ) as LinkItem[];
+  // Bog'lanish (yon panel) va boshqa ishlar havolalari (Portfolio bo'limi ostida).
+  // Kontaktlar yashirilgan bo'lsa (standart) — shaxsiy Telegram ko'rsatilmaydi: muloqot faqat sayt ichidagi loyiha xonasida
+  const contacts = [
+    !contactsHidden && p.telegram && { href: `https://t.me/${p.telegram}`, label: `@${p.telegram}`, icon: TelegramIcon },
+  ].filter(Boolean) as LinkItem[];
   const workLinks = [
     p.driveUrl && { href: p.driveUrl, label: d.profile.googleDrive, icon: FolderOpen },
     p.telegramChannel && {
@@ -122,6 +129,11 @@ export default async function EditorProfilePage({ params }: Params) {
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
+                {p.roles.map((r) => (
+                  <span key={r} className="chip chip-primary">
+                    {r === "videographer" ? <Camera className="h-3 w-3" /> : <Scissors className="h-3 w-3" />} {d.roles[r] ?? r}
+                  </span>
+                ))}
                 <span className="chip">{d.levels[p.level]}</span>
                 {boosted && (
                   <span className="chip chip-accent">
@@ -315,6 +327,23 @@ export default async function EditorProfilePage({ params }: Params) {
               </Link>
             )}
           </div>
+
+          {contactsHidden && !isOwner && (
+            <div className="card p-5">
+              <h3 className="mb-2 text-lg font-medium">{d.contact.title}</h3>
+              <p className="text-sm text-muted">{d.contact.text}</p>
+              <ul className="mt-3 space-y-1.5 text-xs text-muted">
+                {d.contact.safe.map((t) => (
+                  <li key={t} className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-success" /> {t}
+                  </li>
+                ))}
+              </ul>
+              <Link href={`/orders/new?editor=${p.slug}`} className="btn btn-ghost mt-4 w-full">
+                <Lock className="h-4 w-4" /> {d.contact.cta}
+              </Link>
+            </div>
+          )}
 
           {contacts.length > 0 && (
             <div className="card p-5">
