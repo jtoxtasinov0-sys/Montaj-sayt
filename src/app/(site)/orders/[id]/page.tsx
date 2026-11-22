@@ -14,6 +14,7 @@ import {
   submitReview,
 } from "@/actions/orders";
 import { Avatar } from "@/components/avatar";
+import { BackButton } from "@/components/back-button";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { TelegramIcon } from "@/components/icons";
 import { OrderRoom } from "@/components/order-room";
@@ -99,7 +100,13 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   return (
     <>
       <section className="border-b border-line">
-        <div className="container-x pt-32 pb-12">
+        <div className="container-x pt-24 pb-12 sm:pt-28">
+          {/* To'g'ridan-to'g'ri havola bilan ochilsa: ishtirokchilar — kabinetdagi buyurtmalarga, boshqalar — ochiq buyurtmalar ro'yxatiga */}
+          <BackButton
+            fallback={isClient || isEditor || isAdmin ? "/dashboard/orders" : "/jobs"}
+            label={d.common.back}
+            className="fade-up mb-6 sm:mb-8"
+          />
           <div className="fade-up flex flex-wrap items-center gap-2">
             <StatusBadge status={o.status} label={d.orderStatus[o.status]} />
             <span className="chip">{d.services[o.service] ?? o.service}</span>

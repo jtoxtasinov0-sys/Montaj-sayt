@@ -1,11 +1,15 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { BackButton } from "./back-button";
 
-/** Ichki sahifalar sarlavhasi — katta matn va pastda chiziladigan ingichka chiziq */
-export function PageHero({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
+export type BackLink = { href: string; label: string };
+
+/** Ichki sahifalar sarlavhasi — katta matn va pastda chiziladigan ingichka chiziq. `back` — tepada "Orqaga" tugmasi */
+export function PageHero({ title, subtitle, back, children }: { title: string; subtitle?: string; back?: BackLink; children?: React.ReactNode }) {
   return (
-    <section className="container-x pt-32 sm:pt-36">
+    <section className={cn("container-x", back ? "pt-24 sm:pt-28" : "pt-32 sm:pt-36")}>
+      {back && <BackButton fallback={back.href} label={back.label} className="fade-up mb-6 sm:mb-8" />}
       <h1 className="h-hero fade-up text-[clamp(2.4rem,6vw,4.6rem)] text-balance">{title}</h1>
       {subtitle && <p className="fade-up mt-4 max-w-2xl text-muted [animation-delay:.08s]">{subtitle}</p>}
       {children && <div className="fade-up mt-8 [animation-delay:.16s]">{children}</div>}
