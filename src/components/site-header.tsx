@@ -52,15 +52,6 @@ export async function SiteHeader() {
           <div className="hidden md:block">
             <LangSwitcher current={locale} label={d.common.language} />
           </div>
-          {/* Ilovani o'rnatish: telefonda — faqat belgi, kompyuterda — "O'rnatish" yozuvi bilan.
-              390px dan tor ekranda sig'maydi (menyu tugmasi chetga chiqib ketadi) — u yerda menyu ichida bor */}
-          <InstallAppButton
-            label={d.pwa.install}
-            title={d.pwa.footerInstall}
-            iconClassName="h-[18px] w-[18px] shrink-0"
-            labelClassName="hidden sm:inline lg:hidden xl:inline"
-            className="inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-line text-[0.84rem] font-medium text-fg transition hover:border-fg hover:bg-fg hover:text-bg max-[389px]:hidden sm:px-3.5 lg:px-0 xl:px-3.5"
-          />
           <ThemeToggle label={d.common.theme} />
           {account}
           <MobileMenu
@@ -69,6 +60,7 @@ export async function SiteHeader() {
             footer={
               <>
                 <LangSwitcher current={locale} label={d.common.language} />
+                {/* Yuqori panelda joy tor — ilovani o'rnatish tugmasi telefonda shu menyuda, kompyuterda bosh sahifa va kabinetda */}
                 <InstallAppButton label={d.pwa.footerInstall} className="btn btn-ghost btn-lg" iconClassName="h-5 w-5" />
                 {user?.role === "ADMIN" && (
                   <Link href="/admin" className="btn btn-ghost btn-lg">

@@ -228,18 +228,23 @@ export const en: Dict = {
     iosText: "In Safari, tap Share, then choose “Add to Home Screen”.",
     footerInstall: "Install the app",
     helpTitle: "Install the app",
-    steps: {
-      desktop:
-        "Click the install icon at the right end of the address bar. If it isn’t there: browser menu (⋮ or ⋯) → “Install page as app”.",
-      android: "Open the browser menu (⋮) and choose “Install app” or “Add to Home screen”.",
-      ios: "Tap Share (the square with an up arrow), then choose “Add to Home Screen”.",
-      inapp: "The site is open in an app’s built-in browser, which can’t install it. Menu (⋮ or ⋯) → “Open in browser”, then press this button again.",
-      unsupported: "This browser can’t install sites as apps. Open the site in Chrome, Edge or Yandex Browser.",
+    guide: {
+      desktop: ["Click this icon at the right end of the address bar:", "Click “Install” — done."],
+      android: ["Open the ⋮ menu in the top-right corner of the browser.", "Tap “Install app” or “Add to Home screen”."],
+      ios: ["Tap Share at the bottom (the square with an arrow).", "Choose “Add to Home Screen”.", "Tap “Add” — done."],
+      inapp: ["Open the ⋮ or ⋯ menu at the top.", "Choose “Open in browser”.", "On the page that opens, press “Install the app” again."],
+      unsupported: ["Open the site in Chrome or Edge.", "Press “Install the app” again."],
     },
+    noIcon: "Don’t see that icon?",
+    noIconText: "Then the app is already installed on this computer. Remove it and install it again:",
+    reinstallLead: "To install it again:",
+    reinstall: [
+      "Copy this address and paste it into a new tab’s address bar:",
+      `Right-click ${SITE_NAME} → “Remove”.`,
+      "Reload this page and press “Install the app” again.",
+    ],
     installedTitle: "The app is already installed",
-    installedText: `Open ${SITE_NAME} from its icon on the desktop or in the Start menu. In the browser, the address bar also has an “Open in app” icon.`,
-    reinstallTitle: "Installed it before?",
-    reinstallText: `Deleting the desktop icon doesn’t remove the app: it stays installed in the browser, so the install offer doesn’t come back. To remove it fully, type {url} in the address bar → right-click ${SITE_NAME} → “Remove”. Then reload this page and install again.`,
+    installedText: `Open ${SITE_NAME} from the Start menu or its desktop icon.`,
   },
   footer: {
     about: "A platform that connects video editors and videographers with clients. Built in Tashkent.",
