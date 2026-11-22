@@ -87,15 +87,19 @@ export async function expireStalePayments() {
  * tasdiqlanadi. Kodlar takrorlanmaydi (payCodeFor), shuning uchun summa to'lovchini aniq ko'rsatadi.
  */
 
-/** Balans/qoldiq — undan keyingi summa tushgan pul emas */
-const BALANCE_LINE = /(balans|balance|qoldiq|ostatok|остаток|dostupno|доступно|💰)/i;
+/** Balans/qoldiq — undan keyingi summa tushgan pul emas. Koreya banklari: 잔액 (qoldiq), 사용가능/출금가능 (mavjud summa) */
+const BALANCE_LINE = /(balans|balance|qoldiq|ostatok|остаток|dostupno|доступно|💰|잔액|사용가능|출금가능)/i;
 const MONEY = /(?<![\d])(\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d{4,9})(?:[.,]\d{1,2})?(?![\d])/g;
 
-/** Pul chiqib ketgani haqidagi xabar (xarid, yechib olish) — kirim emas */
-const DEBIT = /(spisan|списан|pokupka|покупка|oplata|оплата|yechildi|chiqim|xarid|➖)/i;
-const CREDIT = /(popoln|пополн|zachisl|зачисл|perevod|перевод|tushdi|kirim|o'tkazma|➕|\+\s?\d)/i;
+/**
+ * Pul chiqib ketgani haqidagi xabar (xarid, yechib olish) — kirim emas.
+ * Koreya: 출금 (yechildi), 승인/결제/사용 (karta bilan to'lov), Toss "…님에게 …원을 보냈어요" (siz yubordingiz).
+ * Kirim: 입금 (tushdi), 받았 (oldingiz), Toss "…님이 …원을 보냈어요" (sizga yuborishdi).
+ */
+const DEBIT = /(spisan|списан|pokupka|покупка|oplata|оплата|yechildi|chiqim|xarid|➖|출금|승인|결제|사용|에게.{0,40}보냈)/i;
+const CREDIT = /(popoln|пополн|zachisl|зачисл|perevod|перевод|tushdi|kirim|o'tkazma|➕|\+\s?\d|입금|받았|님이.{0,40}보냈)/i;
 
-/** Matndan pul summalarini ajratib olish: "+50 437.00 UZS", "50437,00 so'm", "Popolnenie: 50 437 UZS" → 50437 */
+/** Matndan pul summalarini ajratib olish: "+50 437.00 UZS", "50437,00 so'm", "Popolnenie: 50 437 UZS", "입금 10,437원" → 50437 */
 export function parseAmounts(text: string): number[] {
   if (DEBIT.test(text) && !CREDIT.test(text)) return [];
   const out = new Set<number>();
